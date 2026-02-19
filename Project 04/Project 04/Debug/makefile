@@ -12,6 +12,7 @@ GEN_CMDS__FLAG :=
 ORDERED_OBJS += \
 "./clocks.obj" \
 "./display.obj" \
+"./imu.obj" \
 "./init.obj" \
 "./led.obj" \
 "./main.obj" \
@@ -155,8 +156,8 @@ Project\ 04.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "clocks.obj" "display.obj" "init.obj" "led.obj" "main.obj" "motors.obj" "ports.obj" "robot.obj" "system.obj" 
-	-$(RM) "clocks.d" "display.d" "init.d" "led.d" "main.d" "motors.d" "ports.d" "robot.d" "system.d" 
+	-$(RM) "clocks.obj" "display.obj" "imu.obj" "init.obj" "led.obj" "main.obj" "motors.obj" "ports.obj" "robot.obj" "system.obj" 
+	-$(RM) "clocks.d" "display.d" "imu.d" "init.d" "led.d" "main.d" "motors.d" "ports.d" "robot.d" "system.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

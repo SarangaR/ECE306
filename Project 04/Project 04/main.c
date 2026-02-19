@@ -17,6 +17,37 @@
 #include "Include\motors.h"
 #include "Include\robot.h"
 
+static void format_heading_for_log(float heading, char *message)
+{
+  long heading_tenths;
+  unsigned long magnitude;
+  char sign;
+  unsigned int whole;
+  unsigned int tenths;
+
+  if (heading >= 0.0f)
+  {
+    heading_tenths = (long)((heading * 10.0f) + 0.5f);
+  }
+  else
+  {
+    heading_tenths = (long)((heading * 10.0f) - 0.5f);
+  }
+
+  sign = (heading_tenths < 0) ? '-' : '+';
+  magnitude = (heading_tenths < 0) ? (unsigned long)(-heading_tenths) : (unsigned long)heading_tenths;
+  whole = (unsigned int)(magnitude / 10UL);
+  tenths = (unsigned int)(magnitude % 10UL);
+
+  message[0] = sign;
+  message[1] = (char)('0' + ((whole / 100U) % 10U));
+  message[2] = (char)('0' + ((whole / 10U) % 10U));
+  message[3] = (char)('0' + (whole % 10U));
+  message[4] = '.';
+  message[5] = (char)('0' + (tenths % 10U));
+  message[6] = '\0';
+}
+
 void main(void)
 {
   //    WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
@@ -47,6 +78,9 @@ void main(void)
   //------------------------------------------------------------------------------
   while (ALWAYS)
   { // Can the Operating system run
+    float heading;
+    char heading_str[11];
+
     // Run a Time Based State Machine
     if (Last_Time_Sequence != Time_Sequence)
     {
@@ -55,10 +89,9 @@ void main(void)
       time_change = 1;
     }
     // updateRobot(&robot, Time_Sequence); //Update Robot State Machine (for shapes)
-    float heading = getHeading();
-    //convert float to string
-    char heading_str[16];
-    snprintf(heading_str, sizeof(heading_str), "Heading: %.2f", heading);
+    heading = getHeading();
+    format_heading_for_log(heading, heading_str);
+
     displayLog(heading_str);
     Display_Process();   // Update Display
     P3OUT ^= TEST_PROBE; // Change State of TEST_PROBE OFF
