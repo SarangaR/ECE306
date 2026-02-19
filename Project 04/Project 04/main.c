@@ -36,6 +36,7 @@ void main(void)
   Init_Conditions(); // Initialize Variables and Initial Conditions
   Init_Timers();     // Initialize Timers
   Init_LCD();        // Initialize LCD
+  Init_IMU();        // Initialize IMU
 
   Robot robot;
   initRobot(&robot);       // Initialize Robot (initial states and time variables)
@@ -53,7 +54,12 @@ void main(void)
       cycle_time++;
       time_change = 1;
     }
-    updateRobot(&robot, Time_Sequence); //Update Robot State Machine (for shapes)
+    // updateRobot(&robot, Time_Sequence); //Update Robot State Machine (for shapes)
+    float heading = getHeading();
+    //convert float to string
+    char heading_str[16];
+    snprintf(heading_str, sizeof(heading_str), "Heading: %.2f", heading);
+    displayLog(heading_str);
     Display_Process();   // Update Display
     P3OUT ^= TEST_PROBE; // Change State of TEST_PROBE OFF
   }

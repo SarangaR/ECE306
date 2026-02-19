@@ -128,3 +128,9 @@ void usleep10(unsigned int usec);
 void five_msec_sleep(unsigned int msec);
 void measure_delay(void);
 void out_control_words(void);
+
+// IMU
+void Init_IMU(void);
+void IMU_Process(void);
+float getHeading(void);
+void zeroHeading(void);
