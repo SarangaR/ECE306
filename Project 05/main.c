@@ -16,6 +16,8 @@
 #include "Include\macros.h"
 #include "Include\motors.h"
 #include "Include\robot.h"
+#include "Include\imu.h"
+#include "Include\timers.h"
 
 void main(void)
 {
@@ -38,10 +40,6 @@ void main(void)
   Init_LCD();        // Initialize LCD
   Init_IMU();        // Initialize IMU
 
-//  if (!IMU_HasValidStartupAngle()) {
-//    P6OUT |= LCD_BACKLITE;
-//  }
-
   Robot robot;
   initRobot(&robot);       // Initialize Robot (initial states and time variables)
   setRobotShape(&robot, NONE); // Set Initial Robot Shape to NONE
@@ -51,9 +49,6 @@ void main(void)
   //------------------------------------------------------------------------------
   while (ALWAYS)
   { // Can the Operating system run
-    float heading;
-    char heading_str[11];
-
     // Run a Time Based State Machine
     if (Last_Time_Sequence != Time_Sequence)
     {
@@ -61,11 +56,8 @@ void main(void)
       cycle_time++;
       time_change = 1;
     }
-    updateRobot(&robot, Time_Sequence); //Update Robot State Machine (for shapes)
-    // heading = getHeading();
-    // format_heading_for_log(heading, heading_str);
 
-    // displayLog(heading_str);
+    updateRobot(&robot, Time_Sequence); //Update Robot State Machine (for shapes)
     Display_Process();   // Update Display
     P3OUT ^= TEST_PROBE; // Change State of TEST_PROBE OFF
   }

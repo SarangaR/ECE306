@@ -117,136 +117,6 @@
    {
       "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
       "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/adc14.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/aes256.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/comp_e.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/cpu.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/crc32.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/cs.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/dma.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/flash.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/fpu.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/gpio.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/i2c.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/interrupt.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/mpu.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/pcm.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/pmap.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/pss.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/ref_a.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/reset.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/rtc_c.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/spi.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/sysctl.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/systick.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/timer32.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/timer_a.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/uart.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
-      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Include/driver/wdt_a.c"
-   },
-   {
-      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
-      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
       "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/clocks.c"
    },
    {
@@ -293,5 +163,10 @@
       "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
       "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
       "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/system.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Project 05/timers.c"
    }
 ]

@@ -112,9 +112,27 @@ typedef enum {
     CIRCLE_2 = 1
 } CircleState;
 
+typedef enum {
+    FORWARD = 0,
+    STOP = 0
+} ForwardState;
+
+typedef enum {
+    REVERSE = 0,
+    STOP = 0,
+} ReverseState;
+
+typedef enum {
+    TURN = 0,
+    STOP = 0
+} TurnState;
+
 typedef struct {
     State state;
     Event event;
+    ForwardState fwd_state;
+    ReverseState rev_state;
+    TurnState turn_state;
     TriangleState triangle_state;
     Figure8State figure8_state;
     CircleState circle_state;
@@ -146,42 +164,8 @@ void run_circle(Robot* robot);
 void run_figure8(Robot* robot);
 void run_triangle(Robot* robot);
 void displayLog(char* message);
-void displayLogHeading(char* message, float heading);
 void moveStraight(Robot* robot);
 void turnToAngle(Robot* robot, float angle);
 void curveToAngle(Robot* robot, float angle);
-
-static void format_heading_for_log(float heading, char *message)
-{
-  long heading_tenths;
-  unsigned long magnitude;
-  char sign;
-  unsigned int whole;
-  unsigned int tenths;
-
-  if (heading >= 0.0f)
-  {
-    heading_tenths = (long)((heading * 10.0f) + 0.5f);
-  }
-  else
-  {
-    heading_tenths = (long)((heading * 10.0f) - 0.5f);
-  }
-
-  sign = (heading_tenths < 0) ? '-' : '+';
-  magnitude = (heading_tenths < 0) ? (unsigned long)(-heading_tenths) : (unsigned long)heading_tenths;
-  whole = (unsigned int)(magnitude / 10UL);
-  tenths = (unsigned int)(magnitude % 10UL);
-
-    memset(message, ' ', 10);
-
-  message[0] = sign;
-  message[1] = (char)('0' + ((whole / 100U) % 10U));
-  message[2] = (char)('0' + ((whole / 10U) % 10U));
-  message[3] = (char)('0' + (whole % 10U));
-  message[4] = '.';
-  message[5] = (char)('0' + (tenths % 10U));
-    message[10] = '\0';
-}
 
 #endif // ROBOT_H

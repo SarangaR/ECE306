@@ -162,11 +162,6 @@ void setRobotShape(Robot *robot, Event shape) {
         break;
     }
     strcpy(display_line[3], "          ");
-
-    update_string(display_line[0], 0);
-    update_string(display_line[1], 11);
-    update_string(display_line[2], 22);
-    update_string(display_line[3], 33);
     update_display = 1;
 
     display_changed = TRUE;
@@ -236,7 +231,7 @@ void run_circle(Robot *robot) {
                     robot->circle_state = CIRCLE_2;
                 }
             }
-            displayLogHeading("CIRCLE 1", current_heading);
+            displayLog("CIRCLE 1");
             break;
         case CIRCLE_2:
             if ((rotation_progress >= full_turn_threshold) && (abs_error <= circle_close_window_deg)) {
@@ -255,7 +250,7 @@ void run_circle(Robot *robot) {
                     robot->circle_state = CIRCLE_1;
                 }
             }
-            displayLogHeading("CIRCLE 2", current_heading);
+            displayLog("CIRCLE 2");
             break;
     }
 }
@@ -302,21 +297,21 @@ void run_figure8(Robot *robot) {
             leftDuty = LEFT_COUNT_CIRCLE;
             rightDuty = RIGHT_COUNT_CIRCLE;
             target_heading = -90.0f;
-            displayLogHeading("F8 LEFT 1", current_heading);
+            displayLog("F8 LEFT 1");
             break;
         case FIGURE8_CIRCLE_2:
             direction = 1;
             leftDuty = RIGHT_COUNT_CIRCLE;
             rightDuty = 1;
             target_heading = -90.0f;
-            displayLogHeading("F8 RIGHT1", current_heading);
+            displayLog("F8 RIGHT1");
             break;
         case FIGURE8_CIRCLE_3:
             direction = -1;
             leftDuty = LEFT_COUNT_CIRCLE;
             rightDuty = RIGHT_COUNT_CIRCLE;
             target_heading = -90.0f;
-            displayLogHeading("F8 LEFT 2", current_heading);
+            displayLog("F8 LEFT 2");
             break;
         case FIGURE8_CIRCLE_4:
         default:
@@ -324,7 +319,7 @@ void run_figure8(Robot *robot) {
             leftDuty = RIGHT_COUNT_CIRCLE;
             rightDuty = 1;
             target_heading = -90.0f;
-            displayLogHeading("F8 RIGHT2", current_heading);
+            displayLog("F8 RIGHT2");
             break;
     }
 
@@ -397,7 +392,7 @@ void run_triangle(Robot *robot) {
                 robot->right_motor_count = 0;
                 robot->left_motor_count = 0;
             }
-            displayLogHeading("STRAIGHT", getHeading());
+            displayLog("STRAIGHT");
             break;
         case TRIANGLE_TURN:
             turn_index = robot->triangle_turn_count % 3;
@@ -416,7 +411,7 @@ void run_triangle(Robot *robot) {
                 robot->right_motor_count = 0;
                 robot->left_motor_count = 0;
             }
-            displayLogHeading("TURN", getHeading());
+            displayLog("TURN");
             break;
     }
 }
@@ -533,48 +528,9 @@ void displayLog(char* message) {
 
     strcpy(display_line[2], formatted_message);
 
-    strcpy(display_line[3], "          ");
-
     update_string(display_line[0], 0);
     update_string(display_line[1], 11);
     update_string(display_line[2], 22);
-    update_string(display_line[3], 33);
-    update_display = 1;
-
-    display_changed = TRUE;
-}
-
-void displayLogHeading(char* message, float heading) {
-    strcpy(display_line[0], "          ");
-    format_heading_for_log(heading, display_line[1]);
-    char formatted_message[11] = "          ";
-    int length = strlen(message);
-
-    if (length > 10) {
-        strncpy(formatted_message, message, 10);
-    }
-    else {
-        int total_padding = 10 - length;
-        int front_padding = total_padding / 2;
-        int back_padding = total_padding - front_padding;
-
-        memset(formatted_message, ' ', 10);
-        memcpy(&formatted_message[front_padding], message, length);
-        formatted_message[10] = '\0';
-
-        if (back_padding == 0) {
-            formatted_message[10] = '\0';
-        }
-    }
-
-    strcpy(display_line[2], formatted_message);
-
-    strcpy(display_line[3], "          ");
-
-    update_string(display_line[0], 0);
-    update_string(display_line[1], 11);
-    update_string(display_line[2], 22);
-    update_string(display_line[3], 33);
     update_display = 1;
 
     display_changed = TRUE;
@@ -688,4 +644,8 @@ void curveToAngle(Robot* robot, float angle) {
     rightDuty = CURVE_BASE_DUTY - delta;
 
     applyDutyCycle(robot, leftDuty, rightDuty);
+}
+
+void forwardTime(float time) {
+    if 
 }

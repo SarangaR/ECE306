@@ -192,42 +192,37 @@ void zeroHeading(void)
 
 uint8_t IMU_HasValidStartupAngle(void)
 {
-  uint16_t start_packets;
-  uint16_t packet_delta;
   uint16_t i;
-  float sample;
-  float previous_sample;
-  uint8_t change_detected;
+  uint8_t change = 0;
+  float previous_heading = getHeading();
+  float current_heading;
+  float delta;
 
-  start_packets = imu_packet_count;
-  change_detected = 0;
-
-  IMU_Process();
-  previous_sample = yaw_raw - yaw_zero_offset;
-
-  for (i = 0; i < 300; i++)
+  for (i = 0; i < 3000U; i++)
   {
-    IMU_Process();
+    current_heading = getHeading();
+    delta = wrap_heading(current_heading - previous_heading);
 
-    sample = yaw_raw - yaw_zero_offset;
-    if ((sample < -180.0f) || (sample > 180.0f))
+    if (delta < 0.0f)
     {
-      return 0;
+      delta = -delta;
     }
 
-    if (sample != previous_sample)
+    if (delta > 0.15f)
     {
-      change_detected = 1;
+      change++;
+
+      if (change >= 3U)
+      {
+        return 1;
+      }
     }
-    previous_sample = sample;
+
+    previous_heading = current_heading;
+    __delay_cycles(5000);
   }
 
-  if (!change_detected)
-  {
-    return 0;
-  }
-
-  return 1;
+  return 0;
 }
 
 #pragma vector=EUSCI_A1_VECTOR
