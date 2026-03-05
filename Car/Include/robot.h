@@ -37,6 +37,7 @@ typedef enum
     CMD_TURN_TO_ANGLE,
     CMD_DRIVE_STRAIGHT,
     CMD_REVERSE_STRAIGHT,
+    CMD_DRIVE_TO_XY,
     CMD_TURN_SYSID,
     CMD_AUTO_TUNE,
     CMD_SEQUENCE,
@@ -66,6 +67,8 @@ struct Command
     float heading_error_prev;
     float heading_error_sum;
     SpinDirection spin_direction;
+    float target_x;
+    float target_y;
     unsigned char pwm_counter;
     unsigned char left_duty;
     unsigned char right_duty;
@@ -91,6 +94,7 @@ struct RobotCommandChain
     RobotCommandChain (*andThenDriveStraight)(int time_seconds);
     RobotCommandChain (*andThenReverseStraight)(int time_seconds);
     RobotCommandChain (*andThenTurnSysId)(void);
+    RobotCommandChain (*andThenDriveToXY)(float target_x_in, float target_y_in);
     void (*schedule)(void);
 };
 
@@ -106,6 +110,7 @@ void Command_Wait(Command *command, int time_seconds);
 void Command_TurnToAngle(Command *command, float target_angle_degrees);
 void Command_DriveStraight(Command *command, int time_seconds);
 void Command_ReverseStraight(Command *command, int time_seconds);
+void Command_DriveToXY(Command *command, float target_x_in, float target_y_in);
 void Command_TurnSysId(Command *command);
 void Command_AutoTune(Command *command);
 void Command_Sequence(Command *command, Command **children, unsigned char child_count);
@@ -120,6 +125,7 @@ void spin(int time);
 void turnToAngle(float target_angle_degrees);
 void driveStraight(int time_seconds);
 void reverseStraight(int time_seconds);
+void driveToXY(float target_x_in, float target_y_in);
 void turnSysId(void);
 void autoTuneTurnPID(void);
 
@@ -131,6 +137,7 @@ RobotCommandChain chainSpinCCW(int time_seconds);
 RobotCommandChain chainTurnToAngle(float target_angle_degrees);
 RobotCommandChain chainDriveStraight(int time_seconds);
 RobotCommandChain chainReverseStraight(int time_seconds);
+RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
 RobotCommandChain chainTurnSysId(void);
 
 extern float turn_kp;
@@ -149,5 +156,7 @@ extern float drive_straight_max_correction_percent;
 extern float drive_straight_deadband_deg;
 extern float drive_straight_correction_sign;
 extern float turn_angle_tolerance_deg;
+extern float drive_to_xy_speed_percent;
+extern float drive_to_xy_tolerance_in;
 
 #endif

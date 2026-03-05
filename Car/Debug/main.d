@@ -13,16 +13,6 @@ main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/link
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/cdefs.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h
 main.obj: ../Include/functions.h
-main.obj: ../Include/LCD.h
-main.obj: ../Include/ports.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/timers.h
-main.obj: ../Include/macros.h
-main.obj: ../Include/motors.h
-main.obj: ../Include/robot.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/ports.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/macros.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/motors.h
-main.obj: ../Include/imu.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/_stdint40.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/stdint.h
@@ -30,6 +20,16 @@ main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_types.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
+main.obj: ../Include/LCD.h
+main.obj: ../Include/ports.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/timers.h
+main.obj: ../Include/macros.h
+main.obj: ../Include/motors.h
+main.obj: ../Include/robot.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/ports.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/macros.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/motors.h
+main.obj: ../Include/otos.h
 
 ../main.c:
 
@@ -57,26 +57,6 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_strin
 
 ../Include/functions.h:
 
-../Include/LCD.h:
-
-../Include/ports.h:
-
-C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/timers.h:
-
-../Include/macros.h:
-
-../Include/motors.h:
-
-../Include/robot.h:
-
-C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/ports.h:
-
-C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/macros.h:
-
-C:/Users/sarng/OneDrive/Documents/ECE306/Project\ 05/Include/motors.h:
-
-../Include/imu.h:
-
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h:
 
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/_stdint40.h:
@@ -90,4 +70,24 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_types
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h:
 
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
+
+../Include/LCD.h:
+
+../Include/ports.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/timers.h:
+
+../Include/macros.h:
+
+../Include/motors.h:
+
+../Include/robot.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/ports.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/macros.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/Include/motors.h:
+
+../Include/otos.h:
 

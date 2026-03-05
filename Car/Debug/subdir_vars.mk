@@ -11,11 +11,11 @@ CMD_SRCS += \
 C_SRCS += \
 ../clocks.c \
 ../display.c \
-../imu.c \
 ../init.c \
 ../led.c \
 ../main.c \
 ../motors.c \
+../otos.c \
 ../ports.c \
 ../robot.c \
 ../system.c \
@@ -24,11 +24,11 @@ C_SRCS += \
 C_DEPS += \
 ./clocks.d \
 ./display.d \
-./imu.d \
 ./init.d \
 ./led.d \
 ./main.d \
 ./motors.d \
+./otos.d \
 ./ports.d \
 ./robot.d \
 ./system.d \
@@ -37,11 +37,11 @@ C_DEPS += \
 OBJS += \
 ./clocks.obj \
 ./display.obj \
-./imu.obj \
 ./init.obj \
 ./led.obj \
 ./main.obj \
 ./motors.obj \
+./otos.obj \
 ./ports.obj \
 ./robot.obj \
 ./system.obj \
@@ -50,11 +50,11 @@ OBJS += \
 OBJS__QUOTED += \
 "clocks.obj" \
 "display.obj" \
-"imu.obj" \
 "init.obj" \
 "led.obj" \
 "main.obj" \
 "motors.obj" \
+"otos.obj" \
 "ports.obj" \
 "robot.obj" \
 "system.obj" \
@@ -63,11 +63,11 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "clocks.d" \
 "display.d" \
-"imu.d" \
 "init.d" \
 "led.d" \
 "main.d" \
 "motors.d" \
+"otos.d" \
 "ports.d" \
 "robot.d" \
 "system.d" \
@@ -76,11 +76,11 @@ C_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "../clocks.c" \
 "../display.c" \
-"../imu.c" \
 "../init.c" \
 "../led.c" \
 "../main.c" \
 "../motors.c" \
+"../otos.c" \
 "../ports.c" \
 "../robot.c" \
 "../system.c" \

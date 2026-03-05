@@ -26,6 +26,8 @@ static MotorDriveMode requested_mode = MOTOR_MODE_STOP;
 static MotorDriveMode applied_mode = MOTOR_MODE_STOP;
 static MotorDriveMode last_directional_mode = MOTOR_MODE_STOP;
 static unsigned int direction_change_delay_counter = 0;
+static unsigned int g_pending_left = 0;
+static unsigned int g_pending_right = 0;
 
 static unsigned int pwmCountsFromPercent(unsigned int duty_percent)
 {
@@ -61,23 +63,23 @@ static void applyMotorMode(MotorDriveMode mode)
 
     if (mode == MOTOR_MODE_FORWARD)
     {
-        LEFT_FORWARD_SPEED = WHEEL_PERIOD;
-        RIGHT_FORWARD_SPEED = WHEEL_PERIOD;
+        LEFT_FORWARD_SPEED = g_pending_left;
+        RIGHT_FORWARD_SPEED = g_pending_right;
     }
     else if (mode == MOTOR_MODE_REVERSE)
     {
-        LEFT_REVERSE_SPEED = WHEEL_PERIOD;
-        RIGHT_REVERSE_SPEED = WHEEL_PERIOD;
+        LEFT_REVERSE_SPEED = g_pending_left;
+        RIGHT_REVERSE_SPEED = g_pending_right;
     }
     else if (mode == MOTOR_MODE_SPIN)
     {
-        LEFT_FORWARD_SPEED = WHEEL_PERIOD;
-        RIGHT_REVERSE_SPEED = WHEEL_PERIOD;
+        LEFT_FORWARD_SPEED = g_pending_left;
+        RIGHT_REVERSE_SPEED = g_pending_right;
     }
     else if (mode == MOTOR_MODE_SPIN_REVERSE)
     {
-        LEFT_REVERSE_SPEED = WHEEL_PERIOD;
-        RIGHT_FORWARD_SPEED = WHEEL_PERIOD;
+        LEFT_REVERSE_SPEED = g_pending_left;
+        RIGHT_FORWARD_SPEED = g_pending_right;
     }
 
     if (mode != MOTOR_MODE_STOP)
@@ -148,6 +150,8 @@ static int requiresDirectionChangeDeadtime(MotorDriveMode from_mode, MotorDriveM
 
 void allMotorsOff(void)
 {
+    g_pending_left = 0;
+    g_pending_right = 0;
     requested_mode = MOTOR_MODE_STOP;
     direction_change_delay_counter = 0;
     applyMotorMode(MOTOR_MODE_STOP);
@@ -160,6 +164,8 @@ void driveStop(void)
 
 void driveForward(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_FORWARD;
 }
 
@@ -175,36 +181,50 @@ void rightMotorOff(void)
 
 void leftMotorOn(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_FORWARD;
 }
 
 void rightMotorOn(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_FORWARD;
 }
 
 void leftMotorReverse(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_REVERSE;
 }
 
 void rightMotorReverse(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_REVERSE;
 }
 
 void driveReverse(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_REVERSE;
 }
 
 void driveSpin(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_SPIN;
 }
 
 void driveSpinReverse(void)
 {
+    g_pending_left = WHEEL_PERIOD;
+    g_pending_right = WHEEL_PERIOD;
     requested_mode = MOTOR_MODE_SPIN_REVERSE;
 }
 
@@ -269,50 +289,78 @@ void Motors_SetPWM(unsigned int left_fwd, unsigned int right_fwd,
 
 void Motors_DriveForwardPWM(unsigned int left_pwm, unsigned int right_pwm)
 {
-    LEFT_REVERSE_SPEED = 0;
-    RIGHT_REVERSE_SPEED = 0;
-    LEFT_FORWARD_SPEED = clampPWM(left_pwm);
-    RIGHT_FORWARD_SPEED = clampPWM(right_pwm);
-
+    g_pending_left = clampPWM(left_pwm);
+    g_pending_right = clampPWM(right_pwm);
     requested_mode = MOTOR_MODE_FORWARD;
-    applied_mode = MOTOR_MODE_FORWARD;
-    last_directional_mode = MOTOR_MODE_FORWARD;
+
+    if (requiresDirectionChangeDeadtime(last_directional_mode, MOTOR_MODE_FORWARD))
+    {
+        if (direction_change_delay_counter == 0)
+        {
+            applyMotorMode(MOTOR_MODE_STOP);
+            direction_change_delay_counter = MOTOR_DIRECTION_CHANGE_DELAY_CYCLES;
+        }
+        return;
+    }
+
+    applyMotorMode(MOTOR_MODE_FORWARD);
 }
 
 void Motors_DriveReversePWM(unsigned int left_pwm, unsigned int right_pwm)
 {
-    LEFT_FORWARD_SPEED = 0;
-    RIGHT_FORWARD_SPEED = 0;
-    LEFT_REVERSE_SPEED = clampPWM(left_pwm);
-    RIGHT_REVERSE_SPEED = clampPWM(right_pwm);
-
+    g_pending_left = clampPWM(left_pwm);
+    g_pending_right = clampPWM(right_pwm);
     requested_mode = MOTOR_MODE_REVERSE;
-    applied_mode = MOTOR_MODE_REVERSE;
-    last_directional_mode = MOTOR_MODE_REVERSE;
+
+    if (requiresDirectionChangeDeadtime(last_directional_mode, MOTOR_MODE_REVERSE))
+    {
+        if (direction_change_delay_counter == 0)
+        {
+            applyMotorMode(MOTOR_MODE_STOP);
+            direction_change_delay_counter = MOTOR_DIRECTION_CHANGE_DELAY_CYCLES;
+        }
+        return;
+    }
+
+    applyMotorMode(MOTOR_MODE_REVERSE);
 }
 
 void Motors_DriveSpinPWM(unsigned int left_pwm, unsigned int right_pwm)
 {
-    LEFT_REVERSE_SPEED = 0;
-    RIGHT_FORWARD_SPEED = 0;
-    LEFT_FORWARD_SPEED = clampPWM(left_pwm);
-    RIGHT_REVERSE_SPEED = clampPWM(right_pwm);
-
+    g_pending_left = clampPWM(left_pwm);
+    g_pending_right = clampPWM(right_pwm);
     requested_mode = MOTOR_MODE_SPIN;
-    applied_mode = MOTOR_MODE_SPIN;
-    last_directional_mode = MOTOR_MODE_SPIN;
+
+    if (requiresDirectionChangeDeadtime(last_directional_mode, MOTOR_MODE_SPIN))
+    {
+        if (direction_change_delay_counter == 0)
+        {
+            applyMotorMode(MOTOR_MODE_STOP);
+            direction_change_delay_counter = MOTOR_DIRECTION_CHANGE_DELAY_CYCLES;
+        }
+        return;
+    }
+
+    applyMotorMode(MOTOR_MODE_SPIN);
 }
 
 void Motors_DriveSpinReversePWM(unsigned int left_pwm, unsigned int right_pwm)
 {
-    LEFT_FORWARD_SPEED = 0;
-    RIGHT_REVERSE_SPEED = 0;
-    LEFT_REVERSE_SPEED = clampPWM(left_pwm);
-    RIGHT_FORWARD_SPEED = clampPWM(right_pwm);
-
+    g_pending_left = clampPWM(left_pwm);
+    g_pending_right = clampPWM(right_pwm);
     requested_mode = MOTOR_MODE_SPIN_REVERSE;
-    applied_mode = MOTOR_MODE_SPIN_REVERSE;
-    last_directional_mode = MOTOR_MODE_SPIN_REVERSE;
+
+    if (requiresDirectionChangeDeadtime(last_directional_mode, MOTOR_MODE_SPIN_REVERSE))
+    {
+        if (direction_change_delay_counter == 0)
+        {
+            applyMotorMode(MOTOR_MODE_STOP);
+            direction_change_delay_counter = MOTOR_DIRECTION_CHANGE_DELAY_CYCLES;
+        }
+        return;
+    }
+
+    applyMotorMode(MOTOR_MODE_SPIN_REVERSE);
 }
 
 void Motors_DriveForwardDifferential(unsigned char left_on, unsigned char right_on)

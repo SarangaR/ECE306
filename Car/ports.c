@@ -168,11 +168,17 @@ void Init_Port4(void)
     P4DIR &= ~SW1;  // Direction = input
     P4REN |= SW1;   // Enable pullup resistor
 
-    P4SEL0 |= UCA1TXD;  // USCI_A1 UART operation
-    P4SEL1 &= ~UCA1TXD; // USCI_A1 UART operation
+    P4SEL0 &= ~UCA1TXD;
+    P4SEL1 &= ~UCA1TXD;
+    P4OUT |= UCA1TXD;
+    P4DIR &= ~UCA1TXD;
+    P4REN |= UCA1TXD;
 
-    P4SEL0 |= UCA1RXD;  // USCI_A1 UART operation
-    P4SEL1 &= ~UCA1RXD; // USCI_A1 UART operation
+    P4SEL0 &= ~UCA1RXD;
+    P4SEL1 &= ~UCA1RXD;
+    P4OUT |= UCA1RXD;
+    P4DIR &= ~UCA1RXD;
+    P4REN |= UCA1RXD;
 
     P4SEL0 &= ~UCB1_CS_LCD; // UCB1_CS_LCD GPIO operation
     P4SEL1 &= ~UCB1_CS_LCD; // UCB1_CS_LCD GPIO operation

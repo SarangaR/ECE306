@@ -16,15 +16,15 @@
 #include "Include\macros.h"
 #include "Include\motors.h"
 #include "Include\robot.h"
-#include "Include\imu.h"
+#include "Include\otos.h"
 #include "Include\timers.h"
 
 void main(void)
 {
-  unsigned char imu_ready = 0;
-  const unsigned long imu_retry_period_ticks = 10UL; // 2 seconds at 5 Hz tick
-  unsigned long imu_attempt_start_tick = 0;
-  unsigned int imu_packet_start = 0;
+  unsigned char otos_ready = 0;
+  const unsigned long otos_retry_period_ticks = 10UL; // 2 seconds at 5 Hz tick
+  unsigned long otos_attempt_start_tick = 0;
+  unsigned int otos_packet_start = 0;
   unsigned int packet_delta = 0;
   unsigned long ticks_elapsed = 0;
 
@@ -46,15 +46,19 @@ void main(void)
   Init_Timers();     // Initialize Timers
   Init_LCD();        // Initialize LCD
 
-  strcpy(display_line[0], " IMU INIT ");
-  strcpy(display_line[1], " WAIT DATA");
+  strcpy(display_line[0], "OTOS INIT ");
+  strcpy(display_line[1], "CALIBRATE ");
   strcpy(display_line[2], "          ");
   display_changed = TRUE;
+  P6OUT |= LCD_BACKLITE;
+  Display_Process();
 
   Init_IMU();
-  imu_packet_start = IMU_GetPacketCount();
-  imu_attempt_start_tick = one_second_timer;
-  P6OUT |= LCD_BACKLITE;
+
+  strcpy(display_line[1], " WAIT DATA");
+  display_changed = TRUE;
+  otos_packet_start = IMU_GetPacketCount();
+  otos_attempt_start_tick = one_second_timer;
 
   Robot robot;
 
@@ -65,9 +69,10 @@ void main(void)
   // autoTuneTurnPID();
   // chainTurnSysId().schedule();
   // chainWait(5).andThenForward(5).schedule();
-  chainWait(2).andThenTurnToAngle(90.0f).andThenTurnToAngle(-90.0).andThenTurnToAngle(0.0).andThenTurnToAngle(0.0f).andThenWait(2).schedule();
+  // chainWait(2).andThenTurnToAngle(90.0f).andThenTurnToAngle(-90.0).andThenTurnToAngle(0.0).andThenTurnToAngle(0.0f).andThenWait(2).schedule();
   // chainWait(5).andThenTurnSysId().schedule();
   // autoTuneTurnPID();
+  chainWait(5).andThenDriveToXY(0.0f, 15.0f).schedule();
 
   //------------------------------------------------------------------------------
   // Beginning of the "While" Operating System
@@ -83,22 +88,22 @@ void main(void)
 
     Motors_Service();
     // Motors_PWM_Test();
-    if (!imu_ready)
+    if (!otos_ready)
     {
-      packet_delta = (unsigned int)(IMU_GetPacketCount() - imu_packet_start);
-      ticks_elapsed = one_second_timer - imu_attempt_start_tick;
+      packet_delta = (unsigned int)(IMU_GetPacketCount() - otos_packet_start);
+      ticks_elapsed = one_second_timer - otos_attempt_start_tick;
 
       if (packet_delta >= 5U)
       {
-        imu_ready = 1U;
+        otos_ready = 1U;
         P6OUT &= ~LCD_BACKLITE;
         zeroHeading();
       }
-      else if (ticks_elapsed >= imu_retry_period_ticks)
+      else if (ticks_elapsed >= otos_retry_period_ticks)
       {
         Init_IMU();
-        imu_packet_start = IMU_GetPacketCount();
-        imu_attempt_start_tick = one_second_timer;
+        otos_packet_start = IMU_GetPacketCount();
+        otos_attempt_start_tick = one_second_timer;
       }
     }
     else

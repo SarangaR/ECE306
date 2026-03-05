@@ -2,7 +2,14 @@
 #include "Include\functions.h"
 #include <string.h>
 #include <stdint.h>
-#include "Include\imu.h"
+#include "Include\otos.h"
+
+#pragma diag_suppress 1530
+#pragma diag_suppress 1531
+#pragma diag_suppress 1534
+#pragma diag_suppress 1535
+#pragma diag_suppress 1544
+#pragma diag_suppress 1546
 
 static Robot *active_robot = 0;
 
@@ -30,13 +37,14 @@ float drive_straight_max_correction_percent = 60.0f;
 float drive_straight_deadband_deg = 0.5f;
 float drive_straight_correction_sign = -1.0f;
 float turn_angle_tolerance_deg = 2.0f;
+float drive_to_xy_speed_percent = 50.0f;
+float drive_to_xy_tolerance_in = 1.5f;
 
 static volatile int sw1_position = 0;
 static volatile int sw2_position = 0;
 static volatile int switch1_lock = 1;
 static volatile int switch2_lock = 1;
 static volatile int count_debounce_sw1 = 0;
-static volatile int count_debounce_sw2 = 0;
 
 #define CHAIN_MAX_COMMANDS (24)
 
@@ -49,7 +57,6 @@ typedef struct
 } InternalCommandChain;
 
 static InternalCommandChain active_chain;
-static RobotCommandChain chain_api;
 
 #define TURN_SYSID_MAX_SAMPLES (40U)
 #define TURN_SYSID_STEP_TICKS (25U)
@@ -92,8 +99,6 @@ typedef struct
     float best_ki;
     float best_kd;
 } TurnAutoTuneData;
-
-static TurnAutoTuneData turn_autotune_data;
 
 static void scheduleCommand(Robot *robot, Command *root);
 static RobotCommandChain getChainApi(void);
@@ -400,8 +405,7 @@ static void setCurrentCommandDisplay(const char *name)
     char line[11] = "          ";
     unsigned int index = 0;
 
-    strcpy(display_line[0], "          ");
-    strcpy(display_line[1], "   CMD:   ");
+    strcpy(display_line[0], "   CMD:   ");
 
     while ((name[index] != '\0') && (index < 10U))
     {
@@ -410,7 +414,7 @@ static void setCurrentCommandDisplay(const char *name)
     }
 
     line[10] = '\0';
-    strcpy(display_line[2], line);
+    strcpy(display_line[1], line);
     display_changed = TRUE;
 }
 
@@ -538,6 +542,18 @@ static RobotCommandChain chainAndThenTurnSysId(void)
     return getChainApi();
 }
 
+static RobotCommandChain chainAndThenDriveToXY(float target_x_in, float target_y_in)
+{
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    Command_DriveToXY(&active_chain.commands[active_chain.count], target_x_in, target_y_in);
+    chainAppend(&active_chain.commands[active_chain.count]);
+    return getChainApi();
+}
+
 static void chainSchedule(void)
 {
     if ((active_robot == 0) || (active_chain.count == 0))
@@ -551,18 +567,21 @@ static void chainSchedule(void)
 
 static RobotCommandChain getChainApi(void)
 {
-    chain_api.andThenForward = chainAndThenForward;
-    chain_api.andThenReverse = chainAndThenReverse;
-    chain_api.andThenWait = chainAndThenWait;
-    chain_api.andThenSpinCW = chainAndThenSpinCW;
-    chain_api.andThenSpinCCW = chainAndThenSpinCCW;
-    chain_api.andThenTurnToAngle = chainAndThenTurnToAngle;
-    chain_api.andThenDriveStraight = chainAndThenDriveStraight;
-    chain_api.andThenReverseStraight = chainAndThenReverseStraight;
-    chain_api.andThenTurnSysId = chainAndThenTurnSysId;
-    chain_api.schedule = chainSchedule;
+    static RobotCommandChain chain_api_local;
 
-    return chain_api;
+    chain_api_local.andThenForward = chainAndThenForward;
+    chain_api_local.andThenReverse = chainAndThenReverse;
+    chain_api_local.andThenWait = chainAndThenWait;
+    chain_api_local.andThenSpinCW = chainAndThenSpinCW;
+    chain_api_local.andThenSpinCCW = chainAndThenSpinCCW;
+    chain_api_local.andThenTurnToAngle = chainAndThenTurnToAngle;
+    chain_api_local.andThenDriveStraight = chainAndThenDriveStraight;
+    chain_api_local.andThenReverseStraight = chainAndThenReverseStraight;
+    chain_api_local.andThenTurnSysId = chainAndThenTurnSysId;
+    chain_api_local.andThenDriveToXY = chainAndThenDriveToXY;
+    chain_api_local.schedule = chainSchedule;
+
+    return chain_api_local;
 }
 
 static void commandResetRecursive(Command *command)
@@ -587,6 +606,7 @@ static void commandResetRecursive(Command *command)
 
 static void commandTick(Command *command)
 {
+    static TurnAutoTuneData turn_autotune_data;
     unsigned char index;
     unsigned char all_done;
 
@@ -781,39 +801,14 @@ static void commandTick(Command *command)
         int max_correction_pwm;
         unsigned int base_pwm;
         unsigned int min_pwm;
-        unsigned int packet_now;
-        unsigned int packet_delta;
 
         if (!command->started)
         {
-            unsigned int packet_start;
-
             command->started = 1;
-            command->heading_start = 0.0f;
-            command->heading_error_prev = 0.0f;
-            command->heading_error_sum = 0.0f;
-            command->pwm_counter = 0;
-            packet_start = IMU_GetPacketCount();
-            command->left_duty = (unsigned char)(packet_start & 0xFFU);
-            command->right_duty = (unsigned char)((packet_start >> 8) & 0xFFU);
-            setCurrentCommandDisplay("STRAIGHT");
-        }
-
-        if (command->pwm_counter == 0)
-        {
-            getHeading();
-            packet_now = IMU_GetPacketCount();
-            packet_delta = packet_now - ((unsigned int)command->left_duty | ((unsigned int)command->right_duty << 8));
-
-            if (packet_delta < 3U)
-            {
-                driveStop();
-                return;
-            }
-
             command->heading_start = getHeading();
             command->heading_error_prev = 0.0f;
-            command->pwm_counter = 1;
+            command->heading_error_sum = 0.0f;
+            setCurrentCommandDisplay("STRAIGHT");
         }
 
         heading = getHeading();
@@ -881,39 +876,14 @@ static void commandTick(Command *command)
         int max_correction_pwm;
         unsigned int base_pwm;
         unsigned int min_pwm;
-        unsigned int packet_now;
-        unsigned int packet_delta;
 
         if (!command->started)
         {
-            unsigned int packet_start;
-
             command->started = 1;
-            command->heading_start = 0.0f;
-            command->heading_error_prev = 0.0f;
-            command->heading_error_sum = 0.0f;
-            command->pwm_counter = 0;
-            packet_start = IMU_GetPacketCount();
-            command->left_duty = (unsigned char)(packet_start & 0xFFU);
-            command->right_duty = (unsigned char)((packet_start >> 8) & 0xFFU);
-            setCurrentCommandDisplay("REV STR");
-        }
-
-        if (command->pwm_counter == 0)
-        {
-            getHeading();
-            packet_now = IMU_GetPacketCount();
-            packet_delta = packet_now - ((unsigned int)command->left_duty | ((unsigned int)command->right_duty << 8));
-
-            if (packet_delta < 3U)
-            {
-                driveStop();
-                return;
-            }
-
             command->heading_start = getHeading();
             command->heading_error_prev = 0.0f;
-            command->pwm_counter = 1;
+            command->heading_error_sum = 0.0f;
+            setCurrentCommandDisplay("REV STR");
         }
 
         heading = getHeading();
@@ -961,6 +931,127 @@ static void commandTick(Command *command)
 
         command->elapsed_ticks++;
         if (command->elapsed_ticks >= command->duration_ticks)
+        {
+            driveStop();
+            command->finished = 1;
+        }
+        break;
+    }
+
+    case CMD_DRIVE_TO_XY:
+    {
+        float heading;
+        float error;
+        float derivative;
+        float control;
+        float normalized_control;
+        int correction;
+        int left_pwm;
+        int right_pwm;
+        int max_correction_pwm;
+        unsigned int base_pwm;
+        unsigned int min_pwm;
+        float current_y;
+        float delta_y;
+
+        if (!command->started)
+        {
+            command->started = 1;
+            command->heading_start = getHeading();
+            command->heading_error_prev = 0.0f;
+            command->heading_error_sum = 0.0f;
+            /* Determine direction once: CLOCKWISE = forward (+Y), CCW = reverse (-Y) */
+            command->spin_direction = (getPositionY() <= command->target_y)
+                                      ? SPIN_CLOCKWISE : SPIN_COUNTERCLOCKWISE;
+            setCurrentCommandDisplay("GO TO XY");
+        }
+
+        heading = getHeading();
+        error = wrapAngle(command->heading_start - heading);
+        derivative = error - command->heading_error_prev;
+        command->heading_error_prev = error;
+
+        control = (drive_straight_kp * error) + (drive_straight_kd * derivative);
+        control *= drive_straight_correction_sign;
+
+        if (absoluteFloat(error) <= drive_straight_deadband_deg)
+        {
+            control = 0.0f;
+        }
+
+        base_pwm = pwmCountsFromPercentFloat(drive_to_xy_speed_percent);
+        min_pwm = pwmCountsFromPercent(MOTOR_MIN_DUTY_PERCENT);
+        max_correction_pwm = (int)pwmCountsFromPercentFloat(drive_straight_max_correction_percent);
+
+        normalized_control = control / 90.0f;
+        if (normalized_control > 1.0f)
+        {
+            normalized_control = 1.0f;
+        }
+        if (normalized_control < -1.0f)
+        {
+            normalized_control = -1.0f;
+        }
+
+        correction = (int)((float)max_correction_pwm * normalized_control);
+
+        if (command->spin_direction == SPIN_CLOCKWISE)
+        {
+            /* Forward: +Y */
+            left_pwm = (int)base_pwm + correction;
+            right_pwm = (int)base_pwm - correction;
+            if ((left_pwm > 0) && (left_pwm < (int)min_pwm))
+            {
+                left_pwm = (int)min_pwm;
+            }
+            if ((right_pwm > 0) && (right_pwm < (int)min_pwm))
+            {
+                right_pwm = (int)min_pwm;
+            }
+            Motors_DriveForwardPWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
+        }
+        else
+        {
+            /* Reverse: -Y */
+            left_pwm = (int)base_pwm - correction;
+            right_pwm = (int)base_pwm + correction;
+            if ((left_pwm > 0) && (left_pwm < (int)min_pwm))
+            {
+                left_pwm = (int)min_pwm;
+            }
+            if ((right_pwm > 0) && (right_pwm < (int)min_pwm))
+            {
+                right_pwm = (int)min_pwm;
+            }
+            Motors_DriveReversePWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
+        }
+
+        /* Stop when within tolerance of target Y (or overshot) */
+        current_y = getPositionY();
+        delta_y = command->target_y - current_y;
+
+        if (command->spin_direction == SPIN_CLOCKWISE)
+        {
+            if (delta_y <= drive_to_xy_tolerance_in)
+            {
+                driveStop();
+                command->finished = 1;
+                break;
+            }
+        }
+        else
+        {
+            if (-delta_y <= drive_to_xy_tolerance_in)
+            {
+                driveStop();
+                command->finished = 1;
+                break;
+            }
+        }
+
+        /* Safety timeout: 30 seconds */
+        command->elapsed_ticks++;
+        if (command->elapsed_ticks >= secondsToTicks(30))
         {
             driveStop();
             command->finished = 1;
@@ -1628,6 +1719,8 @@ static void switchRightProcess(Robot *robot)
 
 static void switchLeftProcess(Robot *robot)
 {
+    static volatile int count_debounce_sw2 = 0;
+
     if ((switch2_lock == 1) && (sw2_position == 0))
     {
         if (!(P2IN & SW2))
@@ -1773,6 +1866,32 @@ void Command_TurnSysId(Command *command)
     command->pwm_counter = 0;
     command->left_duty = 0;
     command->right_duty = 0;
+}
+
+void Command_DriveToXY(Command *command, float target_x_in, float target_y_in)
+{
+    if (command == 0)
+    {
+        return;
+    }
+
+    command->type = CMD_DRIVE_TO_XY;
+    command->duration_ticks = 0;
+    command->elapsed_ticks = 0;
+    command->started = 0;
+    command->finished = 0;
+    command->child_count = 0;
+    command->active_child = 0;
+    command->target_x = target_x_in;
+    command->target_y = target_y_in;
+    command->target_angle = 0.0f;
+    command->heading_start = 0.0f;
+    command->heading_error_prev = 0.0f;
+    command->heading_error_sum = 0.0f;
+    command->pwm_counter = 0;
+    command->left_duty = 0;
+    command->right_duty = 0;
+    command->spin_direction = SPIN_CLOCKWISE;
 }
 
 void Command_AutoTune(Command *command)
@@ -2098,6 +2217,19 @@ void reverseStraight(int time_seconds)
     scheduleCommand(active_robot, &rev_straight_command);
 }
 
+void driveToXY(float target_x_in, float target_y_in)
+{
+    static Command drive_to_xy_command;
+
+    if (active_robot == 0)
+    {
+        return;
+    }
+
+    Command_DriveToXY(&drive_to_xy_command, target_x_in, target_y_in);
+    scheduleCommand(active_robot, &drive_to_xy_command);
+}
+
 void turnSysId(void)
 {
     static Command turn_sysid_command;
@@ -2176,4 +2308,10 @@ RobotCommandChain chainTurnSysId(void)
 {
     chainReset();
     return chainAndThenTurnSysId();
+}
+
+RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in)
+{
+    chainReset();
+    return chainAndThenDriveToXY(target_x_in, target_y_in);
 }
