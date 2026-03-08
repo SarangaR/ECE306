@@ -6,9 +6,9 @@
 //  Jan 2021
 //  Built with IAR Embedded Workbench Version: V7.12.1
 // ------------------------------------------------------------------------------
-#include "Include\functions.h"
+#include "include/functions.h"
 #include "msp430.h"
-#include "Include\macros.h"
+#include "include/macros.h"
 
 void Init_Clocks(void);
 void Software_Trim(void);

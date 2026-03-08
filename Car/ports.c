@@ -1,6 +1,6 @@
 #include "msp430.h"
-#include "Include\functions.h"
-#include "Include\ports.h"
+#include "include/functions.h"
+#include "include/ports.h"
 
 void Init_Ports(void)
 {

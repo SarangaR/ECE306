@@ -1,0 +1,187 @@
+[
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/adc.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/clocks.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/detector.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/display.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/cs.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/ecomp.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_spi.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_uart.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_i2c.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_spi.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/framctl.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/gpio.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/icc.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/lcd_e.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/mpy32.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/pmm.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/rtc.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/sac.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/sfr.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/sysctl.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/tia.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_a.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/init.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/led.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/main.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/motors.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/otos.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/ports.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/robot.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/switches.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/system.c"
+   },
+   {
+      "directory" : "/home/saranga/ECE306/Car/Release",
+      "command"   : "clang++ -I\"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"/home/saranga/ECE306/Car\" -I\"/home/saranga/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "/home/saranga/ECE306/Car/timers.c"
+   }
+]

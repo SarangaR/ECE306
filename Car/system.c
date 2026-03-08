@@ -8,9 +8,9 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-#include "Include\functions.h"
+#include "include/functions.h"
 #include "msp430.h"
-#include "Include\macros.h"
+#include "include/macros.h"
 
 void enable_interrupts(void);
 

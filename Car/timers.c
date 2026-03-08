@@ -6,10 +6,11 @@
 
 #include "msp430.h"
 #include <driverlib.h>
-#include "Include\functions.h"
-#include "Include\timers.h"
-#include "Include/macros.h"
-#include "Include\ports.h"
+#include "include/functions.h"
+#include "include/timers.h"
+#include "include/macros.h"
+#include "include/ports.h"
+#include <string.h>
 
 void Init_Timers(void)
 {
@@ -31,6 +32,15 @@ void Init_Timer_B0(void)
     tb0UpConfig.startTimer = false;
 
     Timer_B_initUpMode(TIMER_B0_BASE, &tb0UpConfig);
+
+    // CCR1: SW1 debounce – compare value is set dynamically in the port ISR
+    TB0CCR1  = 0U;
+    TB0CCTL1 = 0U; // CCIE disabled until a switch press arms it
+
+    // CCR2: SW2 debounce – compare value is set dynamically in the port ISR
+    TB0CCR2  = 0U;
+    TB0CCTL2 = 0U; // CCIE disabled until a switch press arms it
+
     Timer_B_startCounter(TIMER_B0_BASE, TIMER_B_UP_MODE);
 }
 
@@ -48,6 +58,7 @@ void Init_Timer_B1(void)
     tb1UpConfig.startTimer = false;
 
     Timer_B_initUpMode(TIMER_B1_BASE, &tb1UpConfig);
+
     Timer_B_startCounter(TIMER_B1_BASE, TIMER_B_UP_MODE);
 }
 
@@ -75,16 +86,44 @@ void Init_Timer_B3(void)
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void Timer0_B0_ISR(void)
 {
-    update_display = 1;
-    if (update_display_count >= 251) update_display_count = 0;
+    update_display = TRUE;
+    if (update_display_count >= DISPLAY_COUNT_MAX) update_display_count = RESET_STATE;
     update_display_count++;
-    if (Time_Sequence >= 251) Time_Sequence = 0;
+    if (Time_Sequence >= TIME_SEQUENCE_MAX) Time_Sequence = RESET_STATE;
     Time_Sequence++;
-    one_time = 1;
+    one_time = TRUE;
 }
 
 #pragma vector = TIMER1_B0_VECTOR
 __interrupt void Timer1_B0_ISR(void)
 {
     one_second_timer++;
+}
+
+#pragma vector = TIMER0_B1_VECTOR
+__interrupt void Timer0_B1_ISR(void)
+{
+    switch (__even_in_range(TB0IV, TB0IV_MAX))
+    {
+    case TB0IV_CCR1: // CCR1 – SW1 debounce window elapsed
+        TB0CCTL1 &= ~CCIE;
+        enable_switch_SW1();
+        break;
+
+    case TB0IV_CCR2: // CCR2 – SW2 debounce window elapsed
+        TB0CCTL2 &= ~CCIE;
+        enable_switch_SW2();
+        break;
+
+    default:
+        break;
+    }
+}
+
+#pragma vector = TIMER1_B1_VECTOR
+__interrupt void Timer1_B1_ISR(void)
+{
+    // HW06 compare functionality removed.
+    // Keep ISR stub to safely consume any unexpected Timer_B1 CCRn events.
+    (void)TB1IV;
 }

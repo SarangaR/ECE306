@@ -8,10 +8,11 @@
 //------------------------------------------------------------------------------
 
 #include "msp430.h"
-#include "Include\functions.h"
-#include "Include\ports.h"
-#include "Include\motors.h"
-#include "Include\macros.h"
+#include "include/functions.h"
+#include "include/ports.h"
+#include "include/motors.h"
+#include "include/robot.h"
+#include "include/macros.h"
 
 typedef enum
 {
@@ -388,11 +389,18 @@ void Motors_PWM_Test(void)
     static unsigned char test_phase = 0;
     static unsigned char test_duty_percent = 0;
     static unsigned long last_tick = 0;
+    unsigned long tick_interval;
     unsigned int duty_counts;
     unsigned long now;
 
+    tick_interval = (unsigned long)COMMAND_TICKS_PER_SECOND / 5UL;
+    if (tick_interval == 0UL)
+    {
+        tick_interval = 1UL;
+    }
+
     now = one_second_timer;
-    if (now == last_tick)
+    if ((now - last_tick) < tick_interval)
     {
         return;
     }

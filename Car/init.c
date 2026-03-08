@@ -1,8 +1,8 @@
 #include "msp430.h"
-#include "Include\functions.h"
-#include "Include\LCD.h"
-#include "Include\ports.h"
-#include "Include\macros.h"
+#include "include/functions.h"
+#include "include/LCD.h"
+#include "include/ports.h"
+#include "include/macros.h"
 
 void Init_Conditions(void)
 {

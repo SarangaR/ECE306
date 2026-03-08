@@ -1,4 +1,4 @@
-#include "Include\otos.h"
+#include "include/otos.h"
 #include <driverlib.h>
 
 #pragma diag_suppress 1527

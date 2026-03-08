@@ -6,9 +6,9 @@
 	<deviceFamily value="MSP430"/>
 	<executableActions value=""/>
 	<createSlaveProjects value=""/>
-	<templateProperties value="id=BlinkLED_MSP-EXP430FR2355.projectspec.Project 05"/>
+	<templateProperties value="id=BlinkLED_MSP-EXP430FR2355.projectspec.Car"/>
 	<connection value="common/targetdb/connections/TIMSP430-USB.xml"/>
 	<activeTargetConfiguration value="targetConfigs/MSP430FR2355.ccxml"/>
-	<origin value="C:\ti\msp430ware_3_80_14_01\examples\boards\MSP-EXP430FR2355\MSP-EXP430FR2355_Software_Examples\Firmware\Source\BlinkLED_MSP-EXP430FR2355\CCS\BlinkLED_MSP-EXP430FR2355.projectspec"/>
+	<origin value="/home/saranga/ti/msp430ware_3_80_14_01/examples/boards/MSP-EXP430FR2355/MSP-EXP430FR2355_Software_Examples/Firmware/Source/BlinkLED_MSP-EXP430FR2355/CCS/BlinkLED_MSP-EXP430FR2355.projectspec"/>
 	<filesToOpen value="main.c"/>
 </projectOptions>
