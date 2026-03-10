@@ -108,12 +108,16 @@ void Switch1_Process(void)
         black_line_right = 0;
 
         chainWait(1)
-            .andThenDriveToLine()
+            .andThenDriveStraight(30)
+            .untilSelective(&black_line_left, &black_line_right)
             .withDisplay("TO LINE   ")
             .andThenAlignLeftToLine()
             .withDisplay("ALIGN EDGE")
-            .andThenWait(1)
+            .andThenWait(3)
             .withDisplay("ALIGNED   ")
+            .andThenFollowLine(30)
+            .until(&project7flag)
+            .withDisplay("LF PID    ")
             .schedule();
     }
 }
@@ -163,8 +167,8 @@ __interrupt void PORT4_ISR(void)
     {
         unsigned int new_ccr;
 
-        P4IFG &= ~SW1;        // Clear SW1 interrupt flag
-        disable_switch_SW1(); // Disable SW1 port interrupt
+        P4IFG &= ~SW1;  // Clear SW1 interrupt flag
+        P4IE  &= ~SW1;  // Disable SW1 port interrupt
 
         // Arm CCR1 ~25 ms from now; Timer0_B1_ISR re-enables SW1 when it fires
         new_ccr = TB0R + TB0_SW_DEBOUNCE_COUNTS;
@@ -186,8 +190,8 @@ __interrupt void PORT2_ISR(void)
     {
         unsigned int new_ccr;
 
-        P2IFG &= ~SW2;        // Clear SW2 interrupt flag
-        disable_switch_SW2(); // Disable SW2 port interrupt
+        P2IFG &= ~SW2;  // Clear SW2 interrupt flag
+        P2IE  &= ~SW2;  // Disable SW2 port interrupt
 
         // Arm CCR2 ~25 ms from now; Timer0_B1_ISR re-enables SW2 when it fires
         new_ccr = TB0R + TB0_SW_DEBOUNCE_COUNTS;

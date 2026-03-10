@@ -23,7 +23,7 @@ static inline unsigned int Timer_CCR_Interval_From_Frequency(unsigned long clock
 }
 
 #define TB0CCR0_INTERVAL (Timer_CCR_Interval_From_Frequency(8000000UL, 64U, 5U)) // 8,000,000 / 64 / 5Hz = 200ms (display/time sequence)
-#define TB1CCR0_INTERVAL (Timer_CCR_Interval_From_Frequency(32768UL, 1U, 20U)) // 32,768 / 1 / 20Hz = 50ms command tick
+#define TB1CCR0_INTERVAL (Timer_CCR_Interval_From_Frequency(32768UL, 1U, 50U)) // 32,768 / 1 / 50Hz = 20ms command tick
 #define TB3_PWM_TARGET_HZ (25000U)
 #define TB3CCR0_INTERVAL (Timer_CCR_Interval_From_Frequency(8000000UL, 1U, TB3_PWM_TARGET_HZ))
 

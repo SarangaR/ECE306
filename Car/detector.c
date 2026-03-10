@@ -2,17 +2,20 @@
 #include "include/detector.h"
 #include "include/adc.h"
 
-volatile int detector_white_min = 0;
-volatile int detector_white_max = DETECTOR_WHITE_THRESHOLD_DEFAULT;
-volatile int detector_black_min = DETECTOR_BLACK_THRESHOLD_DEFAULT;
-volatile int detector_black_max = ADC_MAX_VALUE;
+#pragma CODE_SECTION(getDetectorValue, ".TI.ramfunc")
+#pragma CODE_SECTION(getDetectorWhiteLevel, ".TI.ramfunc")
 
-static float detector_right_offset_white = 0.0f;
-static float detector_right_offset_black = 0.0f;
-static int detector_white_avg_raw = DETECTOR_WHITE_THRESHOLD_DEFAULT;
-static int detector_black_avg_raw = DETECTOR_BLACK_THRESHOLD_DEFAULT;
-static unsigned int detector_white_cal_valid = 0U;
-static unsigned int detector_black_cal_valid = 0U;
+// Per-side white calibration ranges
+volatile int detector_left_white_min  = 0;
+volatile int detector_left_white_max  = DETECTOR_WHITE_THRESHOLD_DEFAULT;
+volatile int detector_right_white_min = 0;
+volatile int detector_right_white_max = DETECTOR_WHITE_THRESHOLD_DEFAULT;
+
+// Per-side black calibration ranges
+volatile int detector_left_black_min  = DETECTOR_BLACK_THRESHOLD_DEFAULT;
+volatile int detector_left_black_max  = ADC_MAX_VALUE;
+volatile int detector_right_black_min = DETECTOR_BLACK_THRESHOLD_DEFAULT;
+volatile int detector_right_black_max = ADC_MAX_VALUE;
 
 static int clampAdc(int value)
 {
@@ -27,202 +30,65 @@ static int clampAdc(int value)
     return value;
 }
 
-static int getLogicalRawUnaligned(DetectorSide side)
+static int getRaw(DetectorSide side)
 {
     if (side == DETECTOR_LEFT)
     {
         return (int)adc_left_det_raw;
     }
-
     return (int)adc_right_det_raw;
 }
 
-static float getDynamicRightOffset(int left_raw, int right_raw)
-{
-    float offset = 0.0f;
-
-    if (detector_white_cal_valid && detector_black_cal_valid)
-    {
-        int avg_raw = (left_raw + right_raw) / 2;
-        int span = detector_black_avg_raw - detector_white_avg_raw;
-        float t;
-
-        if (span == 0)
-        {
-            t = 0.0f;
-        }
-        else
-        {
-            t = (float)(avg_raw - detector_white_avg_raw) / (float)span;
-        }
-
-        if (t < 0.0f)
-        {
-            t = 0.0f;
-        }
-        if (t > 1.0f)
-        {
-            t = 1.0f;
-        }
-
-        offset = detector_right_offset_white +
-                 (t * (detector_right_offset_black - detector_right_offset_white));
-    }
-    else if (detector_black_cal_valid)
-    {
-        offset = detector_right_offset_black;
-    }
-    else if (detector_white_cal_valid)
-    {
-        offset = detector_right_offset_white;
-    }
-
-    return offset;
-}
-
-static void getAlignedRawPair(int *left_aligned, int *right_aligned)
-{
-    int left_raw;
-    int right_raw;
-    int right_corrected;
-    float dynamic_offset;
-
-    left_raw = getLogicalRawUnaligned(DETECTOR_LEFT);
-    right_raw = getLogicalRawUnaligned(DETECTOR_RIGHT);
-    dynamic_offset = getDynamicRightOffset(left_raw, right_raw);
-
-    if (dynamic_offset >= 0.0f)
-    {
-        right_corrected = right_raw - (int)(dynamic_offset + 0.5f);
-    }
-    else
-    {
-        right_corrected = right_raw - (int)(dynamic_offset - 0.5f);
-    }
-
-    if (left_aligned != 0)
-    {
-        *left_aligned = clampAdc(left_raw);
-    }
-    if (right_aligned != 0)
-    {
-        *right_aligned = clampAdc(right_corrected);
-    }
-}
-
+// Set white range individually for each detector from their current readings.
 void detectorSetWhiteRangeFromCurrent(void)
 {
-    int left_raw = getLogicalRawUnaligned(DETECTOR_LEFT);
-    int right_raw = getLogicalRawUnaligned(DETECTOR_RIGHT);
-    int right_aligned;
-    int center;
-    int min_v;
-    int max_v;
+    int left_raw  = getRaw(DETECTOR_LEFT);
+    int right_raw = getRaw(DETECTOR_RIGHT);
 
-    detector_right_offset_white = (float)(right_raw - left_raw);
-    detector_white_avg_raw = (left_raw + right_raw) / 2;
-    detector_white_cal_valid = 1U;
+    // Left white range
+    detector_left_white_min = clampAdc(left_raw - DETECTOR_CAL_RANGE_HALF);
+    detector_left_white_max = clampAdc(left_raw + DETECTOR_CAL_RANGE_HALF);
 
-    right_aligned = right_raw - (int)(detector_right_offset_white + 0.5f);
-    center = clampAdc((left_raw + right_aligned) / 2);
-    min_v = clampAdc(center - DETECTOR_CAL_RANGE_HALF);
-    max_v = clampAdc(center + DETECTOR_CAL_RANGE_HALF);
-
-    if (max_v >= detector_black_min)
-    {
-        max_v = detector_black_min - 1;
-        if (max_v < min_v)
-        {
-            max_v = min_v;
-        }
-    }
-
-    detector_white_min = min_v;
-    detector_white_max = max_v;
+    // Right white range
+    detector_right_white_min = clampAdc(right_raw - DETECTOR_CAL_RANGE_HALF);
+    detector_right_white_max = clampAdc(right_raw + DETECTOR_CAL_RANGE_HALF);
 }
 
+// Set black range individually for each detector from their current readings.
 void detectorSetBlackRangeFromCurrent(void)
 {
-    int left_raw = getLogicalRawUnaligned(DETECTOR_LEFT);
-    int right_raw = getLogicalRawUnaligned(DETECTOR_RIGHT);
-    int right_aligned;
-    int center;
-    int min_v;
-    int max_v;
+    int left_raw  = getRaw(DETECTOR_LEFT);
+    int right_raw = getRaw(DETECTOR_RIGHT);
 
-    detector_right_offset_black = (float)(right_raw - left_raw);
-    detector_black_avg_raw = (left_raw + right_raw) / 2;
-    detector_black_cal_valid = 1U;
+    // Left black range
+    detector_left_black_min = clampAdc(left_raw - DETECTOR_CAL_RANGE_HALF);
+    detector_left_black_max = clampAdc(left_raw + DETECTOR_CAL_RANGE_HALF);
 
-    right_aligned = right_raw - (int)(detector_right_offset_black + 0.5f);
-    center = clampAdc((left_raw + right_aligned) / 2);
-    min_v = clampAdc(center - DETECTOR_CAL_RANGE_HALF);
-    max_v = clampAdc(center + DETECTOR_CAL_RANGE_HALF);
-
-    if (min_v <= detector_white_max)
-    {
-        min_v = detector_white_max + 1;
-        if (min_v > max_v)
-        {
-            min_v = max_v;
-        }
-    }
-
-    detector_black_min = min_v;
-    detector_black_max = max_v;
+    // Right black range
+    detector_right_black_min = clampAdc(right_raw - DETECTOR_CAL_RANGE_HALF);
+    detector_right_black_max = clampAdc(right_raw + DETECTOR_CAL_RANGE_HALF);
 }
 
-float getDetectorValue(DetectorSide side)
+int getDetectorValue(DetectorSide side)
 {
-    int raw;
-    int left_aligned;
-    int right_aligned;
-
-    getAlignedRawPair(&left_aligned, &right_aligned);
-
-    if (side == DETECTOR_LEFT)
-    {
-        raw = left_aligned;
-    }
-    else
-    {
-        raw = right_aligned;
-    }
-
-    float value = (float)raw / (float)ADC_MAX_VALUE;
-    value *= 100;
-
-    if (value > 100.0f) value = 100.0f;
-    if (value < 0.0f) value = 0.0f;
-
+    int raw = getRaw(side);
+    int value = (int)((long)raw * 100L / (long)ADC_MAX_VALUE);
+    if (value > 100) value = 100;
+    if (value < 0)   value = 0;
     return value;
 }
 
-int getRawDetectorValue(DetectorSide side) {
-    int raw;
-    int left_aligned;
-    int right_aligned;
-
-    getAlignedRawPair(&left_aligned, &right_aligned);
-
-    if (side == DETECTOR_LEFT)
-    {
-        raw = left_aligned;
-    }
-    else
-    {
-        raw = right_aligned;
-    }
-
-    return raw;
+int getRawDetectorValue(DetectorSide side)
+{
+    return getRaw(side);
 }
 
 float getDetectorWhiteLevel(DetectorSide side)
 {
-    int raw = getRawDetectorValue(side);
-    int white_ref = detector_white_max;
-    int black_ref = detector_black_min;
-    int span = black_ref - white_ref;
+    int raw       = getRaw(side);
+    int white_ref = (side == DETECTOR_LEFT) ? detector_left_white_max  : detector_right_white_max;
+    int black_ref = (side == DETECTOR_LEFT) ? detector_left_black_min  : detector_right_black_min;
+    int span      = black_ref - white_ref;
     float value;
 
     if (span <= 0)
@@ -233,60 +99,37 @@ float getDetectorWhiteLevel(DetectorSide side)
     /* 0.0 => black range, 1.0 => white range */
     value = (float)(black_ref - raw) / (float)span;
 
-    if (value < 0.0f)
-    {
-        value = 0.0f;
-    }
-    if (value > 1.0f)
-    {
-        value = 1.0f;
-    }
+    if (value < 0.0f) value = 0.0f;
+    if (value > 1.0f) value = 1.0f;
 
     return value;
 }
 
 Color getDetectedColor(DetectorSide side)
 {
-    int raw;
-    int white_center;
-    int black_center;
+    int raw       = getRaw(side);
+    int white_min = (side == DETECTOR_LEFT) ? detector_left_white_min  : detector_right_white_min;
+    int white_max = (side == DETECTOR_LEFT) ? detector_left_white_max  : detector_right_white_max;
+    int black_min = (side == DETECTOR_LEFT) ? detector_left_black_min  : detector_right_black_min;
+    int black_max = (side == DETECTOR_LEFT) ? detector_left_black_max  : detector_right_black_max;
 
-    raw = getRawDetectorValue(side);
-
-    if ((raw >= detector_white_min) && (raw <= detector_white_max))
+    if ((raw >= white_min) && (raw <= white_max))
     {
         return COLOR_WHITE;
     }
-    else if ((raw >= detector_black_min) && (raw <= detector_black_max))
+    if ((raw >= black_min) && (raw <= black_max))
     {
         return COLOR_BLACK;
     }
-    else
+
+    // Between ranges: pick whichever center is closer
     {
-        int delta_white;
-        int delta_black;
-
-        white_center = (detector_white_min + detector_white_max) / 2;
-        black_center = (detector_black_min + detector_black_max) / 2;
-
-        delta_white = raw - white_center;
-        if (delta_white < 0)
-        {
-            delta_white = -delta_white;
-        }
-        delta_black = raw - black_center;
-        if (delta_black < 0)
-        {
-            delta_black = -delta_black;
-        }
-
-        if (delta_white < delta_black)
-        {
-            return COLOR_WHITE;
-        }
-        else
-        {
-            return COLOR_BLACK;
-        }
+        int white_center = (white_min + white_max) / 2;
+        int black_center = (black_min + black_max) / 2;
+        int delta_white  = raw - white_center;
+        int delta_black  = raw - black_center;
+        if (delta_white < 0) delta_white = -delta_white;
+        if (delta_black < 0) delta_black = -delta_black;
+        return (delta_white < delta_black) ? COLOR_WHITE : COLOR_BLACK;
     }
 }

@@ -107,12 +107,14 @@ __interrupt void Timer0_B1_ISR(void)
     {
     case TB0IV_CCR1: // CCR1 – SW1 debounce window elapsed
         TB0CCTL1 &= ~CCIE;
-        enable_switch_SW1();
+        P4IFG &= ~SW1;  // Clear any edge that arrived during debounce window
+        P4IE  |=  SW1;  // Re-enable SW1 port interrupt
         break;
 
     case TB0IV_CCR2: // CCR2 – SW2 debounce window elapsed
         TB0CCTL2 &= ~CCIE;
-        enable_switch_SW2();
+        P2IFG &= ~SW2;  // Clear any edge that arrived during debounce window
+        P2IE  |=  SW2;  // Re-enable SW2 port interrupt
         break;
 
     default:
@@ -123,7 +125,5 @@ __interrupt void Timer0_B1_ISR(void)
 #pragma vector = TIMER1_B1_VECTOR
 __interrupt void Timer1_B1_ISR(void)
 {
-    // HW06 compare functionality removed.
-    // Keep ISR stub to safely consume any unexpected Timer_B1 CCRn events.
     (void)TB1IV;
 }

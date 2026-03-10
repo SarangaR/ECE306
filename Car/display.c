@@ -231,10 +231,10 @@ void format_detector_line(char side, int raw, int color, char *message)
   if (mag > 9999U) mag = 9999U;
   message[0] = side;
   message[1] = ':';
-  message[2] = (char)('0' + ((mag / 1000U) % 10U));
-  message[3] = (char)('0' + ((mag / 100U) % 10U));
-  message[4] = (char)('0' + ((mag / 10U) % 10U));
-  message[5] = (char)('0' + (mag % 10U));
+  message[2] = (char)('0' + ((mag / 100U) % 10U));
+  message[3] = (char)('0' + ((mag / 10U) % 10U));
+  message[4] = (char)('0' + (mag % 10U));
+  message[5] = ' ';
   message[6] = ' ';
   if (color == 0)
   {

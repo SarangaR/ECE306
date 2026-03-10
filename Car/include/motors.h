@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 #define MOTOR_DIRECTION_CHANGE_DELAY_CYCLES (200)
-#define MOTOR_MIN_DUTY_PERCENT (20U)
+#define MOTOR_MIN_DUTY_PERCENT (10U)
 #define MOTOR_PWM_TEST_STEP_PERCENT (1U)
 
 void allMotorsOff(void);
@@ -40,3 +40,4 @@ void Motors_DriveReverseDifferential(unsigned char left_on, unsigned char right_
 void Motors_DriveSpinDifferential(unsigned char left_on, unsigned char right_on);
 void Motors_DriveSpinReverseDifferential(unsigned char left_on, unsigned char right_on);
 void Motors_PWM_Test(void);
+void Motors_TestShootThroughIndicator(void);

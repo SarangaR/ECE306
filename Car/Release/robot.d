@@ -13,7 +13,7 @@ robot.obj: /home/saranga/ECE306/Car/include/timers.h
 robot.obj: /home/saranga/ECE306/Car/include/macros.h
 robot.obj: /home/saranga/ECE306/Car/include/display.h
 robot.obj: /home/saranga/ECE306/Car/include/motors.h
-robot.obj: ../include/functions.h
+robot.obj: /home/saranga/ECE306/Car/include/pid.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/_ti_config.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/linkage.h
@@ -24,6 +24,7 @@ robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_types.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
+robot.obj: ../include/functions.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h
 robot.obj: /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h
 robot.obj: ../include/otos.h
@@ -55,7 +56,7 @@ robot.obj: ../include/detector.h
 
 /home/saranga/ECE306/Car/include/motors.h:
 
-../include/functions.h:
+/home/saranga/ECE306/Car/include/pid.h:
 
 /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h:
 
@@ -76,6 +77,8 @@ robot.obj: ../include/detector.h
 /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h:
 
 /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
+
+../include/functions.h:
 
 /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h:
 

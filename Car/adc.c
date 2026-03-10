@@ -69,24 +69,14 @@ __interrupt void ADC_ISR(void)
         switch (adc_channel_index)
         {
         case ADC_THUMB:
-            adc_thumb_raw = (unsigned int)ADC_getResults(ADC_BASE);
+            adc_thumb_raw = ADCMEM0;
             break;
         case ADC_LEFT_DET:
-            adc_left_det_raw = (unsigned int)ADC_getResults(ADC_BASE);
+            adc_left_det_raw = ADCMEM0;
             break;
         case ADC_RIGHT_DET:
-        {
-            unsigned int raw = (unsigned int)ADC_getResults(ADC_BASE);
-            if (raw > ADC_RIGHT_DETECTOR_OFFSET_RAW)
-            {
-                adc_right_det_raw = raw - ADC_RIGHT_DETECTOR_OFFSET_RAW;
-            }
-            else
-            {
-                adc_right_det_raw = 0U;
-            }
+            adc_right_det_raw = ADCMEM0;
             break;
-        }
         default:
             break;
         }
@@ -97,7 +87,11 @@ __interrupt void ADC_ISR(void)
             adc_channel_index = ADC_THUMB;
         }
 
-        ADC_SelectAndStart(adc_channel_index);
+        /* Switch channel and trigger next single conversion directly.
+           AVCC/AVSS reference bits are 0 so ADCMCTL0 = ADCINCH_x only. */
+        ADCCTL0 &= ~ADCENC;
+        ADCMCTL0  = adc_input_map[adc_channel_index];
+        ADCCTL0  |= ADCENC | ADCSC;
         break;
 
     default:

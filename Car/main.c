@@ -23,6 +23,9 @@
 
 volatile unsigned int black_line_left = 0;
 volatile unsigned int black_line_right = 0;
+unsigned long project7count = 0;
+unsigned int project7lock = 0;
+volatile unsigned int project7flag = 0;
 
 void main(void)
 {
@@ -106,14 +109,13 @@ void main(void)
     }
     else
     {
-      updateRobot(&robot, Time_Sequence); // Update Robot State Machine (for shapes)
+      updateRobot(&robot, Time_Sequence);
     }
     char heading_line[11];
     char xy_line[11];
     char thumb_line[11];
     char line_3[11];
 
-    // Line 0: Emitter state + thumbwheel value
     format_emitter_line(getEmitterState(), getThumbWheel(), thumb_line);
     if (strncmp(display_line[0], thumb_line, 10) != 0)
     {
@@ -121,10 +123,8 @@ void main(void)
       display_changed = 1;
     }
 
-    // Lines 1-3
     {
-      // Line 1: Left detector raw + color
-      format_detector_line('L', getRawDetectorValue(DETECTOR_LEFT),
+      format_detector_line('L', getDetectorValue(DETECTOR_LEFT),
                            (int)getDetectedColor(DETECTOR_LEFT), heading_line);
       if (strncmp(display_line[1], heading_line, 10) != 0)
       {
@@ -132,8 +132,7 @@ void main(void)
         display_changed = 1;
       }
 
-      // Line 2: Right detector raw + color
-      format_detector_line('R', getRawDetectorValue(DETECTOR_RIGHT),
+      format_detector_line('R', getDetectorValue(DETECTOR_RIGHT),
                            (int)getDetectedColor(DETECTOR_RIGHT), xy_line);
       if (strncmp(display_line[2], xy_line, 10) != 0)
       {
@@ -141,7 +140,6 @@ void main(void)
         display_changed = 1;
       }
 
-      // Line 3: Status (managed by command system when busy, idle detection when not)
       if (!isRobotBusy())
       {
         Color left_color = getDetectedColor(DETECTOR_LEFT);
@@ -170,9 +168,6 @@ void main(void)
       }
     }
 
-    // Only SET flags to 1 when black detected.
-    // The command system clears them to 0 at start;
-    // once set they stay latched until the next command clears them.
     if (getDetectedColor(DETECTOR_LEFT) == COLOR_BLACK)
     {
       black_line_left = 1;
@@ -181,6 +176,40 @@ void main(void)
     if (getDetectedColor(DETECTOR_RIGHT) == COLOR_BLACK)
     {
       black_line_right = 1;
+    }
+
+    // Project 07 2 circle count
+    if (robot.active_command->type == CMD_FOLLOW_LINE) {
+      if (robot.active_command->elapsed_ticks < COMMAND_TICKS_FROM_MS(500) && !project7flag) zeroHeading();
+      else if (!project7flag) {
+        float project7heading = getHeading();
+        float project7absHeading = fabsf(project7heading);
+        if (project7heading >= 87.0f && project7heading <= 93.0f && !project7lock) {
+          project7count++;
+          project7lock = 1;
+        }
+        else if (project7heading > 93.0f && project7heading < 175.0f) project7lock = 0;
+        else if (project7absHeading >= 175.0f && project7absHeading <= 180.0f && !project7lock) {
+          project7count++;
+          project7lock = 1;
+        }
+        else if (project7heading > -175.0f && project7heading < -93.0f) project7lock = 0;
+        else if (project7heading <= -87.0f && project7heading >= -93.0f && !project7lock) {
+          project7count++;
+          project7lock = 1;
+        }
+        else if (project7heading > -87.0f && project7heading < -5.0f) project7lock = 0;
+        else if (project7heading >= -5.0f && project7heading <= 5.0 && !project7lock) {
+          project7lock++;
+          project7lock = 1;
+        }
+        else project7lock = 0;
+
+        if ((project7count / (int) 4) == 2) project7flag = 1;
+      }
+    }
+    else {
+      project7flag = 0; 
     }
 
     Switches_Process();

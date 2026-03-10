@@ -16,6 +16,7 @@ C_SRCS += \
 ../main.c \
 ../motors.c \
 ../otos.c \
+../pid.c \
 ../ports.c \
 ../robot.c \
 ../switches.c \
@@ -32,6 +33,7 @@ C_DEPS += \
 ./main.d \
 ./motors.d \
 ./otos.d \
+./pid.d \
 ./ports.d \
 ./robot.d \
 ./switches.d \
@@ -48,6 +50,7 @@ OBJS += \
 ./main.obj \
 ./motors.obj \
 ./otos.obj \
+./pid.obj \
 ./ports.obj \
 ./robot.obj \
 ./switches.obj \
@@ -64,6 +67,7 @@ OBJS__QUOTED += \
 "main.obj" \
 "motors.obj" \
 "otos.obj" \
+"pid.obj" \
 "ports.obj" \
 "robot.obj" \
 "switches.obj" \
@@ -80,6 +84,7 @@ C_DEPS__QUOTED += \
 "main.d" \
 "motors.d" \
 "otos.d" \
+"pid.d" \
 "ports.d" \
 "robot.d" \
 "switches.d" \
@@ -96,6 +101,7 @@ C_SRCS__QUOTED += \
 "../main.c" \
 "../motors.c" \
 "../otos.c" \
+"../pid.c" \
 "../ports.c" \
 "../robot.c" \
 "../switches.c" \

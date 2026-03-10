@@ -29,6 +29,71 @@ static MotorDriveMode last_directional_mode = MOTOR_MODE_STOP;
 static unsigned int direction_change_delay_counter = 0;
 static unsigned int g_pending_left = 0;
 static unsigned int g_pending_right = 0;
+static unsigned char stop_history_armed = 0U;
+static unsigned long stop_history_start_tick = 0UL;
+
+#define SHOOT_THROUGH_FLASH_TICKS (5UL) // 5 * 20ms = 100ms at 50Hz tick
+#define SHOOT_THROUGH_TEST_DURATION_TICKS (50UL) // 50 * 20ms = 1s simulated fault window
+
+static unsigned char shoot_through_test_active = 0U;
+static unsigned long shoot_through_test_start_tick = 0UL;
+
+void Motors_TestShootThroughIndicator(void)
+{
+    shoot_through_test_active = 1U;
+    shoot_through_test_start_tick = one_second_timer;
+}
+
+static void serviceShootThroughIndicator(void)
+{
+    static unsigned long last_flash_tick = 0UL;
+    static unsigned char red_led_on = 0U;
+    unsigned char left_shoot_through;
+    unsigned char right_shoot_through;
+    unsigned char any_shoot_through;
+    unsigned long now;
+
+    now = one_second_timer;
+
+    left_shoot_through = ((LEFT_FORWARD_SPEED > 0U) && (LEFT_REVERSE_SPEED > 0U)) ? 1U : 0U;
+    right_shoot_through = ((RIGHT_FORWARD_SPEED > 0U) && (RIGHT_REVERSE_SPEED > 0U)) ? 1U : 0U;
+    any_shoot_through = (unsigned char)(left_shoot_through || right_shoot_through);
+
+    if (shoot_through_test_active)
+    {
+        if ((now - shoot_through_test_start_tick) < SHOOT_THROUGH_TEST_DURATION_TICKS)
+        {
+            any_shoot_through = 1U;
+        }
+        else
+        {
+            shoot_through_test_active = 0U;
+        }
+    }
+
+    if (!any_shoot_through)
+    {
+        P1OUT &= ~RED_LED;
+        red_led_on = 0U;
+        last_flash_tick = one_second_timer;
+        return;
+    }
+
+    if ((now - last_flash_tick) >= SHOOT_THROUGH_FLASH_TICKS)
+    {
+        last_flash_tick = now;
+        if (red_led_on)
+        {
+            P1OUT &= ~RED_LED;
+            red_led_on = 0U;
+        }
+        else
+        {
+            P1OUT |= RED_LED;
+            red_led_on = 1U;
+        }
+    }
+}
 
 static unsigned int pwmCountsFromPercent(unsigned int duty_percent)
 {
@@ -231,6 +296,25 @@ void driveSpinReverse(void)
 
 void Motors_Service(void)
 {
+    serviceShootThroughIndicator();
+
+    if ((requested_mode == MOTOR_MODE_STOP) && (applied_mode == MOTOR_MODE_STOP))
+    {
+        if (!stop_history_armed)
+        {
+            stop_history_armed = 1U;
+            stop_history_start_tick = one_second_timer;
+        }
+        else if ((one_second_timer - stop_history_start_tick) >= COMMAND_TICKS_FROM_MS(100U))
+        {
+            last_directional_mode = MOTOR_MODE_STOP;
+        }
+    }
+    else
+    {
+        stop_history_armed = 0U;
+    }
+
     if (direction_change_delay_counter > 0)
     {
         applyMotorMode(MOTOR_MODE_STOP);

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "include/otos.h"
 #include "include/detector.h"
+#include "include/pid.h"
 
 #pragma diag_suppress 1530
 #pragma diag_suppress 1531
@@ -12,19 +13,19 @@
 #pragma diag_suppress 1544
 #pragma diag_suppress 1546
 
-// Place tiny, frequently-called PID helpers in RAM
 #pragma CODE_SECTION(wrapAngle, ".TI.ramfunc")
 #pragma CODE_SECTION(absoluteFloat, ".TI.ramfunc")
 #pragma CODE_SECTION(pwmCountsFromPercentFloat, ".TI.ramfunc")
 
 static Robot *active_robot = 0;
 
+PIDController leftPIDLF;
+PIDController rightPIDLF;
+
 float turn_kp = 0.87f;
 float turn_ki = 0.03f;
 float turn_kd = 0.41f;
-// float turn_kp = 18.462f;
-// float turn_ki =923.077f;
-// float turn_kd = 0.092f;
+
 float turn_ff_rate_kp_dps_per_deg = 5.0f;
 float turn_ff_max_rate_dps = 180.0f;
 float turn_ff_ks_percent = 0.0f;
@@ -37,7 +38,7 @@ float turn_sysid_ramp_step_pwm_percent = 3.0f;
 float turn_sysid_ramp_max_pwm_percent = 72.0f;
 float turn_sysid_motion_delta_deg = 0.30f;
 float drive_straight_kp = 1.2f;
-float drive_straight_kd = 0.00f;
+float drive_straight_kd = 0.0f;
 float drive_straight_base_percent = 80.0f;
 float drive_straight_max_correction_percent = 60.0f;
 float drive_straight_deadband_deg = 0.5f;
@@ -58,10 +59,6 @@ float drive_to_line_max_percent = 85.0f;
 float drive_to_line_min_percent = 12.0f;
 float drive_to_line_approach_gain = 1.5f;
 
-#define CHAIN_MAX_COMMANDS (8)
-
-#define COMMAND_TICKS_FROM_MS(ms) ((unsigned int)((((unsigned long)(ms) * (unsigned long)COMMAND_TICKS_PER_SECOND) + 999UL) / 1000UL))
-
 typedef struct
 {
     Command commands[CHAIN_MAX_COMMANDS];
@@ -72,172 +69,8 @@ typedef struct
 
 static InternalCommandChain active_chain;
 
-#define TURN_SYSID_MAX_SAMPLES (COMMAND_TICKS_FROM_MS(8000U))
-#define TURN_SYSID_STEP_TICKS (COMMAND_TICKS_FROM_MS(5000U))
-#define TURN_AUTOTUNE_MAX_TRIALS (6U)
-#define TURN_AUTOTUNE_TIMEOUT_TICKS (COMMAND_TICKS_FROM_MS(7000U))
-#define TURN_AUTOTUNE_SETTLE_TICKS (COMMAND_TICKS_FROM_MS(400U))
-#define TURN_AUTOTUNE_TARGET_DEG (90.0f)
-#define TURN_AUTOTUNE_OVERSHOOT_WEIGHT (5.0f)
-
-typedef struct
-{
-    unsigned char sample_count;
-    unsigned char breakaway_pwm_percent;
-    unsigned char step_pwm_percent;
-    unsigned char delay_ticks;
-    unsigned char tau_ticks;
-    float steady_rate_dps;
-    float max_rate_dps;
-    float gain_dps_per_percent;
-    int16_t peak_accel_raw;
-    float rate_samples[TURN_SYSID_MAX_SAMPLES];
-} TurnSysIdData;
-
-static TurnSysIdData turn_sysid_data;
-
-typedef struct
-{
-    unsigned char trial_index;
-    unsigned char stage;
-    unsigned char settle_ticks;
-    unsigned char best_found;
-    unsigned int trial_ticks;
-    int8_t initial_error_sign;
-    float peak_overshoot_deg;
-    float best_score;
-    float saved_kp;
-    float saved_ki;
-    float saved_kd;
-    float best_kp;
-    float best_ki;
-    float best_kd;
-} TurnAutoTuneData;
-
 static void scheduleCommand(Robot *robot, Command *root);
 static RobotCommandChain getChainApi(void);
-
-static unsigned int roundPositiveToUInt(float value)
-{
-    if (value <= 0.0f)
-    {
-        return 0U;
-    }
-
-    return (unsigned int)(value + 0.5f);
-}
-
-static unsigned int absoluteInt16(int16_t value)
-{
-    return (unsigned int)((value < 0) ? -value : value);
-}
-
-static void setTurnSysIdDisplay(void)
-{
-    char line0[11] = "          ";
-    char line1[11] = "          ";
-    char line2[11] = "          ";
-    unsigned int bw = turn_sysid_data.breakaway_pwm_percent;
-    unsigned int u = turn_sysid_data.step_pwm_percent;
-    unsigned int r = roundPositiveToUInt(turn_sysid_data.steady_rate_dps);
-    unsigned int k10 = roundPositiveToUInt(turn_sysid_data.gain_dps_per_percent * 10.0f);
-    unsigned int l = turn_sysid_data.delay_ticks;
-    unsigned int t = turn_sysid_data.tau_ticks;
-    unsigned int a = absoluteInt16(turn_sysid_data.peak_accel_raw) / 100U;
-
-    if (r > 999U)
-    {
-        r = 999U;
-    }
-    if (k10 > 99U)
-    {
-        k10 = 99U;
-    }
-    if (l > 99U)
-    {
-        l = 99U;
-    }
-    if (t > 99U)
-    {
-        t = 99U;
-    }
-    if (a > 99U)
-    {
-        a = 99U;
-    }
-
-    line0[0] = 'B';
-    line0[1] = 'W';
-    line0[2] = (char)('0' + ((bw / 10U) % 10U));
-    line0[3] = (char)('0' + (bw % 10U));
-    line0[4] = ' ';
-    line0[5] = 'U';
-    line0[6] = (char)('0' + ((u / 10U) % 10U));
-    line0[7] = (char)('0' + (u % 10U));
-
-    line1[0] = 'R';
-    line1[1] = (char)('0' + ((r / 100U) % 10U));
-    line1[2] = (char)('0' + ((r / 10U) % 10U));
-    line1[3] = (char)('0' + (r % 10U));
-    line1[4] = ' ';
-    line1[5] = 'K';
-    line1[6] = (char)('0' + ((k10 / 10U) % 10U));
-    line1[7] = (char)('0' + (k10 % 10U));
-
-    line2[0] = 'L';
-    line2[1] = (char)('0' + ((l / 10U) % 10U));
-    line2[2] = (char)('0' + (l % 10U));
-    line2[3] = 'T';
-    line2[4] = (char)('0' + ((t / 10U) % 10U));
-    line2[5] = (char)('0' + (t % 10U));
-    line2[6] = 'A';
-    line2[7] = (char)('0' + ((a / 10U) % 10U));
-    line2[8] = (char)('0' + (a % 10U));
-
-    strcpy(display_line[0], line0);
-    strcpy(display_line[1], line1);
-    strcpy(display_line[2], line2);
-    display_changed = TRUE;
-}
-
-static void formatGainLine(const char *label, float gain, char *line_out)
-{
-    float gain_abs = (gain < 0.0f) ? -gain : gain;
-    unsigned int scaled = roundPositiveToUInt(gain_abs * 100.0f);
-    unsigned int whole = scaled / 100U;
-    unsigned int frac = scaled % 100U;
-    char sign = (gain < 0.0f) ? '-' : '+';
-
-    if (whole > 9U)
-    {
-        whole = 9U;
-    }
-
-    strcpy(line_out, "          ");
-    line_out[0] = label[0];
-    line_out[1] = label[1];
-    line_out[2] = sign;
-    line_out[3] = (char)('0' + whole);
-    line_out[4] = '.';
-    line_out[5] = (char)('0' + ((frac / 10U) % 10U));
-    line_out[6] = (char)('0' + (frac % 10U));
-}
-
-static void setTurnAutoTuneDisplay(void)
-{
-    char line_kp[11];
-    char line_ki[11];
-    char line_kd[11];
-
-    formatGainLine("KP", turn_kp, line_kp);
-    formatGainLine("KI", turn_ki, line_ki);
-    formatGainLine("KD", turn_kd, line_kd);
-
-    strcpy(display_line[0], line_kp);
-    strcpy(display_line[1], line_ki);
-    strcpy(display_line[2], line_kd);
-    display_changed = TRUE;
-}
 
 static unsigned int secondsToTicks(int time_seconds)
 {
@@ -279,14 +112,14 @@ static float absoluteFloat(float value)
     return value;
 }
 
-static unsigned int pwmCountsFromPercent(unsigned int duty_percent)
+static int pwmCountsFromPercent(unsigned int duty_percent)
 {
-    if (duty_percent >= 100U)
+    if (duty_percent >= 100)
     {
         return WHEEL_PERIOD;
     }
 
-    return (unsigned int)(((unsigned long)WHEEL_PERIOD * (unsigned long)duty_percent) / 100UL);
+    return (int)(((long)WHEEL_PERIOD * (long)duty_percent) / 100L);
 }
 
 static unsigned int pwmCountsFromPercentFloat(float duty_percent)
@@ -426,8 +259,39 @@ static void setCurrentCommandDisplay(const char *name)
     }
 
     line[10] = '\0';
-    strcpy(display_line[3], line);
-    display_changed = TRUE;
+    if (strncmp(display_line[3], line, 10) != 0)
+    {
+        memcpy(display_line[3], line, 11);
+        display_changed = TRUE;
+    }
+}
+
+static void setFollowLineElapsedDisplay(const Command *command)
+{
+    char line[11] = "LF 000.0s ";
+    unsigned int elapsed_tenths;
+    unsigned int seconds;
+    unsigned int tenths;
+
+    elapsed_tenths = ((unsigned int)((unsigned long)command->elapsed_ticks * 10UL)) / COMMAND_TICKS_PER_SECOND;
+    seconds = elapsed_tenths / 10U;
+    tenths = elapsed_tenths % 10U;
+
+    if (seconds > 999U)
+    {
+        seconds = 999U;
+    }
+
+    line[3] = (char)('0' + ((seconds / 100U) % 10U));
+    line[4] = (char)('0' + ((seconds / 10U) % 10U));
+    line[5] = (char)('0' + (seconds % 10U));
+    line[7] = (char)('0' + (tenths % 10U));
+
+    if (strncmp(display_line[3], line, 10) != 0)
+    {
+        memcpy(display_line[3], line, 11);
+        display_changed = TRUE;
+    }
 }
 
 static const char *getDisplayName(Command *cmd, const char *default_name)
@@ -559,6 +423,18 @@ static RobotCommandChain chainAndThenAlignLeftToLine(void)
     return getChainApi();
 }
 
+static RobotCommandChain chainAndThenFollowLine(int time_seconds)
+{
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    Command_FollowLine(&active_chain.commands[active_chain.count], time_seconds);
+    chainAppend(&active_chain.commands[active_chain.count]);
+    return getChainApi();
+}
+
 static RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag stop_flag)
 {
     if (active_chain.count >= CHAIN_MAX_COMMANDS)
@@ -620,18 +496,6 @@ static RobotCommandChain chainAndThenReverseStraight(int time_seconds)
     return getChainApi();
 }
 
-static RobotCommandChain chainAndThenTurnSysId(void)
-{
-    if (active_chain.count >= CHAIN_MAX_COMMANDS)
-    {
-        return getChainApi();
-    }
-
-    Command_TurnSysId(&active_chain.commands[active_chain.count]);
-    chainAppend(&active_chain.commands[active_chain.count]);
-    return getChainApi();
-}
-
 static RobotCommandChain chainAndThenDriveToXY(float target_x_in, float target_y_in)
 {
     if (active_chain.count >= CHAIN_MAX_COMMANDS)
@@ -669,11 +533,11 @@ static RobotCommandChain getChainApi(void)
     chain_api_local.andThenReverseStraight = chainAndThenReverseStraight;
     chain_api_local.andThenDriveToLine = chainAndThenDriveToLine;
     chain_api_local.andThenAlignLeftToLine = chainAndThenAlignLeftToLine;
+    chain_api_local.andThenFollowLine      = chainAndThenFollowLine;
     chain_api_local.until = chainUntil;
     chain_api_local.untilSelective = chainUntilSelective;
     chain_api_local.withDisplay = chainWithDisplay;
     chain_api_local.andThenDriveUntil = chainAndThenDriveUntil;
-    chain_api_local.andThenTurnSysId = chainAndThenTurnSysId;
     chain_api_local.andThenDriveToXY = chainAndThenDriveToXY;
     chain_api_local.schedule = chainSchedule;
 
@@ -702,7 +566,6 @@ static void commandResetRecursive(Command *command)
 
 static void commandTick(Command *command)
 {
-    static TurnAutoTuneData turn_autotune_data;
     unsigned char index;
     unsigned char all_done;
 
@@ -981,7 +844,7 @@ static void commandTick(Command *command)
             unsigned int left_hit = 0U;
             unsigned int right_hit = 0U;
 
-            if (command->elapsed_ticks >= 2U)
+            if (command->elapsed_ticks >= COMMAND_TICKS_FROM_MS(100U))
             {
                 if ((command->drive_until_left_flag != 0) && (*(command->drive_until_left_flag) != 0U))
                 {
@@ -1011,7 +874,7 @@ static void commandTick(Command *command)
             command->elapsed_ticks++;
             if (command->drive_until_flag != 0)
             {
-                if ((command->elapsed_ticks >= 2U) && (*(command->drive_until_flag) != 0U))
+                if ((command->elapsed_ticks >= COMMAND_TICKS_FROM_MS(100U)) && (*(command->drive_until_flag) != 0U))
                 {
                     driveStop();
                     command->finished = 1;
@@ -1055,7 +918,7 @@ static void commandTick(Command *command)
         }
 
         command->elapsed_ticks++;
-        if ((command->elapsed_ticks >= 2U) &&
+        if ((command->elapsed_ticks >= COMMAND_TICKS_FROM_MS(100U)) &&
             (command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U))
         {
             driveStop();
@@ -1221,7 +1084,7 @@ static void commandTick(Command *command)
         }
 
         command->elapsed_ticks++;
-        if ((command->pwm_counter >= 2U) || (command->elapsed_ticks >= secondsToTicks(30)))
+        if ((command->pwm_counter >= COMMAND_TICKS_FROM_MS(100U)) || (command->elapsed_ticks >= secondsToTicks(30)))
         {
             driveStop();
             command->finished = 1;
@@ -1231,94 +1094,34 @@ static void commandTick(Command *command)
 
     case CMD_ALIGN_LEFT_TO_LINE:
     {
-        float left_white_level;
-        float right_white_level;
-        float left_error;
-        float right_error;
-        float edge_error;
-        float left_reverse_percent;
-        float right_forward_percent;
+
+        Color left_color;
+        Color right_color;
         unsigned int left_pwm;
         unsigned int right_pwm;
         unsigned int min_pwm;
-        const float align_left_white_target = 0.92f;
-        const float align_right_black_target = 0.08f;
-        const float align_side_kp_percent = 55.0f;
-        const float align_edge_kp_percent = 28.0f;
-        const float align_left_right_target = 0.84f;
 
         if (!command->started)
         {
             command->started = 1;
-            command->heading_error_prev = 0.0f;
-            command->heading_error_sum = 0.0f;
             command->pwm_counter = 0U;
             setCurrentCommandDisplay(getDisplayName(command, "ALIGN LINE"));
         }
 
-        left_white_level = getDetectorWhiteLevel(DETECTOR_LEFT);
-        right_white_level = getDetectorWhiteLevel(DETECTOR_RIGHT);
+        left_color  = getDetectedColor(DETECTOR_RIGHT);
+        right_color = getDetectedColor(DETECTOR_LEFT);
 
-        left_error = align_left_white_target - left_white_level;
-        if (left_error < 0.0f)
-        {
-            left_error = 0.0f;
-        }
-
-        right_error = right_white_level - align_right_black_target;
-        if (right_error < 0.0f)
-        {
-            right_error = 0.0f;
-        }
-
-        edge_error = align_left_right_target - (left_white_level - right_white_level);
-        if (edge_error < 0.0f)
-        {
-            edge_error = 0.0f;
-        }
-
-        left_reverse_percent = align_line_left_base_percent +
-                               (align_side_kp_percent * left_error) +
-                               (align_edge_kp_percent * edge_error);
-        right_forward_percent = align_line_left_base_percent +
-                                (align_side_kp_percent * right_error) +
-                                (align_edge_kp_percent * edge_error);
-
-        if (left_reverse_percent > align_line_right_base_percent)
-        {
-            left_reverse_percent = align_line_right_base_percent;
-        }
-        if (right_forward_percent > align_line_right_base_percent)
-        {
-            right_forward_percent = align_line_right_base_percent;
-        }
-
-        if (left_reverse_percent < 0.0f)
-        {
-            left_reverse_percent = 0.0f;
-        }
-        if (right_forward_percent < 0.0f)
-        {
-            right_forward_percent = 0.0f;
-        }
-
-        left_pwm = (left_reverse_percent <= 0.0f) ? 0U : pwmCountsFromPercentFloat(left_reverse_percent);
-        right_pwm = (right_forward_percent <= 0.0f) ? 0U : pwmCountsFromPercentFloat(right_forward_percent);
+        left_pwm = pwmCountsFromPercentFloat(75.0);
+        right_pwm = pwmCountsFromPercentFloat(75.0);
 
         min_pwm = pwmCountsFromPercent(MOTOR_MIN_DUTY_PERCENT);
-        if ((left_pwm > 0) && (left_pwm < (int)min_pwm))
-        {
-            left_pwm = min_pwm;
-        }
-        if ((right_pwm > 0) && (right_pwm < (int)min_pwm))
-        {
-            right_pwm = min_pwm;
-        }
+        if ((left_pwm  > 0U) && (left_pwm  < min_pwm)) { left_pwm  = min_pwm; }
+        if ((right_pwm > 0U) && (right_pwm < min_pwm)) { right_pwm = min_pwm; }
 
-        Motors_DriveSpinReversePWM(clampPwmCounts((int)left_pwm), clampPwmCounts((int)right_pwm));
-
-        if ((left_white_level >= align_left_white_target) &&
-            (right_white_level <= align_right_black_target))
+        Motors_DriveSpinReversePWM(clampPwmCounts((int)left_pwm),
+                                   clampPwmCounts((int)right_pwm));
+                                   
+        if ((left_color == COLOR_BLACK) && (right_color == COLOR_WHITE))
         {
             if (command->pwm_counter < 255U)
             {
@@ -1331,11 +1134,79 @@ static void commandTick(Command *command)
         }
 
         command->elapsed_ticks++;
-        if ((command->pwm_counter >= 2U) || (command->elapsed_ticks >= secondsToTicks(5)))
+        if ((command->pwm_counter >= COMMAND_TICKS_FROM_MS(100U)) ||
+            (command->elapsed_ticks >= secondsToTicks(5)))
         {
             driveStop();
             command->finished = 1;
         }
+
+        break;
+    }
+
+    case CMD_FOLLOW_LINE:
+    {
+        if (!command->started)
+        {
+            command->started = 1;
+            command->elapsed_ticks = 0U;
+            lf_integral = 0;
+            lf_prev_error = 0;
+            lf_wasInGap = 0;
+            setFollowLineElapsedDisplay(command);
+        }
+
+        int irL;
+        int irR;
+
+        irL = getDetectorValue(DETECTOR_LEFT);
+        irR = getDetectorValue(DETECTOR_RIGHT);
+
+        int error = irL - irR;
+        int inGap = (irL < LF_GAP_THRESHOLD) && (irR < LF_GAP_THRESHOLD);
+
+        if (((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U)) || (inGap && !lf_wasInGap))
+        {
+            if ((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U))
+            {
+                driveStop();
+                command->finished = 1;
+            }
+
+            lf_integral = 0;
+            lf_prev_error = 0;
+        }
+        lf_wasInGap = inGap;
+
+        lf_integral += error;
+
+        if (lf_integral > LF_INTEGRAL_MAX) lf_integral = LF_INTEGRAL_MAX;
+        if (lf_integral < LF_INTEGRAL_MIN) lf_integral = LF_INTEGRAL_MIN;
+
+        int derivative = error - lf_prev_error;
+        lf_prev_error = error;
+
+        int mv_scaled = (LF_KP_SCALED * error) + (LF_KI_SCALED * lf_integral) + (LF_KD_SCALED * derivative);
+        int mv = mv_scaled >> 10;
+
+        if (mv > LF_CORRECTION_MAX) mv = LF_CORRECTION_MAX;
+        if (mv < LF_CORRECTION_MIN) mv = LF_CORRECTION_MIN;
+
+        int leftDuty = LF_BASE_SPEED + mv;
+        int rightDuty = LF_BASE_SPEED - mv;
+
+        if (leftDuty  >  100) leftDuty  =  100;
+        if (leftDuty  < -100) leftDuty  = -100;
+        if (rightDuty >  100) rightDuty =  100;
+        if (rightDuty < -100) rightDuty = -100;
+
+        int leftPWM = pwmCountsFromPercent(leftDuty);
+        int rightPWM = pwmCountsFromPercent(rightDuty);
+
+        applyMixedDrive(leftPWM, rightPWM);
+
+        command->elapsed_ticks++;
+        setFollowLineElapsedDisplay(command);
 
         break;
     }
@@ -1569,441 +1440,6 @@ static void commandTick(Command *command)
             driveStop();
             command->finished = 1;
         }
-        break;
-    }
-
-    case CMD_TURN_SYSID:
-    {
-        float heading;
-        float delta_heading;
-        float yaw_rate_dps;
-        float steady_target_10;
-        float steady_target_63;
-        unsigned int ramp_pwm_percent;
-        unsigned int step_pwm_percent;
-        unsigned int ramp_start_pwm_percent;
-        unsigned int ramp_step_pwm_percent;
-        unsigned int ramp_max_pwm_percent;
-        unsigned int index_start;
-        unsigned int index;
-        int16_t ax;
-        int16_t ay;
-        int16_t az;
-        int16_t accel_peak;
-
-        if (!command->started)
-        {
-            command->started = 1;
-            command->pwm_counter = 0;
-            command->elapsed_ticks = 0;
-            command->left_duty = 0;
-            command->right_duty = 0;
-            command->heading_start = getHeading();
-            command->heading_error_prev = command->heading_start;
-
-            turn_sysid_data.sample_count = 0;
-            turn_sysid_data.breakaway_pwm_percent = 0;
-            turn_sysid_data.step_pwm_percent = 0;
-            turn_sysid_data.delay_ticks = 0;
-            turn_sysid_data.tau_ticks = 0;
-            turn_sysid_data.steady_rate_dps = 0.0f;
-            turn_sysid_data.max_rate_dps = 0.0f;
-            turn_sysid_data.gain_dps_per_percent = 0.0f;
-            turn_sysid_data.peak_accel_raw = 0;
-
-            setCurrentCommandDisplay(getDisplayName(command, "TURN SYSID"));
-        }
-
-        if (command->pwm_counter == 0U)
-        {
-            ramp_start_pwm_percent = roundPositiveToUInt(turn_sysid_ramp_start_pwm_percent);
-            ramp_step_pwm_percent = roundPositiveToUInt(turn_sysid_ramp_step_pwm_percent);
-            ramp_max_pwm_percent = roundPositiveToUInt(turn_sysid_ramp_max_pwm_percent);
-            if (ramp_start_pwm_percent > 100U)
-            {
-                ramp_start_pwm_percent = 100U;
-            }
-            if (ramp_step_pwm_percent == 0U)
-            {
-                ramp_step_pwm_percent = 1U;
-            }
-            if (ramp_max_pwm_percent > 100U)
-            {
-                ramp_max_pwm_percent = 100U;
-            }
-            if (ramp_max_pwm_percent < ramp_start_pwm_percent)
-            {
-                ramp_max_pwm_percent = ramp_start_pwm_percent;
-            }
-
-            ramp_pwm_percent = ramp_start_pwm_percent + ((unsigned int)command->elapsed_ticks * ramp_step_pwm_percent);
-            if (ramp_pwm_percent > ramp_max_pwm_percent)
-            {
-                ramp_pwm_percent = ramp_max_pwm_percent;
-            }
-
-            command->left_duty = (unsigned char)ramp_pwm_percent;
-            Motors_DriveSpinPWM(pwmCountsFromPercent(ramp_pwm_percent), pwmCountsFromPercent(ramp_pwm_percent));
-
-            heading = getHeading();
-            delta_heading = wrapAngle(heading - command->heading_error_prev);
-            command->heading_error_prev = heading;
-
-            if (absoluteFloat(delta_heading) >= turn_sysid_motion_delta_deg)
-            {
-                if (command->right_duty < 255U)
-                {
-                    command->right_duty++;
-                }
-            }
-            else
-            {
-                command->right_duty = 0;
-            }
-
-            command->elapsed_ticks++;
-            if ((command->right_duty >= 2U) || (ramp_pwm_percent >= ramp_max_pwm_percent))
-            {
-                turn_sysid_data.breakaway_pwm_percent = (unsigned char)ramp_pwm_percent;
-                command->pwm_counter = 1U;
-                command->elapsed_ticks = 0;
-                command->right_duty = 0;
-                command->heading_error_prev = heading;
-            }
-            break;
-        }
-
-        if (command->pwm_counter == 1U)
-        {
-            step_pwm_percent = roundPositiveToUInt(turn_sysid_step_pwm_percent);
-            if (step_pwm_percent > 100U)
-            {
-                step_pwm_percent = 100U;
-            }
-            turn_sysid_data.step_pwm_percent = (unsigned char)step_pwm_percent;
-
-            Motors_DriveSpinPWM(pwmCountsFromPercent(step_pwm_percent), pwmCountsFromPercent(step_pwm_percent));
-
-            heading = getHeading();
-            delta_heading = wrapAngle(heading - command->heading_error_prev);
-            command->heading_error_prev = heading;
-            yaw_rate_dps = absoluteFloat(delta_heading) * (float)COMMAND_TICKS_PER_SECOND;
-
-            if (turn_sysid_data.sample_count < TURN_SYSID_MAX_SAMPLES)
-            {
-                turn_sysid_data.rate_samples[turn_sysid_data.sample_count] = yaw_rate_dps;
-                turn_sysid_data.sample_count++;
-            }
-
-            if (yaw_rate_dps > turn_sysid_data.max_rate_dps)
-            {
-                turn_sysid_data.max_rate_dps = yaw_rate_dps;
-            }
-
-            ax = IMU_GetAccelXRaw();
-            ay = IMU_GetAccelYRaw();
-            az = IMU_GetAccelZRaw();
-            accel_peak = ax;
-            if (absoluteInt16(ay) > absoluteInt16(accel_peak))
-            {
-                accel_peak = ay;
-            }
-            if (absoluteInt16(az) > absoluteInt16(accel_peak))
-            {
-                accel_peak = az;
-            }
-            if (absoluteInt16(accel_peak) > absoluteInt16(turn_sysid_data.peak_accel_raw))
-            {
-                turn_sysid_data.peak_accel_raw = accel_peak;
-            }
-
-            command->elapsed_ticks++;
-            if (command->elapsed_ticks >= TURN_SYSID_STEP_TICKS)
-            {
-                command->pwm_counter = 2U;
-            }
-            break;
-        }
-
-        driveStop();
-
-        if (turn_sysid_data.sample_count > 0U)
-        {
-            index_start = 0U;
-            if (turn_sysid_data.sample_count > 5U)
-            {
-                index_start = (unsigned int)turn_sysid_data.sample_count - 5U;
-            }
-
-            turn_sysid_data.steady_rate_dps = 0.0f;
-            for (index = index_start; index < turn_sysid_data.sample_count; index++)
-            {
-                turn_sysid_data.steady_rate_dps += turn_sysid_data.rate_samples[index];
-            }
-            turn_sysid_data.steady_rate_dps /= (float)(turn_sysid_data.sample_count - index_start);
-
-            if (turn_sysid_data.step_pwm_percent > 0U)
-            {
-                turn_sysid_data.gain_dps_per_percent =
-                    turn_sysid_data.steady_rate_dps / (float)turn_sysid_data.step_pwm_percent;
-            }
-            else
-            {
-                turn_sysid_data.gain_dps_per_percent = 0.0f;
-            }
-
-            steady_target_10 = 0.10f * turn_sysid_data.steady_rate_dps;
-            steady_target_63 = 0.632f * turn_sysid_data.steady_rate_dps;
-            turn_sysid_data.delay_ticks = turn_sysid_data.sample_count;
-            turn_sysid_data.tau_ticks = turn_sysid_data.sample_count;
-
-            for (index = 0U; index < turn_sysid_data.sample_count; index++)
-            {
-                if ((turn_sysid_data.delay_ticks == turn_sysid_data.sample_count) &&
-                    (turn_sysid_data.rate_samples[index] >= steady_target_10))
-                {
-                    turn_sysid_data.delay_ticks = (unsigned char)index;
-                }
-                if ((turn_sysid_data.tau_ticks == turn_sysid_data.sample_count) &&
-                    (turn_sysid_data.rate_samples[index] >= steady_target_63))
-                {
-                    turn_sysid_data.tau_ticks = (unsigned char)index;
-                }
-            }
-        }
-
-        setTurnSysIdDisplay();
-        command->finished = 1;
-        break;
-    }
-
-    case CMD_AUTO_TUNE:
-    {
-        float heading;
-        float error;
-        float abs_error;
-        float derivative;
-        float feedback_control;
-        float normalized_feedback;
-        float cmd_rate_dps;
-        float ff_percent;
-        float score;
-        const float feedback_full_scale_deg = 45.0f;
-        const float integral_limit = 720.0f;
-        unsigned int max_turn_pwm;
-        int feedback_pwm;
-        int ff_pwm;
-        int signed_pwm;
-        int abs_signed_pwm;
-
-        if (!command->started)
-        {
-            command->started = 1;
-            command->heading_error_prev = 0.0f;
-            command->heading_error_sum = 0.0f;
-            command->pwm_counter = 0;
-            setCurrentCommandDisplay(getDisplayName(command, "AUTO TUNE"));
-
-            turn_autotune_data.trial_index = 0U;
-            turn_autotune_data.stage = 0U;
-            turn_autotune_data.settle_ticks = 0U;
-            turn_autotune_data.best_found = 0U;
-            turn_autotune_data.trial_ticks = 0U;
-            turn_autotune_data.initial_error_sign = 1;
-            turn_autotune_data.peak_overshoot_deg = 0.0f;
-            turn_autotune_data.best_score = 0.0f;
-            turn_autotune_data.saved_kp = turn_kp;
-            turn_autotune_data.saved_ki = turn_ki;
-            turn_autotune_data.saved_kd = turn_kd;
-            turn_autotune_data.best_kp = turn_kp;
-            turn_autotune_data.best_ki = turn_ki;
-            turn_autotune_data.best_kd = turn_kd;
-        }
-
-        if (turn_autotune_data.stage == 0U)
-        {
-            if (turn_autotune_data.trial_index >= TURN_AUTOTUNE_MAX_TRIALS)
-            {
-                driveStop();
-                if (turn_autotune_data.best_found)
-                {
-                    turn_kp = turn_autotune_data.best_kp;
-                    turn_ki = turn_autotune_data.best_ki;
-                    turn_kd = turn_autotune_data.best_kd;
-                }
-                else
-                {
-                    turn_kp = turn_autotune_data.saved_kp;
-                    turn_ki = turn_autotune_data.saved_ki;
-                    turn_kd = turn_autotune_data.saved_kd;
-                }
-
-                setTurnAutoTuneDisplay();
-                command->finished = 1;
-                break;
-            }
-
-            turn_kp = 0.4f + (0.35f * (float)turn_autotune_data.trial_index);
-            turn_kd = 0.05f + (0.08f * (float)turn_autotune_data.trial_index);
-            if (turn_autotune_data.trial_index >= 3U)
-            {
-                turn_ki = 0.01f * (float)(turn_autotune_data.trial_index - 2U);
-            }
-            else
-            {
-                turn_ki = 0.0f;
-            }
-
-            heading = getHeading();
-            if ((turn_autotune_data.trial_index & 0x01U) == 0U)
-            {
-                command->target_angle = wrapAngle(heading + TURN_AUTOTUNE_TARGET_DEG);
-            }
-            else
-            {
-                command->target_angle = wrapAngle(heading - TURN_AUTOTUNE_TARGET_DEG);
-            }
-
-            error = wrapAngle(command->target_angle - heading);
-            turn_autotune_data.initial_error_sign = (error >= 0.0f) ? 1 : -1;
-            turn_autotune_data.trial_ticks = 0U;
-            turn_autotune_data.settle_ticks = 0U;
-            turn_autotune_data.peak_overshoot_deg = 0.0f;
-            command->heading_error_prev = error;
-            command->heading_error_sum = 0.0f;
-            turn_autotune_data.stage = 1U;
-            break;
-        }
-
-        heading = getHeading();
-        error = wrapAngle(command->target_angle - heading);
-        abs_error = absoluteFloat(error);
-        derivative = error - command->heading_error_prev;
-        command->heading_error_prev = error;
-
-        if (abs_error <= turn_integral_zone_deg)
-        {
-            command->heading_error_sum += error;
-            if (command->heading_error_sum > integral_limit)
-            {
-                command->heading_error_sum = integral_limit;
-            }
-            if (command->heading_error_sum < -integral_limit)
-            {
-                command->heading_error_sum = -integral_limit;
-            }
-        }
-        else
-        {
-            command->heading_error_sum = 0.0f;
-        }
-
-        feedback_control = (turn_kp * error) + (turn_ki * command->heading_error_sum) + (turn_kd * derivative);
-        normalized_feedback = feedback_control / feedback_full_scale_deg;
-        if (normalized_feedback > 1.0f)
-        {
-            normalized_feedback = 1.0f;
-        }
-        if (normalized_feedback < -1.0f)
-        {
-            normalized_feedback = -1.0f;
-        }
-
-        cmd_rate_dps = turn_ff_rate_kp_dps_per_deg * error;
-        if (cmd_rate_dps > turn_ff_max_rate_dps)
-        {
-            cmd_rate_dps = turn_ff_max_rate_dps;
-        }
-        if (cmd_rate_dps < -turn_ff_max_rate_dps)
-        {
-            cmd_rate_dps = -turn_ff_max_rate_dps;
-        }
-
-        ff_percent = turn_ff_ks_percent + (turn_ff_kv_percent_per_dps * absoluteFloat(cmd_rate_dps));
-        if (ff_percent > turn_max_pwm_percent)
-        {
-            ff_percent = turn_max_pwm_percent;
-        }
-
-        max_turn_pwm = pwmCountsFromPercentFloat(turn_max_pwm_percent);
-        feedback_pwm = (int)((float)max_turn_pwm * normalized_feedback);
-        ff_pwm = (int)pwmCountsFromPercentFloat(ff_percent);
-        if (cmd_rate_dps < 0.0f)
-        {
-            ff_pwm = -ff_pwm;
-        }
-
-        signed_pwm = feedback_pwm + ff_pwm;
-        if (signed_pwm > (int)max_turn_pwm)
-        {
-            signed_pwm = (int)max_turn_pwm;
-        }
-        if (signed_pwm < -(int)max_turn_pwm)
-        {
-            signed_pwm = -(int)max_turn_pwm;
-        }
-
-        abs_signed_pwm = (signed_pwm < 0) ? -signed_pwm : signed_pwm;
-        if ((abs_signed_pwm == 0) && (abs_error > turn_angle_tolerance_deg))
-        {
-            signed_pwm = (error >= 0.0f) ? (int)pwmCountsFromPercent(MOTOR_MIN_DUTY_PERCENT)
-                                          : -(int)pwmCountsFromPercent(MOTOR_MIN_DUTY_PERCENT);
-        }
-
-        applyMixedDrive(-signed_pwm, signed_pwm);
-
-        if (((float)turn_autotune_data.initial_error_sign * error) < 0.0f)
-        {
-            if (abs_error > turn_autotune_data.peak_overshoot_deg)
-            {
-                turn_autotune_data.peak_overshoot_deg = abs_error;
-            }
-        }
-
-        if (abs_error <= turn_angle_tolerance_deg)
-        {
-            if (turn_autotune_data.settle_ticks < 255U)
-            {
-                turn_autotune_data.settle_ticks++;
-            }
-        }
-        else
-        {
-            turn_autotune_data.settle_ticks = 0U;
-        }
-
-        if (turn_autotune_data.trial_ticks < 65535U)
-        {
-            turn_autotune_data.trial_ticks++;
-        }
-
-        if (turn_autotune_data.settle_ticks >= TURN_AUTOTUNE_SETTLE_TICKS)
-        {
-            score = (float)turn_autotune_data.trial_ticks +
-                    (TURN_AUTOTUNE_OVERSHOOT_WEIGHT * turn_autotune_data.peak_overshoot_deg);
-            if ((!turn_autotune_data.best_found) || (score < turn_autotune_data.best_score))
-            {
-                turn_autotune_data.best_found = 1U;
-                turn_autotune_data.best_score = score;
-                turn_autotune_data.best_kp = turn_kp;
-                turn_autotune_data.best_ki = turn_ki;
-                turn_autotune_data.best_kd = turn_kd;
-            }
-
-            driveStop();
-            turn_autotune_data.trial_index++;
-            turn_autotune_data.stage = 0U;
-            break;
-        }
-
-        if (turn_autotune_data.trial_ticks >= TURN_AUTOTUNE_TIMEOUT_TICKS)
-        {
-            driveStop();
-            turn_autotune_data.trial_index++;
-            turn_autotune_data.stage = 0U;
-            break;
-        }
-
         break;
     }
 
@@ -2339,6 +1775,33 @@ void Command_AlignLeftToLine(Command *command)
     command->display_message = 0;
 }
 
+void Command_FollowLine(Command *command, int time_seconds)
+{
+    if (command == 0)
+    {
+        return;
+    }
+
+    command->type = CMD_FOLLOW_LINE;
+    command->duration_ticks = secondsToTicks(time_seconds);
+    command->elapsed_ticks = 0;
+    command->started = 0;
+    command->finished = 0;
+    command->child_count = 0;
+    command->active_child = 0;
+    command->target_angle = 0.0f;
+    command->heading_start = 0.0f;
+    command->heading_error_prev = 0.0f;
+    command->heading_error_sum = 0.0f;
+    command->pwm_counter = 0;
+    command->left_duty = 0;
+    command->right_duty = 0;
+    command->drive_until_flag = 0;
+    command->drive_until_left_flag = 0;
+    command->drive_until_right_flag = 0;
+    command->display_message = 0;
+}
+
 void Command_ReverseStraight(Command *command, int time_seconds)
 {
     if (command == 0)
@@ -2357,33 +1820,6 @@ void Command_ReverseStraight(Command *command, int time_seconds)
     command->heading_start = 0.0f;
     command->heading_error_prev = 0.0f;
     command->heading_error_sum = 0.0f;
-    command->drive_until_flag = 0;
-    command->drive_until_left_flag = 0;
-    command->drive_until_right_flag = 0;
-    command->display_message = 0;
-}
-
-void Command_TurnSysId(Command *command)
-{
-    if (command == 0)
-    {
-        return;
-    }
-
-    command->type = CMD_TURN_SYSID;
-    command->duration_ticks = 0;
-    command->elapsed_ticks = 0;
-    command->started = 0;
-    command->finished = 0;
-    command->child_count = 0;
-    command->active_child = 0;
-    command->target_angle = 0.0f;
-    command->heading_start = 0.0f;
-    command->heading_error_prev = 0.0f;
-    command->heading_error_sum = 0.0f;
-    command->pwm_counter = 0;
-    command->left_duty = 0;
-    command->right_duty = 0;
     command->drive_until_flag = 0;
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
@@ -2414,33 +1850,6 @@ void Command_DriveToXY(Command *command, float target_x_in, float target_y_in)
     command->left_duty = 0;
     command->right_duty = 0;
     command->spin_direction = SPIN_CLOCKWISE;
-    command->drive_until_flag = 0;
-    command->drive_until_left_flag = 0;
-    command->drive_until_right_flag = 0;
-    command->display_message = 0;
-}
-
-void Command_AutoTune(Command *command)
-{
-    if (command == 0)
-    {
-        return;
-    }
-
-    command->type = CMD_AUTO_TUNE;
-    command->duration_ticks = 0;
-    command->elapsed_ticks = 0;
-    command->started = 0;
-    command->finished = 0;
-    command->child_count = 0;
-    command->active_child = 0;
-    command->target_angle = 0.0f;
-    command->heading_start = 0.0f;
-    command->heading_error_prev = 0.0f;
-    command->heading_error_sum = 0.0f;
-    command->pwm_counter = 0;
-    command->left_duty = 0;
-    command->right_duty = 0;
     command->drive_until_flag = 0;
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
@@ -2544,6 +1953,7 @@ void Command_Parallel(Command *command, Command **children, unsigned char child_
 
 void initRobot(Robot *robot)
 {
+    // PID_Init(&lfPID, LF_KP_SCALED, LF_KI_SCALED, LF_KD_SCALED, LF_INTEGRAL_MAX, LF_INTEGRAL_MIN, LF_CORRECTION_MAX, LF_CORRECTION_MIN);
     if (robot == 0)
     {
         return;
@@ -2680,16 +2090,16 @@ RobotCommandChain chainAlignLeftToLine(void)
     return chainAndThenAlignLeftToLine();
 }
 
+RobotCommandChain chainFollowLine(int time_seconds)
+{
+    chainReset();
+    return chainAndThenFollowLine(time_seconds);
+}
+
 RobotCommandChain chainDriveUntil(DriveUntilFlag stop_flag)
 {
     chainReset();
     return chainAndThenDriveUntil(stop_flag);
-}
-
-RobotCommandChain chainTurnSysId(void)
-{
-    chainReset();
-    return chainAndThenTurnSysId();
 }
 
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in)

@@ -26,6 +26,7 @@ motors.obj: /home/saranga/ECE306/Car/include/ports.h
 motors.obj: /home/saranga/ECE306/Car/include/macros.h
 motors.obj: /home/saranga/ECE306/Car/include/display.h
 motors.obj: /home/saranga/ECE306/Car/include/motors.h
+motors.obj: /home/saranga/ECE306/Car/include/pid.h
 motors.obj: ../include/macros.h
 
 ../motors.c:
@@ -79,6 +80,8 @@ motors.obj: ../include/macros.h
 /home/saranga/ECE306/Car/include/display.h:
 
 /home/saranga/ECE306/Car/include/motors.h:
+
+/home/saranga/ECE306/Car/include/pid.h:
 
 ../include/macros.h:
 

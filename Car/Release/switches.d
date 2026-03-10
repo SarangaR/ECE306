@@ -29,6 +29,7 @@ switches.obj: ../include/robot.h
 switches.obj: /home/saranga/ECE306/Car/include/ports.h
 switches.obj: /home/saranga/ECE306/Car/include/macros.h
 switches.obj: /home/saranga/ECE306/Car/include/motors.h
+switches.obj: /home/saranga/ECE306/Car/include/pid.h
 switches.obj: ../include/adc.h
 
 ../switches.c:
@@ -88,6 +89,8 @@ switches.obj: ../include/adc.h
 /home/saranga/ECE306/Car/include/macros.h:
 
 /home/saranga/ECE306/Car/include/motors.h:
+
+/home/saranga/ECE306/Car/include/pid.h:
 
 ../include/adc.h:
 
