@@ -226,5 +226,6 @@ unsigned char isRobotBusy(void);
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;
 extern volatile unsigned int project7flag;
+extern unsigned long project7count;
 
 #endif

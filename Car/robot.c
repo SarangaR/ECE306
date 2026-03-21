@@ -268,7 +268,7 @@ static void setCurrentCommandDisplay(const char *name)
 
 static void setFollowLineElapsedDisplay(const Command *command)
 {
-    char line[11] = "LF 000.0s ";
+    char line[11] = "L  000.0s ";
     unsigned int elapsed_tenths;
     unsigned int seconds;
     unsigned int tenths;
@@ -282,6 +282,7 @@ static void setFollowLineElapsedDisplay(const Command *command)
         seconds = 999U;
     }
 
+    line[1] = (char)('0' + project7count);
     line[3] = (char)('0' + ((seconds / 100U) % 10U));
     line[4] = (char)('0' + ((seconds / 10U) % 10U));
     line[5] = (char)('0' + (seconds % 10U));
@@ -1121,7 +1122,7 @@ static void commandTick(Command *command)
         Motors_DriveSpinReversePWM(clampPwmCounts((int)left_pwm),
                                    clampPwmCounts((int)right_pwm));
                                    
-        if ((left_color == COLOR_BLACK) && (right_color == COLOR_WHITE))
+        if ((left_color == COLOR_WHITE) && (right_color == COLOR_BLACK))
         {
             if (command->pwm_counter < 255U)
             {
@@ -1163,7 +1164,8 @@ static void commandTick(Command *command)
         irR = getDetectorValue(DETECTOR_RIGHT);
 
         int error = irL - irR;
-        int inGap = (irL < LF_GAP_THRESHOLD) && (irR < LF_GAP_THRESHOLD);
+        // int inGap = (irL < LF_GAP_THRESHOLD) && (irR < LF_GAP_THRESHOLD);
+        int inGap = 0;
 
         if (((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U)) || (inGap && !lf_wasInGap))
         {

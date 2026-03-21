@@ -1,27 +1,18 @@
 #include "include/pid.h"
 
-/* ---------------------------------------------------------------
- * Static (private) implementations – not visible outside this
- * translation unit.  Callers reach them only via function pointers.
- * --------------------------------------------------------------- */
-
 static int32_t PID_Calculate(PIDController *self, int32_t error)
 {
-    /* Integral with anti-windup clamp */
     self->integral += error;
     if (self->integral > self->integralMax) self->integral = self->integralMax;
     if (self->integral < self->integralMin) self->integral = self->integralMin;
 
-    /* Derivative */
     int32_t derivative  = error - self->prevError;
     self->prevError     = error;
 
-    /* PID sum – arithmetic right-shift replaces divide */
     int32_t output = (self->kp * error
                     + self->ki * self->integral
                     + self->kd * derivative) >> GAIN_SCALE_SHIFT;
 
-    /* Output clamp */
     if (output > self->outputMax) output = self->outputMax;
     if (output < self->outputMin) output = self->outputMin;
 

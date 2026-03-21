@@ -12,8 +12,8 @@ static volatile unsigned int adc_channel_index = ADC_THUMB;
 
 static const unsigned int adc_input_map[ADC_NUM_CHANNELS] = {
     ADC_INPUT_A5,   // V_THUMB
-    ADC_INPUT_A2,   // V_DETECT_L
-    ADC_INPUT_A3    // V_DETECT_R
+    ADC_INPUT_A3,   // V_DETECT_L
+    ADC_INPUT_A2    // V_DETECT_R
 };
 
 static void ADC_SelectAndStart(unsigned int ch_index)

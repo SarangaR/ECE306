@@ -3,8 +3,8 @@
 
 typedef enum
 {
-    DETECTOR_LEFT  = 1,
-    DETECTOR_RIGHT = 0
+    DETECTOR_LEFT  = 0,
+    DETECTOR_RIGHT = 1
 } DetectorSide;
 
 typedef enum
