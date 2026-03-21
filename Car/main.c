@@ -180,36 +180,7 @@ void main(void)
 
     // Project 07 2 circle count
     if (robot.active_command->type == CMD_FOLLOW_LINE) {
-      if (robot.active_command->elapsed_ticks < COMMAND_TICKS_FROM_MS(500) && !project7flag) zeroHeading();
-      else if (!project7flag) {
-        float project7heading = getHeading();
-        float project7absHeading = fabsf(project7heading);
-        if (project7heading >= 87.0f && project7heading <= 93.0f && !project7lock) {
-          project7count++;
-          project7lock = 1;
-        }
-        else if (project7heading > 93.0f && project7heading < 175.0f) project7lock = 0;
-        else if (project7absHeading >= 175.0f && project7absHeading <= 180.0f && !project7lock) {
-          project7count++;
-          project7lock = 1;
-        }
-        else if (project7heading > -175.0f && project7heading < -93.0f) project7lock = 0;
-        else if (project7heading <= -87.0f && project7heading >= -93.0f && !project7lock) {
-          project7count++;
-          project7lock = 1;
-        }
-        else if (project7heading > -87.0f && project7heading < -5.0f) project7lock = 0;
-        else if (project7heading >= -5.0f && project7heading <= 5.0 && !project7lock) {
-          project7lock++;
-          project7lock = 1;
-        }
-        else project7lock = 0;
-
-        if ((project7count / (int) 4) == 2) project7flag = 1;
-      }
-    }
-    else {
-      project7flag = 0; 
+      project7flag = robot.active_command->lf_lap_count >= 2;
     }
 
     Switches_Process();

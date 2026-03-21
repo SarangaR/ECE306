@@ -99,7 +99,7 @@ void Switch1_Process(void)
     {
         // Calibration mode: set black threshold from current detector readings
         detectorSetBlackRangeFromCurrent();
-        chainWait(2).withDisplay("BLACK CAL ").schedule();
+        chainWait(1).withDisplay("BLACK CAL ").schedule();
     }
     else
     {
@@ -130,20 +130,15 @@ void Switch2_Process(void)
     {
         // Calibration mode: set white threshold from current detector readings
         detectorSetWhiteRangeFromCurrent();
-        chainWait(2).withDisplay("WHITE CAL ").schedule();
+        chainWait(1).withDisplay("WHITE CAL ").schedule();
     }
     else
     {
-        // Toggle IR emitter
-        emitter_on ^= TRUE;
-        if (emitter_on)
-        {
-            P2OUT |= IR_LED;
-        }
-        else
-        {
-            P2OUT &= ~IR_LED;
-        }
+        chainWait(1)
+            .andThenFollowLine(30)
+            // .until(&project7flag)
+            .withDisplay("LF PID    ")
+            .schedule();
     }
 }
 

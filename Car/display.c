@@ -121,7 +121,7 @@ void format_thumbwheel_line(int thumb_val, char *message)
   message[10] = '\0';
 }
 
-void format_float(int value, char *message) {
+void format_float(float value, char *message) {
   char sign = (value < 0) ? '-' : '+';
   unsigned int mag = (value < 0) ? (unsigned int)(-value) : (unsigned int)value;
 

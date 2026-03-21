@@ -268,7 +268,7 @@ static void setCurrentCommandDisplay(const char *name)
 
 static void setFollowLineElapsedDisplay(const Command *command)
 {
-    char line[11] = "L  000.0s ";
+    char line[11] = "L0 000.0s ";
     unsigned int elapsed_tenths;
     unsigned int seconds;
     unsigned int tenths;
@@ -282,7 +282,7 @@ static void setFollowLineElapsedDisplay(const Command *command)
         seconds = 999U;
     }
 
-    line[1] = (char)('0' + project7count);
+    line[1] = (char)('0' + command->lf_lap_count);
     line[3] = (char)('0' + ((seconds / 100U) % 10U));
     line[4] = (char)('0' + ((seconds / 10U) % 10U));
     line[5] = (char)('0' + (seconds % 10U));
@@ -1145,67 +1145,82 @@ static void commandTick(Command *command)
         break;
     }
 
-    case CMD_FOLLOW_LINE:
+case CMD_FOLLOW_LINE:
     {
         if (!command->started)
         {
-            command->started = 1;
+            command->started       = 1;
             command->elapsed_ticks = 0U;
-            lf_integral = 0;
-            lf_prev_error = 0;
-            lf_wasInGap = 0;
+            lf_integral            = 0;
+            lf_prev_error          = 0;
+            lf_wasInGap            = 0;
+            lf_coastFrames         = 0;
+            lf_coastMv             = 0;
             setFollowLineElapsedDisplay(command);
+            zeroHeading();
+            project7count = 0;
         }
 
-        int irL;
-        int irR;
+        int irL = getDetectorValue(DETECTOR_LEFT);
+        int irR = getDetectorValue(DETECTOR_RIGHT);
 
-        irL = getDetectorValue(DETECTOR_LEFT);
-        irR = getDetectorValue(DETECTOR_RIGHT);
+        int steerError = irL - irR;
+        int sumError   = (irL + irR) - LF_TARGET_SUM;
 
-        int error = irL - irR;
-        // int inGap = (irL < LF_GAP_THRESHOLD) && (irR < LF_GAP_THRESHOLD);
-        int inGap = 0;
-
-        if (((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U)) || (inGap && !lf_wasInGap))
+        if ((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U))
         {
-            if ((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0U))
-            {
-                driveStop();
-                command->finished = 1;
-            }
-
-            lf_integral = 0;
-            lf_prev_error = 0;
+            driveStop();
+            command->finished = 1;
+            lf_integral    = 0;
+            lf_prev_error  = 0;
         }
-        lf_wasInGap = inGap;
 
-        lf_integral += error;
+        lf_integral += steerError;
+        if (lf_integral >  LF_INTEGRAL_MAX) lf_integral =  LF_INTEGRAL_MAX;
+        if (lf_integral <  LF_INTEGRAL_MIN) lf_integral =  LF_INTEGRAL_MIN;
 
-        if (lf_integral > LF_INTEGRAL_MAX) lf_integral = LF_INTEGRAL_MAX;
-        if (lf_integral < LF_INTEGRAL_MIN) lf_integral = LF_INTEGRAL_MIN;
+        int derivative = steerError - lf_prev_error;
+        lf_prev_error  = steerError;
 
-        int derivative = error - lf_prev_error;
-        lf_prev_error = error;
-
-        int mv_scaled = (LF_KP_SCALED * error) + (LF_KI_SCALED * lf_integral) + (LF_KD_SCALED * derivative);
+        int mv_scaled = (LF_KP_SCALED * steerError)
+                      + (LF_KI_SCALED * lf_integral)
+                      + (LF_KD_SCALED * derivative);
         int mv = mv_scaled >> 10;
 
-        if (mv > LF_CORRECTION_MAX) mv = LF_CORRECTION_MAX;
-        if (mv < LF_CORRECTION_MIN) mv = LF_CORRECTION_MIN;
+        if (mv >  LF_CORRECTION_MAX) mv =  LF_CORRECTION_MAX;
+        if (mv <  LF_CORRECTION_MIN) mv =  LF_CORRECTION_MIN;
 
-        int leftDuty = LF_BASE_SPEED + mv;
-        int rightDuty = LF_BASE_SPEED - mv;
+        int speedTrim_scaled = LF_KP_SUM_SCALED * sumError;
+        int speedTrim        = speedTrim_scaled >> 10;
+        if (speedTrim < 0) speedTrim = -speedTrim;
+
+        int steerAbs = mv < 0 ? -mv : mv;
+        int minBase  = steerAbs > 10 ? steerAbs : 10;
+
+        int baseSpeed = LF_BASE_SPEED - speedTrim;
+        if (baseSpeed < minBase) baseSpeed = minBase;
+
+        int leftDuty  = baseSpeed + mv;
+        int rightDuty = baseSpeed - mv;
 
         if (leftDuty  >  100) leftDuty  =  100;
         if (leftDuty  < -100) leftDuty  = -100;
         if (rightDuty >  100) rightDuty =  100;
         if (rightDuty < -100) rightDuty = -100;
 
-        int leftPWM = pwmCountsFromPercent(leftDuty);
-        int rightPWM = pwmCountsFromPercent(rightDuty);
+        applyMixedDrive(pwmCountsFromPercent(leftDuty),
+                        pwmCountsFromPercent(rightDuty));
 
-        applyMixedDrive(leftPWM, rightPWM);
+        float heading = getHeading();
+        if (fabsf(heading) <= 30.0f && project7count == 0)
+        {
+            command->lf_lap_count++;
+            project7count = 1;
+        }
+        else if (project7count == 1 && fabsf(heading) > 30.0f)
+        {
+            project7count = 0;
+        }
 
         command->elapsed_ticks++;
         setFollowLineElapsedDisplay(command);
@@ -1802,6 +1817,8 @@ void Command_FollowLine(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    lf_heading_acc = 0;
+    lf_prev_heading = getHeading();
 }
 
 void Command_ReverseStraight(Command *command, int time_seconds)

@@ -14,39 +14,35 @@
 #define MAX_RPM (150.0f) // Maximum RPM of the motors
 #define V_MAX ((MAX_RPM / 60.0) * PI * WHEEL_DIAMETER)
 
-#define LF_BASE_SPEED (75)
-#define LF_GAIN_SCALE (1024)
+#define LF_BASE_SPEED       (75)
+#define LF_GAIN_SCALE       (1024)
 
-#define LF_KP (0.6f)
-#define LF_KI (0.0f)
-#define LF_KD (0.5f)
+#define LF_KP               (0.7f)
+#define LF_KI               (0.0F)
+#define LF_KD               (0.5f)
 
-#define LF_KP_SCALED_L (LF_KP*LF_GAIN_SCALE)
-#define LF_KI_SCALED_L (LF_KI*LF_GAIN_SCALE)
-#define LF_KD_SCALED_L (LF_KD*LF_GAIN_SCALE)
+#define LF_KP_SCALED        (LF_KP * LF_GAIN_SCALE)
+#define LF_KI_SCALED        (LF_KI * LF_GAIN_SCALE)
+#define LF_KD_SCALED        (LF_KD * LF_GAIN_SCALE)
 
-#define LF_KP_SCALED_R (LF_KP*LF_GAIN_SCALE)
-#define LF_KI_SCALED_R (LF_KI*LF_GAIN_SCALE)
-#define LF_KD_SCALED_R (0)
+#define LF_TARGET_SUM       (138)
+#define LF_KP_SUM_SCALED    (512)     // ~0.3 * 1024 — tune this
 
-#define LF_KP_SCALED_L (LF_KP*LF_GAIN_SCALE)
-#define LF_KI_SCALED_L (LF_KI*LF_GAIN_SCALE)
-#define LF_KD_SCALED_L (LF_KD*LF_GAIN_SCALE)
-
-#define LF_KP_SCALED (LF_KP*LF_GAIN_SCALE)
-#define LF_KI_SCALED (LF_KI*LF_GAIN_SCALE)
-#define LF_KD_SCALED (LF_KD*LF_GAIN_SCALE)
-
-
-#define LF_INTEGRAL_MAX (5000)
-#define LF_INTEGRAL_MIN (-5000)
-#define LF_CORRECTION_MAX (100)
-#define LF_CORRECTION_MIN (-100)
-#define LF_GAP_THRESHOLD (20)
+#define LF_INTEGRAL_MAX     (5000)
+#define LF_INTEGRAL_MIN     (-5000)
+#define LF_CORRECTION_MAX   (100)
+#define LF_CORRECTION_MIN   (-100)
+#define LF_LOSS_THRESHOLD   (30)
+#define LF_FRICTION_FLOOR (45)
 
 static int lf_integral = 0;
 static int lf_prev_error = 0;
 static int lf_wasInGap = 0;
+static float lf_prev_heading = 0;
+static float lf_heading_acc = 0;
+static float lf_last_lap_tick = 0;
+static int lf_coastFrames = 0;
+static int lf_coastMv     = 0;
 
 #define CHAIN_MAX_COMMANDS (8)
 
@@ -115,6 +111,7 @@ struct Command
     SpinDirection spin_direction;
     float target_x;
     float target_y;
+    int lf_lap_count;
     unsigned char pwm_counter;
     unsigned char left_duty;
     unsigned char right_duty;
