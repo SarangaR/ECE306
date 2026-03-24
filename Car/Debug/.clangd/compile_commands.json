@@ -1,0 +1,192 @@
+[
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/clocks.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/display.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/cs.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/ecomp.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_spi.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_uart.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_i2c.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_spi.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/framctl.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/gpio.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/icc.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/lcd_e.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/mpy32.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/pmm.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/rtc.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sac.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sfr.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sysctl.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tia.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_a.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/init.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/led.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/main.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/motors.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/otos.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/ports.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/robot.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/system.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/timers.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/adc.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/detector.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/pid.c"
+   },
+   {
+      "directory" : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/Debug",
+      "command"   : "clang++ -I\"C:/ti/ccs2041/ccs/ccs_base/msp430/include\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car\" -I\"C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx\" -I\"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include\" -D__MSP430FR2355__ -D_FRWP_ENABLE -D_INFO_FRWP_ENABLE -xc",
+      "file"      : "C:/Users/sarng/OneDrive/Documents/ECE306/Car/switches.c"
+   }
+]
