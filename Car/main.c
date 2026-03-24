@@ -23,6 +23,7 @@
 
 volatile unsigned int black_line_left = 0;
 volatile unsigned int black_line_right = 0;
+volatile unsigned int black_all = 0;
 unsigned long project7count = 0;
 unsigned int project7lock = 0;
 volatile unsigned int project7flag = 0;
@@ -57,20 +58,11 @@ void main(void)
   Init_Switches();   // Initialize switch interrupts
 
   P2OUT |= IR_LED;   // Turn on IR emitter so detectors can read reflected light
-
-  strcpy(display_line[0], "OTOS INIT ");
-  strcpy(display_line[1], "CALIBRATE ");
-  strcpy(display_line[2], "          ");
-  display_changed = TRUE;
   P6OUT |= LCD_BACKLITE;
-  Display_Process();
 
   Init_IMU();
-
-  strcpy(display_line[1], " WAIT DATA");
-  display_changed = TRUE;
-  otos_packet_start = IMU_GetPacketCount();
-  otos_attempt_start_tick = one_second_timer;
+  OTOS_CalibrateImu(255, TRUE);
+  __delay_cycles(10000);
 
   Robot robot;
 
@@ -178,9 +170,8 @@ void main(void)
       black_line_right = 1;
     }
 
-    // Project 07 2 circle count
-    if (robot.active_command->type == CMD_FOLLOW_LINE) {
-      project7flag = robot.active_command->lf_lap_count >= 2;
+    if (black_line_left && black_line_right) {
+      black_all = 1;
     }
 
     Switches_Process();

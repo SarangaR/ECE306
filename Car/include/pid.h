@@ -9,25 +9,25 @@ typedef struct PIDController PIDController;
 
 struct PIDController {
     // Gains are prescaled by 1024
-    int32_t kp;
-    int32_t ki;
-    int32_t kd;
-
-    int32_t integralMax;
-    int32_t integralMin;
-    int32_t outputMax;
-    int32_t outputMin;
-
-    int32_t integral;
-    int32_t prevError;
-
-    int32_t (*calculate)(PIDController *self, int32_t error);
+    int kp;
+    int ki;
+    int kd;
+    int integralMax;
+    int integralMin;
+    int outputMax;
+    int outputMin;
+    int integral;
+    int prevError;
+    int tolerance;
+    int error;
+    int (*calculate)(PIDController *self, int error);
     void    (*reset)    (PIDController *self);
+    int (*isDone)(PIDController *self);
 };
 
 void PID_Init(PIDController *pid,
-              int32_t kp,          int32_t ki,          int32_t kd,
-              int32_t integralMax, int32_t integralMin,
-              int32_t outputMax,   int32_t outputMin);
+              int kp,          int ki,          int kd,
+              int integralMax, int integralMin,
+              int outputMax,   int outputMin, float tolerance);
 
 #endif // PID_H

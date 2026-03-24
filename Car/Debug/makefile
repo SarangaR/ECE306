@@ -2,7 +2,9 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-CG_TOOL_ROOT := /home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
+SHELL = cmd.exe
+
+CG_TOOL_ROOT := C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS
 
 GEN_OPTS__FLAG := 
 GEN_CMDS__FLAG := 
@@ -17,6 +19,7 @@ ORDERED_OBJS += \
 "./main.obj" \
 "./motors.obj" \
 "./otos.obj" \
+"./pid.obj" \
 "./ports.obj" \
 "./robot.obj" \
 "./switches.obj" \
@@ -53,8 +56,8 @@ $(GEN_CMDS__FLAG) \
 
 -include ../makefile.init
 
-RM := rm -rf
-RMDIR := rm -rf
+RM := DEL /F
+RMDIR := RMDIR /S/Q
 
 # All of the sources participating in the build are defined here
 -include sources.mk
@@ -154,43 +157,43 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-Car.out 
+Project\ 05.out 
 
 EXE_OUTPUTS__QUOTED += \
-"Car.out" 
+"Project 05.out" 
 
 BIN_OUTPUTS += \
-Car.txt 
+Project\ 05.txt 
 
 BIN_OUTPUTS__QUOTED += \
-"Car.txt" 
+"Project 05.txt" 
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "Car.out" secondary-outputs
+	@$(MAKE) --no-print-directory -Onone "Project 05.out" secondary-outputs
 
 # Tool invocations
-Car.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+Project\ 05.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: MSP430 Linker'
-	"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR2355__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"Car.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/include" -i"/home/saranga/ti/ccs2041/ccs/ccs_base/msp430/lib/FR2xx" -i"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="Car_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "Car.out" $(ORDERED_OBJS)
+	"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR2355__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"Project 05.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs2041/ccs/ccs_base/msp430/include" -i"C:/ti/ccs2041/ccs/ccs_base/msp430/lib/FR2xx" -i"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="Project 05_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "Project 05.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-Car.txt: $(EXE_OUTPUTS)
+Project\ 05.txt: $(EXE_OUTPUTS)
 	@echo 'Building secondary target: "$@"'
 	@echo 'Invoking: MSP430 Hex Utility'
-	"/home/saranga/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off --ti_txt -o "Car.txt" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off --ti_txt -o "Project 05.txt" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building secondary target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "adc.obj" "clocks.obj" "detector.obj" "display.obj" "init.obj" "led.obj" "main.obj" "motors.obj" "otos.obj" "ports.obj" "robot.obj" "switches.obj" "system.obj" "timers.obj" "driverlib/MSP430FR2xx_4xx/adc.obj" "driverlib/MSP430FR2xx_4xx/crc.obj" "driverlib/MSP430FR2xx_4xx/cs.obj" "driverlib/MSP430FR2xx_4xx/ecomp.obj" "driverlib/MSP430FR2xx_4xx/eusci_a_spi.obj" "driverlib/MSP430FR2xx_4xx/eusci_a_uart.obj" "driverlib/MSP430FR2xx_4xx/eusci_b_i2c.obj" "driverlib/MSP430FR2xx_4xx/eusci_b_spi.obj" "driverlib/MSP430FR2xx_4xx/framctl.obj" "driverlib/MSP430FR2xx_4xx/gpio.obj" "driverlib/MSP430FR2xx_4xx/icc.obj" "driverlib/MSP430FR2xx_4xx/lcd_e.obj" "driverlib/MSP430FR2xx_4xx/mpy32.obj" "driverlib/MSP430FR2xx_4xx/pmm.obj" "driverlib/MSP430FR2xx_4xx/rtc.obj" "driverlib/MSP430FR2xx_4xx/sac.obj" "driverlib/MSP430FR2xx_4xx/sfr.obj" "driverlib/MSP430FR2xx_4xx/sysctl.obj" "driverlib/MSP430FR2xx_4xx/tia.obj" "driverlib/MSP430FR2xx_4xx/timer_a.obj" "driverlib/MSP430FR2xx_4xx/timer_b.obj" "driverlib/MSP430FR2xx_4xx/tlv.obj" 
-	-$(RM) "driverlib/MSP430FR2xx_4xx/wdt_a.obj" 
-	-$(RM) "adc.d" "clocks.d" "detector.d" "display.d" "init.d" "led.d" "main.d" "motors.d" "otos.d" "ports.d" "robot.d" "switches.d" "system.d" "timers.d" "driverlib/MSP430FR2xx_4xx/adc.d" "driverlib/MSP430FR2xx_4xx/crc.d" "driverlib/MSP430FR2xx_4xx/cs.d" "driverlib/MSP430FR2xx_4xx/ecomp.d" "driverlib/MSP430FR2xx_4xx/eusci_a_spi.d" "driverlib/MSP430FR2xx_4xx/eusci_a_uart.d" "driverlib/MSP430FR2xx_4xx/eusci_b_i2c.d" "driverlib/MSP430FR2xx_4xx/eusci_b_spi.d" "driverlib/MSP430FR2xx_4xx/framctl.d" "driverlib/MSP430FR2xx_4xx/gpio.d" "driverlib/MSP430FR2xx_4xx/icc.d" "driverlib/MSP430FR2xx_4xx/lcd_e.d" "driverlib/MSP430FR2xx_4xx/mpy32.d" "driverlib/MSP430FR2xx_4xx/pmm.d" "driverlib/MSP430FR2xx_4xx/rtc.d" "driverlib/MSP430FR2xx_4xx/sac.d" "driverlib/MSP430FR2xx_4xx/sfr.d" "driverlib/MSP430FR2xx_4xx/sysctl.d" "driverlib/MSP430FR2xx_4xx/tia.d" "driverlib/MSP430FR2xx_4xx/timer_a.d" "driverlib/MSP430FR2xx_4xx/timer_b.d" "driverlib/MSP430FR2xx_4xx/tlv.d" "driverlib/MSP430FR2xx_4xx/wdt_a.d" 
+	-$(RM) "adc.obj" "clocks.obj" "detector.obj" "display.obj" "init.obj" "led.obj" "main.obj" "motors.obj" "otos.obj" "pid.obj" "ports.obj" "robot.obj" "switches.obj" "system.obj" "timers.obj" "driverlib\MSP430FR2xx_4xx\adc.obj" "driverlib\MSP430FR2xx_4xx\crc.obj" "driverlib\MSP430FR2xx_4xx\cs.obj" "driverlib\MSP430FR2xx_4xx\ecomp.obj" "driverlib\MSP430FR2xx_4xx\eusci_a_spi.obj" "driverlib\MSP430FR2xx_4xx\eusci_a_uart.obj" "driverlib\MSP430FR2xx_4xx\eusci_b_i2c.obj" "driverlib\MSP430FR2xx_4xx\eusci_b_spi.obj" "driverlib\MSP430FR2xx_4xx\framctl.obj" "driverlib\MSP430FR2xx_4xx\gpio.obj" "driverlib\MSP430FR2xx_4xx\icc.obj" "driverlib\MSP430FR2xx_4xx\lcd_e.obj" "driverlib\MSP430FR2xx_4xx\mpy32.obj" "driverlib\MSP430FR2xx_4xx\pmm.obj" "driverlib\MSP430FR2xx_4xx\rtc.obj" "driverlib\MSP430FR2xx_4xx\sac.obj" "driverlib\MSP430FR2xx_4xx\sfr.obj" "driverlib\MSP430FR2xx_4xx\sysctl.obj" "driverlib\MSP430FR2xx_4xx\tia.obj" "driverlib\MSP430FR2xx_4xx\timer_a.obj" "driverlib\MSP430FR2xx_4xx\timer_b.obj" "driverlib\MSP430FR2xx_4xx\tlv.obj" 
+	-$(RM) "driverlib\MSP430FR2xx_4xx\wdt_a.obj" 
+	-$(RM) "adc.d" "clocks.d" "detector.d" "display.d" "init.d" "led.d" "main.d" "motors.d" "otos.d" "pid.d" "ports.d" "robot.d" "switches.d" "system.d" "timers.d" "driverlib\MSP430FR2xx_4xx\adc.d" "driverlib\MSP430FR2xx_4xx\crc.d" "driverlib\MSP430FR2xx_4xx\cs.d" "driverlib\MSP430FR2xx_4xx\ecomp.d" "driverlib\MSP430FR2xx_4xx\eusci_a_spi.d" "driverlib\MSP430FR2xx_4xx\eusci_a_uart.d" "driverlib\MSP430FR2xx_4xx\eusci_b_i2c.d" "driverlib\MSP430FR2xx_4xx\eusci_b_spi.d" "driverlib\MSP430FR2xx_4xx\framctl.d" "driverlib\MSP430FR2xx_4xx\gpio.d" "driverlib\MSP430FR2xx_4xx\icc.d" "driverlib\MSP430FR2xx_4xx\lcd_e.d" "driverlib\MSP430FR2xx_4xx\mpy32.d" "driverlib\MSP430FR2xx_4xx\pmm.d" "driverlib\MSP430FR2xx_4xx\rtc.d" "driverlib\MSP430FR2xx_4xx\sac.d" "driverlib\MSP430FR2xx_4xx\sfr.d" "driverlib\MSP430FR2xx_4xx\sysctl.d" "driverlib\MSP430FR2xx_4xx\tia.d" "driverlib\MSP430FR2xx_4xx\timer_a.d" "driverlib\MSP430FR2xx_4xx\timer_b.d" "driverlib\MSP430FR2xx_4xx\tlv.d" "driverlib\MSP430FR2xx_4xx\wdt_a.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

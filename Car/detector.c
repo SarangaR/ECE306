@@ -113,13 +113,13 @@ Color getDetectedColor(DetectorSide side)
     int black_min = (side == DETECTOR_LEFT) ? detector_left_black_min  : detector_right_black_min;
     int black_max = (side == DETECTOR_LEFT) ? detector_left_black_max  : detector_right_black_max;
 
-    if ((raw >= white_min) && (raw <= white_max))
-    {
-        return COLOR_WHITE;
-    }
     if ((raw >= black_min) && (raw <= black_max))
     {
         return COLOR_BLACK;
+    }
+    else 
+    {
+        return COLOR_WHITE;
     }
 
     // Between ranges: pick whichever center is closer

@@ -9,6 +9,15 @@
                 "name": "Car",
                 "resourceId": "/Car"
             }
+        },
+        {
+            "name": "Project 05",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "Project 05",
+                "resourceId": "/Project 05"
+            }
         }
     ]
 }

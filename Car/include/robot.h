@@ -8,17 +8,18 @@
 #include "include/pid.h"
 
 #define COMMAND_TICKS_PER_SECOND (50)
-#define COMMAND_MAX_CHILDREN (8)
+#define COMMAND_MAX_CHILDREN (12)
 #define TRACK_WIDTH (120.0f) // mm
 #define WHEEL_DIAMETER (40.0f) // mm
 #define MAX_RPM (150.0f) // Maximum RPM of the motors
 #define V_MAX ((MAX_RPM / 60.0) * PI * WHEEL_DIAMETER)
+#define MAX_ANGULAR_VELOCITY_DEG_S (150.0f) // max angular velocity in degrees per second
 
 #define LF_BASE_SPEED       (75)
 #define LF_GAIN_SCALE       (1024)
 
 #define LF_KP               (0.7f)
-#define LF_KI               (0.0F)
+#define LF_KI               (0.0f)
 #define LF_KD               (0.5f)
 
 #define LF_KP_SCALED        (LF_KP * LF_GAIN_SCALE)
@@ -35,6 +36,14 @@
 #define LF_LOSS_THRESHOLD   (30)
 #define LF_FRICTION_FLOOR (45)
 
+#define TURN_KP_UNSCALED (5.0f)
+#define TURN_KI_UNSCALED (0.025f)
+#define TURN_KD_UNSCALED (12.0f)
+
+#define TURN_KP (TURN_KP_UNSCALED * LF_GAIN_SCALE)
+#define TURN_KI (TURN_KI_UNSCALED * LF_GAIN_SCALE)
+#define TURN_KD (TURN_KD_UNSCALED * LF_GAIN_SCALE)
+
 static int lf_integral = 0;
 static int lf_prev_error = 0;
 static int lf_wasInGap = 0;
@@ -44,12 +53,13 @@ static float lf_last_lap_tick = 0;
 static int lf_coastFrames = 0;
 static int lf_coastMv     = 0;
 
-#define CHAIN_MAX_COMMANDS (8)
+#define CHAIN_MAX_COMMANDS (COMMAND_MAX_CHILDREN)
 
 #define COMMAND_TICKS_FROM_MS(ms) ((unsigned int)((((unsigned long)(ms) * (unsigned long)COMMAND_TICKS_PER_SECOND) + 999UL) / 1000UL))
 
 extern PIDController leftPIDLF;
 extern PIDController rightPIDLF;
+extern PIDController turnPID;
 
 typedef enum
 {
@@ -146,7 +156,7 @@ struct RobotCommandChain
     RobotCommandChain (*until)(DriveUntilFlag stop_flag);
     RobotCommandChain (*untilSelective)(DriveUntilFlag left_stop_flag, DriveUntilFlag right_stop_flag);
     RobotCommandChain (*withDisplay)(const char *msg);
-    RobotCommandChain (*andThenDriveUntil)(DriveUntilFlag stop_flag);
+    RobotCommandChain (*andThenDriveUntil)(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
     RobotCommandChain (*andThenDriveToXY)(float target_x_in, float target_y_in);
     void (*schedule)(void);
 };
@@ -164,7 +174,7 @@ void Command_TurnToAngle(Command *command, float target_angle_degrees);
 void Command_DriveStraight(Command *command, int time_seconds);
 void Command_ReverseStraight(Command *command, int time_seconds);
 void Command_DriveToXY(Command *command, float target_x_in, float target_y_in);
-void Command_DriveUntil(Command *command, DriveUntilFlag stop_flag);
+void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUntilFlag stop_right_flag);
 void Command_DriveToLine(Command *command);
 void Command_AlignLeftToLine(Command *command);
 void Command_FollowLine(Command *command, int time_seconds);
@@ -182,7 +192,7 @@ RobotCommandChain chainReverseStraight(int time_seconds);
 RobotCommandChain chainDriveToLine(void);
 RobotCommandChain chainAlignLeftToLine(void);
 RobotCommandChain chainFollowLine(int time_seconds);
-RobotCommandChain chainDriveUntil(DriveUntilFlag stop_flag);
+RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
 
 extern float turn_kp;
@@ -222,6 +232,7 @@ unsigned char isRobotBusy(void);
 
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;
+extern volatile unsigned int black_all;
 extern volatile unsigned int project7flag;
 extern unsigned long project7count;
 

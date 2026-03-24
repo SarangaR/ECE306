@@ -106,18 +106,15 @@ void Switch1_Process(void)
         // Movement mode: clear flags then schedule the drive sequence
         black_line_left = 0;
         black_line_right = 0;
-
+ 
         chainWait(1)
-            .andThenDriveStraight(30)
-            .untilSelective(&black_line_left, &black_line_right)
-            .withDisplay("TO LINE   ")
-            .andThenAlignLeftToLine()
-            .withDisplay("ALIGN EDGE")
-            .andThenWait(3)
-            .withDisplay("ALIGNED   ")
-            .andThenFollowLine(30)
-            .until(&project7flag)
-            .withDisplay("LF PID    ")
+            .andThenDriveStraight(30).untilSelective(&black_line_left, &black_line_right).withDisplay("TO LINE   ")
+            .andThenWait(1)
+            .andThenAlignLeftToLine().withDisplay("ALIGN EDGE")
+            .andThenWait(1)
+            .andThenFollowLine(30).withDisplay("LF PID    ")
+            .andThenTurnToAngle(-90.0f)
+            .andThenDriveStraight(2)
             .schedule();
     }
 }
@@ -135,9 +132,8 @@ void Switch2_Process(void)
     else
     {
         chainWait(1)
-            .andThenFollowLine(30)
-            // .until(&project7flag)
-            .withDisplay("LF PID    ")
+            .andThenTurnToAngle(-90.0f)
+            .andThenTurnToAngle(90.0)
             .schedule();
     }
 }

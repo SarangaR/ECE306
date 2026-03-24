@@ -7,7 +7,6 @@
 //  Built with Code Composer Version: CCS12.4.0.00007_win64
 //------------------------------------------------------------------------------
 
-#define MOTOR_DIRECTION_CHANGE_DELAY_CYCLES (200)
 #define MOTOR_MIN_DUTY_PERCENT (10U)
 #define MOTOR_PWM_TEST_STEP_PERCENT (1U)
 

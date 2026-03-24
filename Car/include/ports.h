@@ -67,9 +67,9 @@
 
 // Port 6 Pins
 #define LCD_BACKLITE           (0x01) // 6.4 LCD_BACKLITE
-#define L_FORWARD              (0x02) // 6.0 P6_0_PWM
-#define R_FORWARD              (0x04) // 6.1 P6_1_PWM
-#define L_REVERSE              (0x08) // 6.2 P6_2_PWM
-#define R_REVERSE              (0x10) // 6.3 P6_3_PWM
+#define R_FORWARD              (0x02) // 6.0 P6_0_PWM
+#define L_FORWARD              (0x04) // 6.1 P6_1_PWM
+#define R_REVERSE              (0x08) // 6.2 P6_2_PWM
+#define L_REVERSE              (0x10) // 6.3 P6_3_PWM
 #define P6_5                   (0x20) // 6.5
 #define GRN_LED                (0x40) // 6.6 GREEN LED
