@@ -1,5 +1,6 @@
 "./adc.obj"
 "./clocks.obj"
+"./dac.obj"
 "./detector.obj"
 "./display.obj"
 "./init.obj"

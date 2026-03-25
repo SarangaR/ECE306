@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
+SHELL = cmd.exe
+
 # Add inputs and outputs from these tool invocations to the build variables 
 CMD_SRCS += \
 ../lnk_msp430fr2355.cmd 
@@ -9,6 +11,7 @@ CMD_SRCS += \
 C_SRCS += \
 ../adc.c \
 ../clocks.c \
+../dac.c \
 ../detector.c \
 ../display.c \
 ../init.c \
@@ -26,6 +29,7 @@ C_SRCS += \
 C_DEPS += \
 ./adc.d \
 ./clocks.d \
+./dac.d \
 ./detector.d \
 ./display.d \
 ./init.d \
@@ -43,6 +47,7 @@ C_DEPS += \
 OBJS += \
 ./adc.obj \
 ./clocks.obj \
+./dac.obj \
 ./detector.obj \
 ./display.obj \
 ./init.obj \
@@ -60,6 +65,7 @@ OBJS += \
 OBJS__QUOTED += \
 "adc.obj" \
 "clocks.obj" \
+"dac.obj" \
 "detector.obj" \
 "display.obj" \
 "init.obj" \
@@ -77,6 +83,7 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "adc.d" \
 "clocks.d" \
+"dac.d" \
 "detector.d" \
 "display.d" \
 "init.d" \
@@ -94,6 +101,7 @@ C_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "../adc.c" \
 "../clocks.c" \
+"../dac.c" \
 "../detector.c" \
 "../display.c" \
 "../init.c" \

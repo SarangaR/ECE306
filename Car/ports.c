@@ -135,10 +135,11 @@ void Init_Port3(void)
     P3OUT &= ~SMCLK;
     P3DIR &= ~SMCLK;
 
-    P3SEL0 |= DAC_CNTL;
-    P3SEL1 |= DAC_CNTL;
-    P3OUT &= ~DAC_CNTL;
-    P3DIR &= ~DAC_CNTL;
+    // P3SEL0 &= ~DAC_CNTL;
+    // P3SEL1 &= ~DAC_CNTL;
+    P3SELC |= DAC_CNTL;
+    P3OUT |= DAC_CNTL;
+    P3DIR |= DAC_CNTL;
 
     P3SEL0 |= IOT_LINK_GRN;
     P3SEL1 |= IOT_LINK_GRN;
