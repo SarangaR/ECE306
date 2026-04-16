@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 #ifndef MACROS_H
 #define MACROS_H
 
 #include "display.h"
 #include <stdint.h>
+=======
+#include "display.h"
+>>>>>>> main
 
 #define ALWAYS (1)
 #define RESET_STATE (0)
@@ -61,7 +65,10 @@ volatile unsigned int sw2_debounce_count;
 volatile unsigned char sw1_debounce_active;
 volatile unsigned char sw2_debounce_active;
 volatile unsigned char backlight_blink_enable;
+<<<<<<< HEAD
 
 extern volatile uint8_t baud_hi;
 
 #endif //MACROS_H
+=======
+>>>>>>> main

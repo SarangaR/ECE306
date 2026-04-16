@@ -121,10 +121,13 @@ unsigned char Switch2_ConsumePress(void);
 void menu_act(void);
 void menu_select(void);
 unsigned char getEmitterState(void);
+<<<<<<< HEAD
 
 // Display helpers
 void Display_WriteLineIfChanged(unsigned int line, const char *text10);
 void Display_FormatBaudLine(char *line);
+=======
+>>>>>>> main
 
 // Timers
 void Init_Timers(void);

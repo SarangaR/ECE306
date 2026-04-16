@@ -3,4 +3,5 @@
 PAT_github.txt
 Car/Debug/
 Car/Release/*
+Car/Debug/*
 Car/.clangd

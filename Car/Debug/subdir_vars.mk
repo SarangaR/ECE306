@@ -11,8 +11,11 @@ CMD_SRCS += \
 C_SRCS += \
 ../adc.c \
 ../clocks.c \
+<<<<<<< HEAD
 ../dac.c \
 ../debug_pc.c \
+=======
+>>>>>>> main
 ../detector.c \
 ../display.c \
 ../esp.c \
@@ -26,7 +29,10 @@ C_SRCS += \
 ../ports.c \
 ../ringbuffer.c \
 ../robot.c \
+<<<<<<< HEAD
 ../serial.c \
+=======
+>>>>>>> main
 ../switches.c \
 ../system.c \
 ../timers.c 
@@ -34,8 +40,11 @@ C_SRCS += \
 C_DEPS += \
 ./adc.d \
 ./clocks.d \
+<<<<<<< HEAD
 ./dac.d \
 ./debug_pc.d \
+=======
+>>>>>>> main
 ./detector.d \
 ./display.d \
 ./esp.d \
@@ -49,7 +58,10 @@ C_DEPS += \
 ./ports.d \
 ./ringbuffer.d \
 ./robot.d \
+<<<<<<< HEAD
 ./serial.d \
+=======
+>>>>>>> main
 ./switches.d \
 ./system.d \
 ./timers.d 
@@ -57,8 +69,11 @@ C_DEPS += \
 OBJS += \
 ./adc.obj \
 ./clocks.obj \
+<<<<<<< HEAD
 ./dac.obj \
 ./debug_pc.obj \
+=======
+>>>>>>> main
 ./detector.obj \
 ./display.obj \
 ./esp.obj \
@@ -72,7 +87,10 @@ OBJS += \
 ./ports.obj \
 ./ringbuffer.obj \
 ./robot.obj \
+<<<<<<< HEAD
 ./serial.obj \
+=======
+>>>>>>> main
 ./switches.obj \
 ./system.obj \
 ./timers.obj 
@@ -80,8 +98,11 @@ OBJS += \
 OBJS__QUOTED += \
 "adc.obj" \
 "clocks.obj" \
+<<<<<<< HEAD
 "dac.obj" \
 "debug_pc.obj" \
+=======
+>>>>>>> main
 "detector.obj" \
 "display.obj" \
 "esp.obj" \
@@ -95,7 +116,10 @@ OBJS__QUOTED += \
 "ports.obj" \
 "ringbuffer.obj" \
 "robot.obj" \
+<<<<<<< HEAD
 "serial.obj" \
+=======
+>>>>>>> main
 "switches.obj" \
 "system.obj" \
 "timers.obj" 
@@ -103,8 +127,11 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "adc.d" \
 "clocks.d" \
+<<<<<<< HEAD
 "dac.d" \
 "debug_pc.d" \
+=======
+>>>>>>> main
 "detector.d" \
 "display.d" \
 "esp.d" \
@@ -118,7 +145,10 @@ C_DEPS__QUOTED += \
 "ports.d" \
 "ringbuffer.d" \
 "robot.d" \
+<<<<<<< HEAD
 "serial.d" \
+=======
+>>>>>>> main
 "switches.d" \
 "system.d" \
 "timers.d" 
@@ -126,8 +156,11 @@ C_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "../adc.c" \
 "../clocks.c" \
+<<<<<<< HEAD
 "../dac.c" \
 "../debug_pc.c" \
+=======
+>>>>>>> main
 "../detector.c" \
 "../display.c" \
 "../esp.c" \
@@ -141,7 +174,10 @@ C_SRCS__QUOTED += \
 "../ports.c" \
 "../ringbuffer.c" \
 "../robot.c" \
+<<<<<<< HEAD
 "../serial.c" \
+=======
+>>>>>>> main
 "../switches.c" \
 "../system.c" \
 "../timers.c" 

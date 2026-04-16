@@ -22,6 +22,7 @@ main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/mach
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 main.obj: ../include/LCD.h
 main.obj: ../include/ports.h
+<<<<<<< HEAD
 main.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
 main.obj: ../include/macros.h
 main.obj: ../include/display.h
@@ -34,6 +35,20 @@ main.obj: ../include/menu.h
 main.obj: ../include/serial.h
 main.obj: ../include/esp.h
 main.obj: ../include/debug_pc.h
+=======
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+main.obj: ../include/macros.h
+main.obj: ../include/display.h
+main.obj: ../include/motors.h
+main.obj: ../include/robot.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/ports.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/macros.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/motors.h
+main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/pid.h
+main.obj: ../include/otos.h
+main.obj: ../include/adc.h
+main.obj: ../include/detector.h
+>>>>>>> main
 
 ../main.c:
 
@@ -79,12 +94,17 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../include/ports.h:
 
+<<<<<<< HEAD
 C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
+=======
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+>>>>>>> main
 
 ../include/macros.h:
 
 ../include/display.h:
 
+<<<<<<< HEAD
 ../include/adc.h:
 
 ../include/robot.h:
@@ -102,4 +122,23 @@ C:/Users/sarng/Documents/ECE306/Car/include/pid.h:
 ../include/esp.h:
 
 ../include/debug_pc.h:
+=======
+../include/motors.h:
+
+../include/robot.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/ports.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/macros.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/motors.h:
+
+C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/pid.h:
+
+../include/otos.h:
+
+../include/adc.h:
+
+../include/detector.h:
+>>>>>>> main
 
