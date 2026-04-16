@@ -18,6 +18,18 @@
                 "name": "Project 05",
                 "resourceId": "/Project 05"
             }
+<<<<<<< HEAD
+        },
+        {
+            "name": "IOT Program Compiled",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "IOT Program Compiled",
+                "resourceId": "/IOT Program Compiled"
+            }
+=======
+>>>>>>> main
         }
     ]
 }

@@ -20,7 +20,11 @@ led.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machi
 led.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 led.obj: ../include/LCD.h
 led.obj: ../include/ports.h
+<<<<<<< HEAD
+led.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
+=======
 led.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+>>>>>>> main
 led.obj: ../include/macros.h
 led.obj: ../include/display.h
 
@@ -64,7 +68,11 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../include/ports.h:
 
+<<<<<<< HEAD
+C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
+=======
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+>>>>>>> main
 
 ../include/macros.h:
 

@@ -11,4 +11,8 @@
 	<activeTargetConfiguration value="targetConfigs/MSP430FR2355.ccxml"/>
 	<origin value="/home/saranga/ti/msp430ware_3_80_14_01/examples/boards/MSP-EXP430FR2355/MSP-EXP430FR2355_Software_Examples/Firmware/Source/BlinkLED_MSP-EXP430FR2355/CCS/BlinkLED_MSP-EXP430FR2355.projectspec"/>
 	<filesToOpen value="main.c"/>
+<<<<<<< HEAD
+	<convertedVirtualResources value=""/>
+=======
+>>>>>>> main
 </projectOptions>

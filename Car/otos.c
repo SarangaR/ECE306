@@ -377,9 +377,13 @@ static otos_err_t otos_poll_measurement(void)
   int16_t rawPosH;
   otos_err_t result;
 
+<<<<<<< HEAD
+  result = otos_read_register_bytes(OTOS_REG_POS_XL, rawData, 18U);
+=======
   __bic_SR_register(GIE);
   result = otos_read_register_bytes(OTOS_REG_POS_XL, rawData, 18U);
   __bis_SR_register(GIE);
+>>>>>>> main
 
   if (result != OTOS_ERR_OK)
   {
@@ -850,11 +854,15 @@ void IMU_Process(void)
 
 float getHeading(void)
 {
+<<<<<<< HEAD
+  float heading = ((float)g_otos.rawChannels[0] * 0.01f) - g_otos.headingZeroOffsetDeg;
+=======
   float heading;
 
   IMU_Process();
   heading = ((float)g_otos.rawChannels[0] * 0.01f) - g_otos.headingZeroOffsetDeg;
 
+>>>>>>> main
   return wrap_heading(heading);
 }
 

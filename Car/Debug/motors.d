@@ -19,7 +19,11 @@ motors.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/ma
 motors.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 motors.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 motors.obj: ../Include/ports.h
+<<<<<<< HEAD
+motors.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
+=======
 motors.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+>>>>>>> main
 motors.obj: ../Include/motors.h
 motors.obj: ../Include/macros.h
 motors.obj: ../Include/display.h
@@ -62,7 +66,11 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../Include/ports.h:
 
+<<<<<<< HEAD
+C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
+=======
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+>>>>>>> main
 
 ../Include/motors.h:
 

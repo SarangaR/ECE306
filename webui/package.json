@@ -1,0 +1,12 @@
+{
+  "name": "car-controller",
+  "version": "1.0.0",
+  "description": "Web D-pad controller for ECE306 robot car",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

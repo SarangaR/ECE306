@@ -116,9 +116,18 @@ void Init_Switch(void);
 void Switch_Process(void);
 void Switch1_Process(void);
 void Switch2_Process(void);
+unsigned char Switch1_ConsumePress(void);
+unsigned char Switch2_ConsumePress(void);
 void menu_act(void);
 void menu_select(void);
 unsigned char getEmitterState(void);
+<<<<<<< HEAD
+
+// Display helpers
+void Display_WriteLineIfChanged(unsigned int line, const char *text10);
+void Display_FormatBaudLine(char *line);
+=======
+>>>>>>> main
 
 // Timers
 void Init_Timers(void);

@@ -1,15 +1,33 @@
 "./adc.obj"
 "./clocks.obj"
+<<<<<<< HEAD
+"./dac.obj"
+"./debug_pc.obj"
+"./detector.obj"
+"./display.obj"
+"./esp.obj"
+"./init.obj"
+"./led.obj"
+"./main.obj"
+"./menu.obj"
+=======
 "./detector.obj"
 "./display.obj"
 "./init.obj"
 "./led.obj"
 "./main.obj"
+>>>>>>> main
 "./motors.obj"
 "./otos.obj"
 "./pid.obj"
 "./ports.obj"
+<<<<<<< HEAD
+"./ringbuffer.obj"
 "./robot.obj"
+"./serial.obj"
+=======
+"./robot.obj"
+>>>>>>> main
 "./switches.obj"
 "./system.obj"
 "./timers.obj"

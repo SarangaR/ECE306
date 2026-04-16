@@ -19,7 +19,11 @@ ports.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/mac
 ports.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 ports.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 ports.obj: ../include/ports.h
+<<<<<<< HEAD
+ports.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
+=======
 ports.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+>>>>>>> main
 
 ../ports.c:
 
@@ -59,5 +63,9 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../include/ports.h:
 
+<<<<<<< HEAD
+C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
+=======
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+>>>>>>> main
 

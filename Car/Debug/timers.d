@@ -7,8 +7,13 @@ timers.obj: C:/ti/ccs2041/ccs/ccs_base/msp430/include/in430.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/intrinsics.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/intrinsics_legacy_undefs.h
 timers.obj: C:/ti/ccs2041/ccs/ccs_base/msp430/include/legacy.h
+<<<<<<< HEAD
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/inc/hw_memmap.h
+=======
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/inc/hw_memmap.h
+>>>>>>> main
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/_ti_config.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/linkage.h
@@ -20,6 +25,31 @@ timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/ma
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/machine/_stdint.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h
+<<<<<<< HEAD
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/cs.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/ecomp.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_spi.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_uart.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_i2c.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_spi.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/framctl.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/gpio.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/icc.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/lcd_e.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/mpy32.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/pmm.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/rtc.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sac.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sfr.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sysctl.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tia.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_a.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.h
+=======
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.h
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.h
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/cs.h
@@ -43,6 +73,7 @@ timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.h
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.h
 timers.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.h
+>>>>>>> main
 timers.obj: ../include/functions.h
 timers.obj: ../include/timers.h
 timers.obj: ../include/macros.h
@@ -65,9 +96,15 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/intrinsics_leg
 
 C:/ti/ccs2041/ccs/ccs_base/msp430/include/legacy.h:
 
+<<<<<<< HEAD
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/inc/hw_memmap.h:
+=======
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h:
 
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/inc/hw_memmap.h:
+>>>>>>> main
 
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdint.h:
 
@@ -91,6 +128,53 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/stdbool.h:
 
+<<<<<<< HEAD
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/cs.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/ecomp.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_spi.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_a_uart.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_i2c.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/eusci_b_spi.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/framctl.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/gpio.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/icc.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/lcd_e.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/mpy32.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/pmm.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/rtc.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sac.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sfr.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/sysctl.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tia.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_a.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.h:
+=======
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/adc.h:
 
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/crc.h:
@@ -136,6 +220,7 @@ C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/timer_b.h
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/tlv.h:
 
 C:/Users/sarng/OneDrive/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.h:
+>>>>>>> main
 
 ../include/functions.h:
 
