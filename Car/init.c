@@ -8,7 +8,7 @@ void Init_Conditions(void)
 {
   //------------------------------------------------------------------------------
 
-  int i;
+  unsigned int i;
   for (i = 0; i < 11; i++)
   {
     display_line[0][i] = RESET_STATE;

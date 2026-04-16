@@ -141,15 +141,17 @@ void Init_Port3(void)
     P3OUT |= DAC_CNTL;
     P3DIR |= DAC_CNTL;
 
-    P3SEL0 |= IOT_LINK_GRN;
-    P3SEL1 |= IOT_LINK_GRN;
-    P3OUT &= ~IOT_LINK_GRN;
-    P3DIR &= ~IOT_LINK_GRN;
+    P3SEL0 &= ~IOT_LINK_GRN; // IOT_LINK_GRN GPIO operation (LED output)
+    P3SEL1 &= ~IOT_LINK_GRN;
+    P3OUT &= ~IOT_LINK_GRN;  // Initial value = Low / Off
+    P3DIR |=  IOT_LINK_GRN;  // Direction = output
 
-    P3SEL0 |= IOT_EN;
-    P3SEL1 |= IOT_EN;
-    P3OUT &= ~IOT_EN;
-    P3DIR &= ~IOT_EN;
+    // IOT_EN: GPIO output, held LOW to keep ESP32 in reset at startup.
+    // ESP_Init() releases it HIGH after a 100ms delay (per project spec).
+    P3SEL0 &= ~IOT_EN;       // GPIO mode — NOT a peripheral function
+    P3SEL1 &= ~IOT_EN;
+    P3OUT &= ~IOT_EN;        // LOW = ESP32 in reset
+    P3DIR |=  IOT_EN;        // Direction = output
 }
 
 void Init_Port4(void)
@@ -223,10 +225,12 @@ void Init_Port5(void)
     P5OUT &= ~V_3_3;
     P5DIR &= ~V_3_3;
 
-    P5SEL0 &= ~IOT_BOOT_CPU;
+    // IOT_BOOT_CPU: must be output HIGH for normal boot.
+    // LOW would put the ESP32 into firmware download mode — never change this.
+    P5SEL0 &= ~IOT_BOOT_CPU; // GPIO mode
     P5SEL1 &= ~IOT_BOOT_CPU;
-    P5OUT &= ~IOT_BOOT_CPU;
-    P5DIR &= ~IOT_BOOT_CPU;
+    P5OUT |=  IOT_BOOT_CPU;  // HIGH = normal boot (not download mode)
+    P5DIR |=  IOT_BOOT_CPU;  // Direction = output
 }
 
 void Init_Port6(void)

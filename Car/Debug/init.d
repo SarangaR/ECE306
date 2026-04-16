@@ -20,7 +20,7 @@ init.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/mach
 init.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 init.obj: ../include/LCD.h
 init.obj: ../include/ports.h
-init.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+init.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
 init.obj: ../include/macros.h
 init.obj: ../include/display.h
 
@@ -64,7 +64,7 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../include/ports.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
 
 ../include/macros.h:
 

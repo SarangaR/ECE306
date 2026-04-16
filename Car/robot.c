@@ -38,7 +38,7 @@ float turn_sysid_ramp_start_pwm_percent = 16.0f;
 float turn_sysid_ramp_step_pwm_percent = 3.0f;
 float turn_sysid_ramp_max_pwm_percent = 72.0f;
 float turn_sysid_motion_delta_deg = 0.30f;
-float drive_straight_kp = 1.2f;
+float drive_straight_kp = 1.8f;
 float drive_straight_kd = 0.0f;
 float drive_straight_base_percent = 90.0f;
 float drive_straight_max_correction_percent = 60.0f;
@@ -406,6 +406,74 @@ static RobotCommandChain chainAndThenSpinCCW(int time_seconds)
     return getChainApi();
 }
 
+static RobotCommandChain chainAndThenDriveStraightMs(unsigned int ms)
+{
+    Command *cmd;
+
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    cmd = &active_chain.commands[active_chain.count];
+    Command_DriveStraight(cmd, 1);
+    cmd->duration_ticks = COMMAND_TICKS_FROM_MS(ms);
+    chainAppend(cmd);
+    return getChainApi();
+}
+
+static RobotCommandChain chainAndThenReverseMs(unsigned int ms)
+{
+    Command *cmd;
+
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    cmd = &active_chain.commands[active_chain.count];
+    Command_Reverse(cmd, 1);
+    cmd->duration_ticks = COMMAND_TICKS_FROM_MS(ms);
+    chainAppend(cmd);
+    return getChainApi();
+}
+
+static RobotCommandChain chainAndThenSpinCWMs(unsigned int ms, unsigned char duty_percent)
+{
+    Command *cmd;
+
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    cmd = &active_chain.commands[active_chain.count];
+    Command_Spin(cmd, 1, SPIN_CLOCKWISE);
+    cmd->duration_ticks = COMMAND_TICKS_FROM_MS(ms);
+    cmd->left_duty  = duty_percent;
+    cmd->right_duty = duty_percent;
+    chainAppend(cmd);
+    return getChainApi();
+}
+
+static RobotCommandChain chainAndThenSpinCCWMs(unsigned int ms, unsigned char duty_percent)
+{
+    Command *cmd;
+
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    cmd = &active_chain.commands[active_chain.count];
+    Command_Spin(cmd, 1, SPIN_COUNTERCLOCKWISE);
+    cmd->duration_ticks = COMMAND_TICKS_FROM_MS(ms);
+    cmd->left_duty  = duty_percent;
+    cmd->right_duty = duty_percent;
+    chainAppend(cmd);
+    return getChainApi();
+}
+
 static RobotCommandChain chainAndThenTurnToAngle(float target_angle_degrees)
 {
     if (active_chain.count >= CHAIN_MAX_COMMANDS)
@@ -642,11 +710,29 @@ static void commandTick(Command *command)
                 setCurrentCommandDisplay(getDisplayName(command, "SPIN"));
                 if (command->spin_direction == SPIN_COUNTERCLOCKWISE)
                 {
-                    driveSpinReverse();
+                    if (command->left_duty > 0U)
+                    {
+                        Motors_DriveSpinReversePWM(
+                            (unsigned int)pwmCountsFromPercent(command->left_duty),
+                            (unsigned int)pwmCountsFromPercent(command->left_duty));
+                    }
+                    else
+                    {
+                        driveSpinReverse();
+                    }
                 }
                 else
                 {
-                    driveSpin();
+                    if (command->left_duty > 0U)
+                    {
+                        Motors_DriveSpinPWM(
+                            (unsigned int)pwmCountsFromPercent(command->left_duty),
+                            (unsigned int)pwmCountsFromPercent(command->left_duty));
+                    }
+                    else
+                    {
+                        driveSpin();
+                    }
                 }
             }
         }
@@ -1622,6 +1708,68 @@ unsigned char isRobotBusy(void)
     return 0U;
 }
 
+/* ── Streaming curvature drive ─────────────────────────────────────────────
+ *
+ *  fwd_pct  : forward speed percent  (-100 = full reverse, +100 = full fwd)
+ *  turn_pct : turn rate percent      (-100 = hard left,    +100 = hard right)
+ *
+ *  Curvature model:
+ *    left  = fwd_pct + turn_pct     (clamped to ±100)
+ *    right = fwd_pct - turn_pct     (clamped to ±100)
+ *
+ *  Any active timed command is preempted so the robot responds immediately.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+static unsigned long  s_curvature_last_tick = 0UL;
+static unsigned char  s_curvature_active    = 0U;
+
+#define CURVATURE_WATCHDOG_TICKS (15U)   /* 15 × 20 ms = 300 ms */
+
+void applySpeedSet(float fwd_pct, float turn_pct)
+{
+    float left_pct;
+    float right_pct;
+
+    /* Preempt any running timed command */
+    if (active_robot != 0)
+    {
+        active_robot->active_command = 0;
+        active_robot->state          = STANDBY;
+    }
+
+    if ((fwd_pct == 0.0f) && (turn_pct == 0.0f))
+    {
+        driveStop();
+        s_curvature_active = 0U;
+        return;
+    }
+
+    left_pct  = fwd_pct + turn_pct;
+    right_pct = fwd_pct - turn_pct;
+
+    if (left_pct  >  100.0f) { left_pct  =  100.0f; }
+    if (left_pct  < -100.0f) { left_pct  = -100.0f; }
+    if (right_pct >  100.0f) { right_pct =  100.0f; }
+    if (right_pct < -100.0f) { right_pct = -100.0f; }
+
+    s_curvature_last_tick = one_second_timer;
+    s_curvature_active    = 1U;
+
+    applyMixedDrive(pwmCountsFromPercentFloatSigned(right_pct),
+                    pwmCountsFromPercentFloatSigned(left_pct));
+}
+
+void robotCurvatureWatchdog(unsigned long tick)
+{
+    if (!s_curvature_active) { return; }
+
+    if ((tick - s_curvature_last_tick) >= (unsigned long)CURVATURE_WATCHDOG_TICKS)
+    {
+        driveStop();
+        s_curvature_active = 0U;
+    }
+}
+
 static void switchProcess(Robot *robot)
 {
     /* Switch handling is done by interrupt-based switches.c */
@@ -1913,6 +2061,8 @@ void Command_Spin(Command *command, int time_seconds, SpinDirection direction)
     command->child_count = 0;
     command->active_child = 0;
     command->spin_direction = direction;
+    command->left_duty = 0;
+    command->right_duty = 0;
     command->drive_until_flag = 0;
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
@@ -2125,4 +2275,28 @@ RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in)
 {
     chainReset();
     return chainAndThenDriveToXY(target_x_in, target_y_in);
+}
+
+RobotCommandChain chainDriveStraightMs(unsigned int ms)
+{
+    chainReset();
+    return chainAndThenDriveStraightMs(ms);
+}
+
+RobotCommandChain chainReverseMs(unsigned int ms)
+{
+    chainReset();
+    return chainAndThenReverseMs(ms);
+}
+
+RobotCommandChain chainSpinCWMs(unsigned int ms, unsigned char duty_percent)
+{
+    chainReset();
+    return chainAndThenSpinCWMs(ms, duty_percent);
+}
+
+RobotCommandChain chainSpinCCWMs(unsigned int ms, unsigned char duty_percent)
+{
+    chainReset();
+    return chainAndThenSpinCCWMs(ms, duty_percent);
 }

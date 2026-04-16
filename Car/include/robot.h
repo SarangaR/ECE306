@@ -194,6 +194,10 @@ RobotCommandChain chainAlignLeftToLine(void);
 RobotCommandChain chainFollowLine(int time_seconds);
 RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
+RobotCommandChain chainDriveStraightMs(unsigned int ms);
+RobotCommandChain chainReverseMs(unsigned int ms);
+RobotCommandChain chainSpinCWMs(unsigned int ms, unsigned char duty_percent);
+RobotCommandChain chainSpinCCWMs(unsigned int ms, unsigned char duty_percent);
 
 extern float turn_kp;
 extern float turn_ki;
@@ -229,6 +233,15 @@ extern float turn_angle_tolerance_deg;
 extern float drive_to_xy_speed_percent;
 extern float drive_to_xy_tolerance_in;
 unsigned char isRobotBusy(void);
+
+/* Streaming curvature drive — preempts any active timed command and applies
+   motor speeds immediately.  fwd_pct and turn_pct are in the range -100..100.
+   Calling with (0, 0) stops the motors and disarms the watchdog. */
+void applySpeedSet(float fwd_pct, float turn_pct);
+
+/* Call once per 50 Hz tick (pass one_second_timer).  Stops motors if no
+   applySpeedSet call has arrived within ~300 ms. */
+void robotCurvatureWatchdog(unsigned long tick);
 
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;

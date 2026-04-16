@@ -22,18 +22,18 @@ main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/mach
 main.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h
 main.obj: ../include/LCD.h
 main.obj: ../include/ports.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h
+main.obj: C:/Users/sarng/Documents/ECE306/Car/include/timers.h
 main.obj: ../include/macros.h
 main.obj: ../include/display.h
-main.obj: ../include/motors.h
-main.obj: ../include/robot.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/ports.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/macros.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/motors.h
-main.obj: C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/pid.h
-main.obj: ../include/otos.h
 main.obj: ../include/adc.h
-main.obj: ../include/detector.h
+main.obj: ../include/robot.h
+main.obj: C:/Users/sarng/Documents/ECE306/Car/include/ports.h
+main.obj: C:/Users/sarng/Documents/ECE306/Car/include/motors.h
+main.obj: C:/Users/sarng/Documents/ECE306/Car/include/pid.h
+main.obj: ../include/menu.h
+main.obj: ../include/serial.h
+main.obj: ../include/esp.h
+main.obj: ../include/debug_pc.h
 
 ../main.c:
 
@@ -79,27 +79,27 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/sys/_stdint.h:
 
 ../include/ports.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/timers.h:
+C:/Users/sarng/Documents/ECE306/Car/include/timers.h:
 
 ../include/macros.h:
 
 ../include/display.h:
 
-../include/motors.h:
+../include/adc.h:
 
 ../include/robot.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/ports.h:
+C:/Users/sarng/Documents/ECE306/Car/include/ports.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/macros.h:
+C:/Users/sarng/Documents/ECE306/Car/include/motors.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/motors.h:
+C:/Users/sarng/Documents/ECE306/Car/include/pid.h:
 
-C:/Users/sarng/OneDrive/Documents/ECE306/Car/include/pid.h:
+../include/menu.h:
 
-../include/otos.h:
+../include/serial.h:
 
-../include/adc.h:
+../include/esp.h:
 
-../include/detector.h:
+../include/debug_pc.h:
 
