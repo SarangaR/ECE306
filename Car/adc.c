@@ -1,7 +1,6 @@
 #include "msp430.h"
 #include <driverlib.h>
 #include "include/adc.h"
-<<<<<<< HEAD
 #include "include/ports.h"
 
 volatile uint16_t adc_thumb_raw     = 0;
@@ -17,26 +16,12 @@ static volatile unsigned int thumbwheel_menu_count = 1U;
 #define BATTERY_R_TOP_OHMS (20000.0f)
 #define BATTERY_R_BOTTOM_OHMS (10000.0f)
 #define BATTERY_DIVIDER_GAIN ((BATTERY_R_TOP_OHMS + BATTERY_R_BOTTOM_OHMS) / BATTERY_R_BOTTOM_OHMS)
-=======
-
-volatile unsigned int adc_thumb_raw     = 0;
-volatile unsigned int adc_left_det_raw  = 0;
-volatile unsigned int adc_right_det_raw = 0;
-
-static volatile unsigned int adc_channel_index = ADC_THUMB;
-
-#define ADC_RIGHT_DETECTOR_OFFSET_RAW (0U)
->>>>>>> main
 
 static const unsigned int adc_input_map[ADC_NUM_CHANNELS] = {
     ADC_INPUT_A5,   // V_THUMB
     ADC_INPUT_A2,   // V_DETECT_L
-<<<<<<< HEAD
     ADC_INPUT_A3,   // V_DETECT_R
     ADC_INPUT_A8    // V_BAT
-=======
-    ADC_INPUT_A3    // V_DETECT_R
->>>>>>> main
 };
 
 static void ADC_SelectAndStart(unsigned int ch_index)
@@ -53,11 +38,9 @@ static void ADC_SelectAndStart(unsigned int ch_index)
 
 void Init_ADC(void)
 {
-<<<<<<< HEAD
     P2OUT |= CHECK_BAT;
 
-=======
->>>>>>> main
+
     ADC_init(ADC_BASE,
              ADC_SAMPLEHOLDSOURCE_SC,
              ADC_CLOCKSOURCE_SMCLK,
@@ -76,7 +59,6 @@ void Init_ADC(void)
     ADC_SelectAndStart(adc_channel_index);
 }
 
-<<<<<<< HEAD
 void setThumbWheelMenuCount(unsigned int item_count)
 {
     if (item_count == 0U)
@@ -115,18 +97,6 @@ float getBatteryVoltage(void)
 
     adc_voltage = ((float)adc_battery_raw * ADC_REF_VOLTAGE) / (float)ADC_MAX_VALUE;
     return adc_voltage * BATTERY_DIVIDER_GAIN;
-=======
-int getThumbWheel(void)
-{
-    unsigned int raw = adc_thumb_raw;
-
-    int scaled = (int)(((long)raw * 10L + 512L) / 1023L);
-
-    if (scaled > 10) scaled = 10;
-    if (scaled < 0)  scaled = 0;
-
-    return scaled;
->>>>>>> main
 }
 
 #pragma vector = ADC_VECTOR
@@ -146,12 +116,9 @@ __interrupt void ADC_ISR(void)
         case ADC_RIGHT_DET:
             adc_right_det_raw = ADCMEM0;
             break;
-<<<<<<< HEAD
         case ADC_BATTERY:
             adc_battery_raw = ADCMEM0;
             break;
-=======
->>>>>>> main
         default:
             break;
         }

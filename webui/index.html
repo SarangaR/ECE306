@@ -297,6 +297,18 @@
       text-align: center;
     }
 
+    /* ── Bridge label ───────────────────────────────────────────────────────── */
+    .bridge-label {
+      display: flex;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      white-space: nowrap;
+      padding: 0 4px;
+    }
+
     /* ── Toast ──────────────────────────────────────────────────────────────── */
     .toast {
       position: fixed;
@@ -355,20 +367,38 @@
   <!-- Connection panel -->
   <footer>
     <div class="connect-card">
+
+      <!-- Row 1: Bridge WebSocket URL -->
+      <div class="connect-row">
+        <label class="bridge-label" for="wsInput">Bridge</label>
+        <input
+          class="ip-input"
+          id="wsInput"
+          type="text"
+          inputmode="url"
+          placeholder="wss://your-device.tailscale.ts.net"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button class="connect-btn" id="wsReconnectBtn" title="Reconnect bridge">↻</button>
+      </div>
+
+      <!-- Row 2: Car IP + connect/disconnect -->
       <div class="connect-row">
         <input
           class="ip-input"
           id="ipInput"
           type="text"
           inputmode="decimal"
-          placeholder="192.168.x.x"
+          placeholder="192.168.x.x  (car IP)"
           autocomplete="off"
           spellcheck="false"
           maxlength="15"
         >
         <button class="connect-btn" id="connectBtn">Connect</button>
       </div>
-      <div class="hint" id="hint">Enter car IP and tap Connect</div>
+
+      <div class="hint" id="hint">Connecting to bridge…</div>
     </div>
   </footer>
 
@@ -384,15 +414,17 @@ const DBG = true;
 function dbg(tag, ...args) { if (DBG) console.log(`[${tag}]`, ...args); }
 
 // ── DOM refs ─────────────────────────────────────────────────────────────────
-const statusPill  = document.getElementById('statusPill');
-const statusText  = document.getElementById('statusText');
-const speedDisplay= document.getElementById('speedDisplay');
-const hint        = document.getElementById('hint');
-const connectBtn  = document.getElementById('connectBtn');
-const ipInput     = document.getElementById('ipInput');
-const toast       = document.getElementById('toast');
-const jsBase      = document.getElementById('jsBase');
-const jsKnob      = document.getElementById('jsKnob');
+const statusPill    = document.getElementById('statusPill');
+const statusText    = document.getElementById('statusText');
+const speedDisplay  = document.getElementById('speedDisplay');
+const hint          = document.getElementById('hint');
+const connectBtn    = document.getElementById('connectBtn');
+const ipInput       = document.getElementById('ipInput');
+const wsInput       = document.getElementById('wsInput');
+const wsReconnectBtn= document.getElementById('wsReconnectBtn');
+const toast         = document.getElementById('toast');
+const jsBase        = document.getElementById('jsBase');
+const jsKnob        = document.getElementById('jsKnob');
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let ws          = null;
@@ -400,25 +432,48 @@ let wsReady     = false;
 let carReady    = false;
 let wsRetryTimer= null;
 
+// ── Bridge URL ────────────────────────────────────────────────────────────────
+// Persisted in localStorage.  Enter your Tailscale Serve URL, e.g.
+//   wss://your-device.tailscale.ts.net
+// (Use tailscale serve on the bridge device to get a free wss:// endpoint.)
+function getBridgeURL() {
+  return wsInput.value.trim();
+}
+
+wsInput.value = localStorage.getItem('bridgeURL') || '';
+wsInput.addEventListener('change', () => {
+  localStorage.setItem('bridgeURL', wsInput.value.trim());
+});
+
 // ── WebSocket ─────────────────────────────────────────────────────────────────
-const WS_PROTO = location.protocol === 'https:' ? 'wss:' : 'ws:';
-const WS_URL   = `${WS_PROTO}//${location.host}`;
-
-async function connectWS() {
+function connectWS() {
   clearTimeout(wsRetryTimer);
-  dbg('WS', `connecting → ${WS_URL}`);
-  try { await fetch('/', { headers: { 'ngrok-skip-browser-warning': 'true' } }); }
-  catch (_) { dbg('WS', 'preflight fetch failed (ngrok not in use or offline)'); }
-  ws = new WebSocket(WS_URL);
+  const url = getBridgeURL();
+  if (!url) {
+    setHint('Enter bridge URL above (wss://…) and tap ↻');
+    return;
+  }
+  dbg('WS', `connecting → ${url}`);
+  ws = new WebSocket(url);
 
-  ws.onopen  = () => { wsReady = true; dbg('WS', 'open'); };
+  ws.onopen = () => {
+    wsReady = true;
+    dbg('WS', 'open');
+    setHint('Bridge connected — enter car IP and tap Connect');
+  };
+
   ws.onclose = (e) => {
     dbg('WS', `closed  code=${e.code}  clean=${e.wasClean}`);
     wsReady = carReady = false;
     joystickStop();
+    setStatus(false);
     statusText.textContent = 'RECONNECTING…';
-    wsRetryTimer = setTimeout(connectWS, 2000);
+    setHint('Bridge offline — check URL and tap ↻');
+    connectBtn.textContent = 'Connect';
+    connectBtn.classList.remove('disconnect');
+    wsRetryTimer = setTimeout(connectWS, 3000);
   };
+
   ws.onerror = (e) => { dbg('WS', 'error', e); };
 
   ws.onmessage = (e) => {
@@ -779,9 +834,9 @@ connectBtn.addEventListener('click', () => {
     connectBtn.classList.remove('disconnect');
   } else {
     const ip = ipInput.value.trim();
-    if (!ip)     { showToast('Enter an IP address first'); return; }
-    if (!wsReady){ showToast('Server not ready — wait a moment'); return; }
-    dbg('TCP', `user clicked Connect → ${ip}:${location.port || 80}`);
+    if (!ip)      { showToast('Enter the car IP address first'); return; }
+    if (!wsReady) { showToast('Bridge not connected — check URL and tap ↻'); return; }
+    dbg('TCP', `user clicked Connect → ${ip}`);
     connectBtn.textContent = 'Connecting…';
     setHint('Connecting to ' + ip + '…');
     wsSend({ type: 'connect', ip });
@@ -790,7 +845,21 @@ connectBtn.addEventListener('click', () => {
 
 ipInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') connectBtn.click(); });
 
-// Pre-fill IP from ?ip= query param.
+// ── Bridge reconnect button ───────────────────────────────────────────────────
+wsReconnectBtn.addEventListener('click', () => {
+  dbg('WS', 'manual reconnect triggered');
+  localStorage.setItem('bridgeURL', wsInput.value.trim());
+  clearTimeout(wsRetryTimer);
+  if (ws) { try { ws.close(); } catch (_) {} ws = null; }
+  wsReady = carReady = false;
+  connectBtn.textContent = 'Connect';
+  connectBtn.classList.remove('disconnect');
+  connectWS();
+});
+
+wsInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') wsReconnectBtn.click(); });
+
+// Pre-fill car IP from ?ip= query param.
 const urlIP = new URLSearchParams(location.search).get('ip');
 if (urlIP) ipInput.value = urlIP;
 

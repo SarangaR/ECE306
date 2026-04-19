@@ -5,9 +5,10 @@
 #include "include/adc.h"
 #include "include/detector.h"
 #include "include/esp.h"
+#include "include/otos.h"
 
 #define LINE_LEN (10U)
-#define ROOT_ITEM_COUNT (4U)
+#define ROOT_ITEM_COUNT (5U)
 
 
 #define IR_CAL_EXIT_THRESHOLD (100)
@@ -23,7 +24,8 @@ typedef enum
     PAGE_IR_CAL,
     PAGE_RUN_MISSION,
     PAGE_BATTERY,
-    PAGE_ESP_CMD
+    PAGE_ESP_CMD,
+    PAGE_POSITION
 } MenuPage;
 
 typedef struct
@@ -36,11 +38,12 @@ static const RootItem root_items[ROOT_ITEM_COUNT] = {
     {"IR Cal",     PAGE_IR_CAL},
     {"Run Mission",PAGE_RUN_MISSION},
     {"Battery",    PAGE_BATTERY},
-    {"ESP Cmds",   PAGE_ESP_CMD}
+    {"ESP Cmds",   PAGE_ESP_CMD},
+    {"Position",   PAGE_POSITION}
 };
 
 static const char root_icons[ROOT_ITEM_COUNT] = {
-    'I', 'M', 'B', 'E'
+    'I', 'M', 'B', 'E', 'P'
 };
 
 static MenuPage current_page = PAGE_MAIN;
@@ -337,6 +340,44 @@ static void renderESPCmd(void)
     }
 }
 
+static void renderPosition(void)
+{
+    float xf = getPositionX();
+    float yf = getPositionY();
+    char x_line[11] = "X:+00.0in ";
+    char y_line[11] = "Y:+00.0in ";
+    int xt, yt;
+    char xs, ys;
+    unsigned int xa, ya;
+
+    if (xf < 0.0f) { xs = '-'; xt = (int)(-xf * 10.0f + 0.5f); }
+    else            { xs = '+'; xt = (int)( xf * 10.0f + 0.5f); }
+    if (xt > 999) { xt = 999; }
+    xa = (unsigned int)xt;
+
+    if (yf < 0.0f) { ys = '-'; yt = (int)(-yf * 10.0f + 0.5f); }
+    else            { ys = '+'; yt = (int)( yf * 10.0f + 0.5f); }
+    if (yt > 999) { yt = 999; }
+    ya = (unsigned int)yt;
+
+    x_line[2]  = xs;
+    x_line[3]  = (char)('0' + ((xa / 100U) % 10U));
+    x_line[4]  = (char)('0' + ((xa /  10U) % 10U));
+    x_line[6]  = (char)('0' +  (xa         % 10U));
+    x_line[10] = '\0';
+
+    y_line[2]  = ys;
+    y_line[3]  = (char)('0' + ((ya / 100U) % 10U));
+    y_line[4]  = (char)('0' + ((ya /  10U) % 10U));
+    y_line[6]  = (char)('0' +  (ya         % 10U));
+    y_line[10] = '\0';
+
+    setLine(0U, "Position");
+    Display_WriteLineIfChanged(1U, x_line);
+    Display_WriteLineIfChanged(2U, y_line);
+    setLine(3U, "SW2 Back");
+}
+
 void Menu_Init(void)
 {
     current_page = PAGE_MAIN;
@@ -401,6 +442,7 @@ void Menu_Update(void)
     case PAGE_RUN_MISSION:
     case PAGE_BATTERY:
     case PAGE_ESP_CMD:
+    case PAGE_POSITION:
         setThumbWheelMenuCount(1U);
         break;
 
@@ -436,6 +478,11 @@ void Menu_Render(void)
 
     case PAGE_ESP_CMD:
         renderESPCmd();
+        break;
+
+    case PAGE_POSITION:
+        setLcdMode(0U);
+        renderPosition();
         break;
 
     default:
