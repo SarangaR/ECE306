@@ -128,8 +128,7 @@ all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 
 # Tool invocations
 IOT\ Program\ Compiled.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@echo 'Building target: "$@"'
-	@echo 'Invoking: MSP430 Linker'
+	@echo 'MSP430 Linker - building target: "$@"'
 	"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/bin/cl430" -vmspx --use_hw_mpy=F5 --advice:power=all --advice:hw_config=all --define=__MSP430FR2355__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"IOT Program Compiled.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs2041/ccs/ccs_base/msp430/include" -i"C:/ti/ccs2041/ccs/ccs_base/msp430/lib/FR2xx" -i"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/lib" -i"C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include" --priority --reread_libs --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="IOT Program Compiled_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "IOT Program Compiled.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
@@ -139,7 +138,6 @@ clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
 	-$(RM) "main.obj" 
 	-$(RM) "main.d" 
-	-@echo 'Finished clean'
 	-@echo ' '
 
 .PHONY: all clean dependents

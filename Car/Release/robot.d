@@ -29,6 +29,7 @@ robot.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/str
 robot.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h
 robot.obj: ../include/otos.h
 robot.obj: ../include/detector.h
+robot.obj: ../include/fast_trig.h
 
 ../robot.c:
 
@@ -87,4 +88,6 @@ C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_strin
 ../include/otos.h:
 
 ../include/detector.h:
+
+../include/fast_trig.h:
 

@@ -14,4 +14,8 @@ void Menu_SetMissionRunning(unsigned char running);
    countdown on the ESP Cmds menu page (Project 09). */
 void Menu_NotifyESPCommandReceived(void);
 
+/* Called by ESP handler for the N command — sets pad number and switches to
+   the Final Demo display page. */
+void Menu_SetPadArrival(int pad_number);
+
 #endif // MENU_H

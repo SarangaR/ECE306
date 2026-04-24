@@ -1,10 +1,10 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.1                     
 ******************************************************************************
->> Linked Wed Apr 15 22:44:36 2026
+>> Linked Tue Apr 21 19:44:52 2026
 
 OUTPUT FILE NAME:   <Car.out>
-ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 0000e322
+ENTRY POINT SYMBOL: "_c_int00_noargs_mpu"  address: 0000e73a
 
 
 MEMORY CONFIGURATION
@@ -16,8 +16,8 @@ MEMORY CONFIGURATION
   INFO                  00001800   00000200  00000000  00000200  RWIX
   TLVMEM                00001a00   00000200  00000000  00000200  RWIX
   BOOTCODE              00001c00   00000400  00000000  00000400  RWIX
-  RAM                   00002000   00001000  000008ca  00000736  RWIX
-  FRAM                  00008000   00007f80  0000614a  00001e36  RWIX
+  RAM                   00002000   00001000  000008d2  0000072e  RWIX
+  FRAM                  00008000   00007f80  00006562  00001a1e  RWIX
   JTAGSIGNATURE         0000ff80   00000004  00000004  00000000  RWIX  ffff 
   BSLSIGNATURE          0000ff84   00000004  00000004  00000000  RWIX  ffff 
   BSLCONFIGURATIONSIGNA 0000ff88   00000002  00000002  00000000  RWIX  ffff 
@@ -94,318 +94,324 @@ section   page    origin      length       input sections
 
 .sysmem    0    00008400    00000000     UNINITIALIZED
 
-.cinit     0    00008400    000000c8     
-                  00008400    000000a6     (.cinit..data.load) [load image, compression = lzss]
-                  000084a6    0000000c     (__TI_handler_table)
-                  000084b2    00000006     (.cinit..bss.load) [load image, compression = zero_init]
-                  000084b8    00000010     (__TI_cinit_table)
+.cinit     0    00008400    000000d0     
+                  00008400    000000ae     (.cinit..data.load) [load image, compression = lzss]
+                  000084ae    0000000c     (__TI_handler_table)
+                  000084ba    00000006     (.cinit..bss.load) [load image, compression = zero_init]
+                  000084c0    00000010     (__TI_cinit_table)
 
-.pinit     0    000084c8    00000000     UNINITIALIZED
+.pinit     0    000084d0    00000000     UNINITIALIZED
 
-.binit     0    000084c8    00000010     
-                  000084c8    00000010     (.binit)
+.binit     0    000084d0    00000010     
+                  000084d0    00000010     (.binit)
 
 .init_array 
-*          0    000084d8    00000000     UNINITIALIZED
+*          0    000084e0    00000000     UNINITIALIZED
 
 .mspabi.exidx 
-*          0    000084d8    00000000     UNINITIALIZED
+*          0    000084e0    00000000     UNINITIALIZED
 
 .mspabi.extab 
-*          0    000084d8    00000000     UNINITIALIZED
+*          0    000084e0    00000000     UNINITIALIZED
 
-.const     0    000084d8    00000546     
-                  000084d8    0000029e     esp.obj (.const:.string)
-                  00008776    000000d4     menu.obj (.const:.string)
-                  0000884a    00000084     esp.obj (.const:esp_commands)
-                  000088ce    00000060     robot.obj (.const:.string)
-                  0000892e    0000001c     gpio.obj (.const:GPIO_PORT_TO_BASE)
-                  0000894a    00000010     menu.obj (.const:root_items)
-                  0000895a    0000000e     timers.obj (.const:$P$T0$1)
-                  00008968    0000000e     timers.obj (.const:$P$T1$2)
-                  00008976    0000000b     menu.obj (.const:.string:$P$T0$1)
-                  00008981    00000001     --HOLE-- [fill = 0]
-                  00008982    0000000b     robot.obj (.const:.string:$P$T0$1)
-                  0000898d    00000001     --HOLE-- [fill = 0]
-                  0000898e    0000000b     menu.obj (.const:.string:$P$T1$2)
-                  00008999    00000001     --HOLE-- [fill = 0]
-                  0000899a    0000000b     robot.obj (.const:.string:$P$T1$2)
-                  000089a5    00000001     --HOLE-- [fill = 0]
-                  000089a6    0000000b     menu.obj (.const:.string:$P$T2$3)
-                  000089b1    00000001     --HOLE-- [fill = 0]
-                  000089b2    0000000b     robot.obj (.const:.string:$P$T2$3)
-                  000089bd    00000001     --HOLE-- [fill = 0]
-                  000089be    0000000b     menu.obj (.const:.string:$P$T3$4)
-                  000089c9    00000001     --HOLE-- [fill = 0]
-                  000089ca    0000000b     menu.obj (.const:.string:$P$T4$5)
-                  000089d5    00000001     --HOLE-- [fill = 0]
-                  000089d6    0000000b     menu.obj (.const:.string:$P$T5$6)
-                  000089e1    00000001     --HOLE-- [fill = 0]
-                  000089e2    0000000b     menu.obj (.const:.string:$P$T6$7)
-                  000089ed    00000001     --HOLE-- [fill = 0]
-                  000089ee    0000000b     menu.obj (.const:.string:$P$T7$8)
-                  000089f9    00000001     --HOLE-- [fill = 0]
-                  000089fa    0000000b     menu.obj (.const:.string:$P$T8$9)
-                  00008a05    00000001     --HOLE-- [fill = 0]
-                  00008a06    0000000b     menu.obj (.const:.string:$P$T9$10)
-                  00008a11    00000001     --HOLE-- [fill = 0]
-                  00008a12    00000008     adc.obj (.const:adc_input_map)
-                  00008a1a    00000004     menu.obj (.const:.string:root_icons)
+.const     0    000084e0    0000055b     
+                  000084e0    0000029e     esp.obj (.const:.string)
+                  0000877e    000000d8     menu.obj (.const:.string)
+                  00008856    00000084     esp.obj (.const:esp_commands)
+                  000088da    00000060     robot.obj (.const:.string)
+                  0000893a    0000001c     gpio.obj (.const:GPIO_PORT_TO_BASE)
+                  00008956    00000014     menu.obj (.const:root_items)
+                  0000896a    0000000e     timers.obj (.const:$P$T0$1)
+                  00008978    0000000e     timers.obj (.const:$P$T1$2)
+                  00008986    0000000b     menu.obj (.const:.string:$P$T0$1)
+                  00008991    00000001     --HOLE-- [fill = 0]
+                  00008992    0000000b     robot.obj (.const:.string:$P$T0$1)
+                  0000899d    00000001     --HOLE-- [fill = 0]
+                  0000899e    0000000b     menu.obj (.const:.string:$P$T1$2)
+                  000089a9    00000001     --HOLE-- [fill = 0]
+                  000089aa    0000000b     robot.obj (.const:.string:$P$T1$2)
+                  000089b5    00000001     --HOLE-- [fill = 0]
+                  000089b6    0000000b     menu.obj (.const:.string:$P$T10$11)
+                  000089c1    00000001     --HOLE-- [fill = 0]
+                  000089c2    0000000b     menu.obj (.const:.string:$P$T2$3)
+                  000089cd    00000001     --HOLE-- [fill = 0]
+                  000089ce    0000000b     robot.obj (.const:.string:$P$T2$3)
+                  000089d9    00000001     --HOLE-- [fill = 0]
+                  000089da    0000000b     menu.obj (.const:.string:$P$T3$4)
+                  000089e5    00000001     --HOLE-- [fill = 0]
+                  000089e6    0000000b     menu.obj (.const:.string:$P$T4$5)
+                  000089f1    00000001     --HOLE-- [fill = 0]
+                  000089f2    0000000b     menu.obj (.const:.string:$P$T5$6)
+                  000089fd    00000001     --HOLE-- [fill = 0]
+                  000089fe    0000000b     menu.obj (.const:.string:$P$T6$7)
+                  00008a09    00000001     --HOLE-- [fill = 0]
+                  00008a0a    0000000b     menu.obj (.const:.string:$P$T7$8)
+                  00008a15    00000001     --HOLE-- [fill = 0]
+                  00008a16    0000000b     menu.obj (.const:.string:$P$T8$9)
+                  00008a21    00000001     --HOLE-- [fill = 0]
+                  00008a22    0000000b     menu.obj (.const:.string:$P$T9$10)
+                  00008a2d    00000001     --HOLE-- [fill = 0]
+                  00008a2e    00000008     adc.obj (.const:adc_input_map)
+                  00008a36    00000005     menu.obj (.const:.string:root_icons)
 
-.text      0    00008a1e    000056aa     
-                  00008a1e    00001390     robot.obj (.text:commandTick)
-                  00009dae    000001f0     menu.obj (.text:renderESPCmd)
-                  00009f9e    000001ca     menu.obj (.text:renderBattery)
-                  0000a168    00000198     esp.obj (.text:ESP_ParseIPDFrame)
-                  0000a300    00000132     rts430x_lc_sd_eabi.lib : fs_add.asm.obj (.text)
-                  0000a432    0000011e     main.obj (.text:main)
-                  0000a550    0000010a     esp.obj (.text:ESP_ProcessStartup)
-                  0000a65a    0000010a     esp.obj (.text:esp_parse_float)
-                  0000a764    000000f4     robot.obj (.text:applySpeedSet)
-                  0000a858    000000ee     rts430x_lc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  0000a946    000000e8     menu.obj (.text:renderMain)
-                  0000aa2e    000000e8     robot.obj (.text:setFollowLineElapsedDisplay)
-                  0000ab16    000000d4     pid.obj (.text:PID_Calculate)
-                  0000abea    000000ce     robot.obj (.text:pwmCountsFromPercentFloatSigned)
-                  0000acb8    000000c8     display.obj (.text:format_float)
-                  0000ad80    000000c6     robot.obj (.text:clampSignedPwm)
-                  0000ae46    000000c4     LCD.obj (.text:Init_LCD)
-                  0000af0a    000000be     clocks.obj (.text:Software_Trim)
-                  0000afc8    000000b8     rts430x_lc_sd_eabi.lib : fs_mpy.asm.obj (.text)
-                  0000b080    000000aa     ports.obj (.text:Init_Port1)
-                  0000b12a    000000a8     rts430x_lc_sd_eabi.lib : cpy_tbl.c.obj (.text:copy_in)
-                  0000b1d2    000000a4     ports.obj (.text:Init_Port3)
-                  0000b276    000000a0     menu.obj (.text:batteryPercent)
-                  0000b316    0000009a     esp.obj (.text:ESP_ScheduleEvent)
-                  0000b3b0    0000009a     robot.obj (.text:getChainApi)
-                  0000b44a    00000096     ports.obj (.text:Init_Port2)
-                  0000b4e0    00000096     otos.obj (.text:otos_poll_measurement)
-                  0000b576    00000092     ports.obj (.text:Init_Port4)
-                  0000b608    00000092     ports.obj (.text:Init_Port6)
-                  0000b69a    00000090     rts430x_lc_sd_eabi.lib : fs_div.asm.obj (.text)
-                  0000b72a    0000008e     menu.obj (.text:setLineNumber3)
-                  0000b7b8    0000008c     timers.obj (.text:Init_Timer_B0)
-                  0000b844    0000008c     robot.obj (.text:commandTickParallelDriveChild)
-                  0000b8d0    00000080     menu.obj (.text:Menu_Update)
-                  0000b950    0000007c     robot.obj (.text:Command_FollowLine)
-                  0000b9cc    0000007c     rts430x_lc_sd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nopinit_hold_wdt:__TI_auto_init_nopinit_hold_wdt)
-                  0000ba48    00000078     otos.obj (.text:i2c_write_byte)
-                  0000bac0    00000078     otos.obj (.text:otos_read_register_bytes)
-                  0000bb38    00000076     robot.obj (.text:Command_DriveToXY)
-                  0000bbae    00000076     timers.obj (.text:Init_Timer_B1)
-                  0000bc24    00000076     otos.obj (.text:wrap_heading)
-                  0000bc9a    00000074     otos.obj (.text:OTOS_Begin)
-                  0000bd0e    00000074     otos.obj (.text:OTOS_CalibrateImu)
-                  0000bd82    00000074     robot.obj (.text:pwmCountsFromPercent)
-                  0000bdf6    00000070     esp.obj (.text:ESP_Init)
-                  0000be66    0000006e     otos.obj (.text:i2c_read_byte)
-                  0000bed4    0000006c     robot.obj (.text:chainAndThenSpinCCWMs)
-                  0000bf40    0000006c     robot.obj (.text:chainAndThenSpinCWMs)
-                  0000bfac    0000006c     robot.obj (.text:clampPwmCounts)
-                  0000c018    00000068     clocks.obj (.text:Init_Clocks)
-                  0000c080    00000068     rts430x_lc_sd_eabi.lib : fs_toi.asm.obj (.text)
-                  0000c0e8    00000068     robot.obj (.text:setCurrentCommandDisplay)
-                  0000c150    00000066     timers.obj (.text:Init_Timer_B3)
-                  0000c1b6    00000066     pid.obj (.text:PID_Init)
-                  0000c21c    00000064     adc.obj (.text:Init_ADC)
-                  0000c280    00000062     robot.obj (.text:Command_TurnToAngle)
-                  0000c2e2    00000062     ports.obj (.text:Init_Port5)
-                  0000c344    00000060     robot.obj (.text:Command_AlignLeftToLine)
-                  0000c3a4    00000060     robot.obj (.text:Command_DriveToLine)
-                  0000c404    00000060     robot.obj (.text:chainAndThenDriveStraightMs)
-                  0000c464    00000060     robot.obj (.text:chainAndThenReverseMs)
-                  0000c4c4    0000005e     motors.obj (.text:applyMotorMode)
-                  0000c522    0000005c     robot.obj (.text:Command_DriveStraight)
-                  0000c57e    0000005c     robot.obj (.text:Command_ReverseStraight)
-                  0000c5da    0000005c     timer_b.obj (.text:Timer_B_initUpMode)
-                  0000c636    0000005c     robot.obj (.text:applyMixedDrive)
-                  0000c692    0000005c     robot.obj (.text:initRobot)
-                  0000c6ee    0000005c     otos.obj (.text:otos_write_register_bytes)
-                  0000c74a    0000005a     robot.obj (.text:Command_Sequence)
-                  0000c7a4    0000005a     menu.obj (.text:Menu_Render)
-                  0000c7fe    00000058     robot.obj (.text:chainAndThenDriveToXY)
-                  0000c856    00000058     rts430x_lc_sd_eabi.lib : div32u.asm.obj (.text)
-                  0000c8ae    00000056     main.obj (.text:Display_WriteLineIfChanged)
-                  0000c904    00000056     robot.obj (.text:updateRobot)
-                  0000c95a    00000054     robot.obj (.text:Command_DriveUntil)
-                  0000c9ae    00000054     robot.obj (.text:chainUntilSelective)
-                  0000ca02    00000052     init.obj (.text:Init_Conditions)
-                  0000ca54    0000004e     robot.obj (.text:chainUntil)
-                  0000caa2    0000004e     menu.obj (.text:setLine)
-                  0000caf0    0000004e     robot.obj (.text:setTurnToAngleDisplay)
-                  0000cb3e    0000004c     robot.obj (.text:chainAndThenDriveUntil)
-                  0000cb8a    0000004c     robot.obj (.text:chainAndThenTurnToAngle)
-                  0000cbd6    0000004a     robot.obj (.text:chainAndThenSpinCCW)
-                  0000cc20    0000004a     robot.obj (.text:chainAndThenSpinCW)
-                  0000cc6a    0000004a     detector.obj (.text:detectorSetBlackRangeFromCurrent)
-                  0000ccb4    0000004a     detector.obj (.text:detectorSetWhiteRangeFromCurrent)
-                  0000ccfe    0000004a     rts430x_lc_sd_eabi.lib : fs_cmp.asm.obj (.text)
-                  0000cd48    0000004a     serial.obj (.text:uart_read_frame)
-                  0000cd92    00000048     robot.obj (.text:Command_Spin)
-                  0000cdda    00000048     robot.obj (.text:chainAndThenDriveStraight)
-                  0000ce22    00000048     robot.obj (.text:chainAndThenFollowLine)
-                  0000ce6a    00000048     robot.obj (.text:chainAndThenForward)
-                  0000ceb2    00000048     robot.obj (.text:chainAndThenReverse)
-                  0000cefa    00000048     robot.obj (.text:chainAndThenReverseStraight)
-                  0000cf42    00000048     robot.obj (.text:chainAndThenWait)
-                  0000cf8a    00000048     motors.obj (.text:clampPWM)
-                  0000cfd2    00000048     motors.obj (.text:pwmCountsFromPercent)
-                  0000d01a    00000048     menu.obj (.text:renderRunMission)
-                  0000d062    00000046     rts430x_lc_sd_eabi.lib : fs_tou.asm.obj (.text)
-                  0000d0a8    00000044     LCD.obj (.text:Display_Update)
-                  0000d0ec    00000040     LCD.obj (.text:Init_SPI_B1)
-                  0000d12c    00000040     rts430x_lc_sd_eabi.lib : cpy_util.asm.obj (.text:__memcpy_far)
-                  0000d16c    00000040     robot.obj (.text:chainAndThenAlignLeftToLine)
-                  0000d1ac    00000040     robot.obj (.text:chainAndThenDriveToLine)
-                  0000d1ec    00000040     rts430x_lc_sd_eabi.lib : div32s.asm.obj (.text)
-                  0000d22c    0000003e                            : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
-                  0000d26a    0000003e                            : asr32.asm.obj (.text:l_asr_const)
-                  0000d2a8    0000003e                            : lsr32.asm.obj (.text:l_lsr_const)
-                  0000d2e6    0000003c     robot.obj (.text:Command_Reverse)
-                  0000d322    0000003c     FRWP_INIT_LIB_CCS_msp430_large_code_small_data.lib : frwp_init.obj (.text:__mpu_init)
-                  0000d35e    0000003c     rts430x_lc_sd_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0000d39a    0000003c     menu.obj (.text:renderIrCalibrate)
-                  0000d3d6    0000003a     robot.obj (.text:Command_Forward)
-                  0000d410    0000003a     robot.obj (.text:Command_Wait)
-                  0000d44a    0000003a     menu.obj (.text:Menu_OnSW1)
-                  0000d484    00000036     esp.obj (.text:ESP_ParseCIFSR)
-                  0000d4ba    00000036     motors.obj (.text:Timer_CCR_Interval_From_Frequency)
-                  0000d4f0    00000036     robot.obj (.text:commandResetRecursive)
-                  0000d526    00000036     rts430x_lc_sd_eabi.lib : fs_itof.asm.obj (.text)
-                  0000d55c    00000036                            : strstr.c.obj (.text:strstr)
-                  0000d592    00000034     adc.obj (.text:ADC_init)
-                  0000d5c6    00000034     main.obj (.text:ScheduleMissionCommands)
-                  0000d5fa    00000034     motors.obj (.text:driveSpin)
-                  0000d62e    00000032     motors.obj (.text:driveForward)
-                  0000d660    00000032     motors.obj (.text:driveReverse)
-                  0000d692    00000032     motors.obj (.text:driveSpinReverse)
-                  0000d6c4    0000002e     adc.obj (.text:ADC_SelectAndStart)
-                  0000d6f2    0000002e     switches.obj (.text:Init_Switches)
-                  0000d720    0000002e     menu.obj (.text:Menu_OnSW2)
-                  0000d74e    0000002e     serial.obj (.text:uart_init)
-                  0000d77c    0000002e     serial.obj (.text:uart_send_buf)
-                  0000d7aa    0000002c     esp.obj (.text:ESP_IPPollUpdate)
-                  0000d7d6    0000002c     menu.obj (.text:Menu_Init)
-                  0000d802    0000002c     adc.obj (.text:getBatteryVoltage)
-                  0000d82e    0000002c     rts430x_lc_sd_eabi.lib : div16s.asm.obj (.text)
-                  0000d85a    0000002a     robot.obj (.text:chainSchedule)
-                  0000d884    0000002a     rts430x_lc_sd_eabi.lib : strncmp.c.obj (.text:strncmp)
-                  0000d8ae    0000002a     otos.obj (.text:wait_scl_high)
-                  0000d8d8    00000028     motors.obj (.text:Motors_DriveSpinPWM)
-                  0000d900    00000028     LCD.obj (.text:WriteData)
-                  0000d928    00000028     LCD.obj (.text:WriteIns)
-                  0000d950    00000028     adc.obj (.text:getThumbWheel)
-                  0000d978    00000026     gpio.obj (.text:GPIO_setAsInputPinWithPullUpResistor)
-                  0000d99e    00000026     robot.obj (.text:chainWithDisplay)
-                  0000d9c4    00000026     otos.obj (.text:getHeading)
-                  0000d9ea    00000024     motors.obj (.text:Motors_DriveForwardPWM)
-                  0000da0e    00000024     motors.obj (.text:Motors_DriveReversePWM)
-                  0000da32    00000024     motors.obj (.text:Motors_DriveSpinReversePWM)
-                  0000da56    00000024     rts430x_lc_sd_eabi.lib : fs_utof.asm.obj (.text)
-                  0000da7a    00000024                            : mult32_f5hw.asm.obj (.text)
-                  0000da9e    00000024     menu.obj (.text:setLcdMode)
-                  0000dac2    00000022     display.obj (.text:Display_Process)
-                  0000dae4    00000022     otos.obj (.text:zeroHeading)
-                  0000db06    00000020     motors.obj (.text:Motors_Service)
-                  0000db26    00000020     esp.obj (.text:esp_is_num_start)
-                  0000db46    00000020     otos.obj (.text:getPositionY)
-                  0000db66    00000020     robot.obj (.text:robotCurvatureWatchdog)
-                  0000db86    00000020     robot.obj (.text:scheduleCommand)
-                  0000dba6    0000001e     adc.obj (.text:ADC_disableConversions)
-                  0000dbc4    0000001e     gpio.obj (.text:GPIO_setAsOutputPin)
-                  0000dbe2    0000001e     otos.obj (.text:i2c_stop)
-                  0000dc00    0000001e     LCD.obj (.text:lcd_BIG_mid)
-                  0000dc1e    0000001c     pid.obj (.text:PID_IsDone)
-                  0000dc3a    0000001c     LCD.obj (.text:SPI_B1_write)
-                  0000dc56    0000001c     rts430x_lc_sd_eabi.lib : mult1632_f5hw.asm.obj (.text:__mpyul)
-                  0000dc72    0000001c     robot.obj (.text:chainAppend)
-                  0000dc8e    0000001c     LCD.obj (.text:lcd_out)
-                  0000dcaa    0000001a     gpio.obj (.text:GPIO_getInputPinValue)
-                  0000dcc4    0000001a     ports.obj (.text:Init_Ports)
-                  0000dcde    0000001a     otos.obj (.text:i2c_start)
-                  0000dcf8    00000018     adc.obj (.text:ADC_startConversion)
-                  0000dd10    00000018     LCD.obj (.text:ClrDisplay_Buffer_0)
-                  0000dd28    00000018     LCD.obj (.text:ClrDisplay_Buffer_1)
-                  0000dd40    00000018     LCD.obj (.text:ClrDisplay_Buffer_2)
-                  0000dd58    00000018     LCD.obj (.text:ClrDisplay_Buffer_3)
-                  0000dd70    00000018     esp.obj (.text:ESP_SendCommand)
-                  0000dd88    00000018     esp.obj (.text:ESP_SetPendingEvent)
-                  0000dda0    00000018     otos.obj (.text:read_sda)
-                  0000ddb8    00000018     rts430x_lc_sd_eabi.lib : mult16_f5hw.asm.obj (.text)
-                  0000ddd0    00000018     robot.obj (.text:secondsToTicks)
-                  0000dde8    00000016     adc.obj (.text:ADC_configureMemory)
-                  0000ddfe    00000016     LCD.obj (.text:ClrDisplay)
-                  0000de14    00000016     gpio.obj (.text:GPIO_setOutputLowOnPin)
-                  0000de2a    00000016     robot.obj (.text:isRobotBusy)
-                  0000de40    00000016     rts430x_lc_sd_eabi.lib : div16u.asm.obj (.text)
-                  0000de56    00000016     LCD.obj (.text:spi_chipselect_idle)
-                  0000de6c    00000014     adc.obj (.text:ADC_setupSamplingTimer)
-                  0000de80    00000014     detector.obj (.text:clampAdc)
-                  0000de94    00000012     otos.obj (.text:Init_IMU)
-                  0000dea6    00000012     menu.obj (.text:Menu_ConsumeCancelMissionRequest)
-                  0000deb8    00000012     menu.obj (.text:Menu_ConsumeRunMissionRequest)
-                  0000deca    00000012     switches.obj (.text:Switch1_ConsumePress)
-                  0000dedc    00000012     switches.obj (.text:Switch2_ConsumePress)
-                  0000deee    00000012     rts430x_lc_sd_eabi.lib : memcpy.c.obj (.text:memcpy)
-                  0000df00    00000012     robot.obj (.text:resetRobot)
-                  0000df12    00000012     otos.obj (.text:scl_low)
-                  0000df24    00000012     otos.obj (.text:sda_low)
-                  0000df36    00000012     LCD.obj (.text:spi_chipselect_active)
-                  0000df48    00000010     robot.obj (.text:getDisplayName)
-                  0000df58    00000010     detector.obj (.text:getRaw)
-                  0000df68    00000010     adc.obj (.text:setThumbWheelMenuCount)
-                  0000df78    0000000e     adc.obj (.text:ADC_setResolution)
-                  0000df86    0000000e     LCD.obj (.text:DisplayOnOff)
-                  0000df94    0000000e     timers.obj (.text:Init_Timers)
-                  0000dfa2    0000000e     motors.obj (.text:Motors_IsSettled)
-                  0000dfb0    0000000e     otos.obj (.text:bytes_to_int16)
-                  0000dfbe    0000000e     LCD.obj (.text:lcd_4line)
-                  0000dfcc    0000000e     otos.obj (.text:otos_delay)
-                  0000dfda    0000000c     otos.obj (.text:IMU_Process)
-                  0000dfe6    0000000a     adc.obj (.text:ADC_setDataReadBackFormat)
-                  0000dff0    0000000a     pid.obj (.text:PID_Reset)
-                  0000dffa    0000000a     rts430x_lc_sd_eabi.lib : abs.c.obj (.text:abs)
-                  0000e004    0000000a     robot.obj (.text:chainDriveStraightMs)
-                  0000e00e    0000000a     robot.obj (.text:chainForward)
-                  0000e018    0000000a     robot.obj (.text:chainReverseMs)
-                  0000e022    0000000a     robot.obj (.text:chainSpinCCWMs)
-                  0000e02c    0000000a     robot.obj (.text:chainSpinCWMs)
-                  0000e036    0000000a     switches.obj (.text:enable_switch_SW1)
-                  0000e040    0000000a     switches.obj (.text:enable_switch_SW2)
-                  0000e04a    0000000a     rts430x_lc_sd_eabi.lib : fs_neg.asm.obj (.text)
-                  0000e054    0000000a     otos.obj (.text:scl_high)
-                  0000e05e    0000000a     otos.obj (.text:sda_high)
-                  0000e068    00000008     adc.obj (.text:ADC_clearInterrupt)
-                  0000e070    00000008     adc.obj (.text:ADC_enable)
-                  0000e078    00000008     adc.obj (.text:ADC_enableInterrupt)
-                  0000e080    00000008     system.obj (.text:enable_interrupts)
-                  0000e088    00000006     esp.obj (.text:ESP_GetIPString)
-                  0000e08e    00000006     esp.obj (.text:ESP_GetStartupState)
-                  0000e094    00000006     menu.obj (.text:Menu_SetMissionRunning)
-                  0000e09a    00000006     timer_b.obj (.text:Timer_B_startCounter)
-                  0000e0a0    00000006     rts430x_lc_sd_eabi.lib : exit.c.obj (.text:abort)
-                  0000e0a6    00000006     robot.obj (.text:chainReset)
-                  0000e0ac    00000006     motors.obj (.text:driveStop)
-                  0000e0b2    00000006     LCD.obj (.text:spi_reset_active)
-                  0000e0b8    00000006     LCD.obj (.text:spi_reset_idle)
-                  0000e0be    00000004     rts430x_lc_sd_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
-                  0000e0c2    00000002     menu.obj (.text:Menu_NotifyESPCommandReceived)
-                  0000e0c4    00000002     switches.obj (.text:Switch_Process)
-                  0000e0c6    00000002     rts430x_lc_sd_eabi.lib : startup.c.obj (.text:_system_post_cinit)
+.text      0    00008a3c    00005aa4     
+                  00008a3c    00001592     robot.obj (.text:commandTick)
+                  00009fce    000001f0     menu.obj (.text:renderESPCmd)
+                  0000a1be    000001ca     menu.obj (.text:renderBattery)
+                  0000a388    00000198     esp.obj (.text:ESP_ParseIPDFrame)
+                  0000a520    00000132     rts430x_lc_sd_eabi.lib : fs_add.asm.obj (.text)
+                  0000a652    0000011e     main.obj (.text:main)
+                  0000a770    0000010a     esp.obj (.text:ESP_ProcessStartup)
+                  0000a87a    0000010a     esp.obj (.text:esp_parse_float)
+                  0000a984    000000fc     menu.obj (.text:renderSignedFloat1)
+                  0000aa80    000000f4     robot.obj (.text:applySpeedSet)
+                  0000ab74    000000ee     rts430x_lc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  0000ac62    000000ea     menu.obj (.text:renderMain)
+                  0000ad4c    000000e8     robot.obj (.text:setFollowLineElapsedDisplay)
+                  0000ae34    000000d4     pid.obj (.text:PID_Calculate)
+                  0000af08    000000ce     robot.obj (.text:pwmCountsFromPercentFloatSigned)
+                  0000afd6    000000c8     display.obj (.text:format_float)
+                  0000b09e    000000c6     robot.obj (.text:clampSignedPwm)
+                  0000b164    000000c4     LCD.obj (.text:Init_LCD)
+                  0000b228    000000be     clocks.obj (.text:Software_Trim)
+                  0000b2e6    000000b8     rts430x_lc_sd_eabi.lib : fs_mpy.asm.obj (.text)
+                  0000b39e    000000aa     ports.obj (.text:Init_Port1)
+                  0000b448    000000a8     rts430x_lc_sd_eabi.lib : cpy_tbl.c.obj (.text:copy_in)
+                  0000b4f0    000000a4     ports.obj (.text:Init_Port3)
+                  0000b594    0000009c     menu.obj (.text:batteryPercent)
+                  0000b630    0000009a     esp.obj (.text:ESP_ScheduleEvent)
+                  0000b6ca    0000009a     robot.obj (.text:getChainApi)
+                  0000b764    00000096     ports.obj (.text:Init_Port2)
+                  0000b7fa    00000096     otos.obj (.text:otos_poll_measurement)
+                  0000b890    00000092     ports.obj (.text:Init_Port4)
+                  0000b922    00000092     ports.obj (.text:Init_Port6)
+                  0000b9b4    00000090     rts430x_lc_sd_eabi.lib : fs_div.asm.obj (.text)
+                  0000ba44    0000008e     menu.obj (.text:setLineNumber3)
+                  0000bad2    0000008c     timers.obj (.text:Init_Timer_B0)
+                  0000bb5e    0000008c     robot.obj (.text:commandTickParallelDriveChild)
+                  0000bbea    00000088     menu.obj (.text:renderRunMission)
+                  0000bc72    00000082     menu.obj (.text:Menu_Update)
+                  0000bcf4    0000007c     robot.obj (.text:Command_FollowLine)
+                  0000bd70    0000007c     rts430x_lc_sd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nopinit_hold_wdt:__TI_auto_init_nopinit_hold_wdt)
+                  0000bdec    00000078     otos.obj (.text:i2c_write_byte)
+                  0000be64    00000078     otos.obj (.text:otos_read_register_bytes)
+                  0000bedc    00000076     robot.obj (.text:Command_DriveToXY)
+                  0000bf52    00000076     timers.obj (.text:Init_Timer_B1)
+                  0000bfc8    00000076     otos.obj (.text:wrap_heading)
+                  0000c03e    00000074     otos.obj (.text:OTOS_Begin)
+                  0000c0b2    00000074     otos.obj (.text:OTOS_CalibrateImu)
+                  0000c126    00000074     robot.obj (.text:pwmCountsFromPercent)
+                  0000c19a    0000006e     otos.obj (.text:i2c_read_byte)
+                  0000c208    0000006c     robot.obj (.text:chainAndThenSpinCCWMs)
+                  0000c274    0000006c     robot.obj (.text:chainAndThenSpinCWMs)
+                  0000c2e0    0000006c     robot.obj (.text:clampPwmCounts)
+                  0000c34c    00000068     clocks.obj (.text:Init_Clocks)
+                  0000c3b4    00000068     rts430x_lc_sd_eabi.lib : fs_toi.asm.obj (.text)
+                  0000c41c    00000068     robot.obj (.text:setCurrentCommandDisplay)
+                  0000c484    00000066     timers.obj (.text:Init_Timer_B3)
+                  0000c4ea    00000066     pid.obj (.text:PID_Init)
+                  0000c550    00000064     adc.obj (.text:Init_ADC)
+                  0000c5b4    00000064     menu.obj (.text:Menu_Render)
+                  0000c618    00000064     rts430x_lc_sd_eabi.lib : cvtfd.c.obj (.text:__mspabi_cvtfd)
+                  0000c67c    00000062     robot.obj (.text:Command_TurnToAngle)
+                  0000c6de    00000062     ports.obj (.text:Init_Port5)
+                  0000c740    00000060     robot.obj (.text:Command_AlignLeftToLine)
+                  0000c7a0    00000060     robot.obj (.text:Command_DriveToLine)
+                  0000c800    00000060     robot.obj (.text:chainAndThenDriveStraightMs)
+                  0000c860    00000060     robot.obj (.text:chainAndThenReverseMs)
+                  0000c8c0    0000005e     motors.obj (.text:applyMotorMode)
+                  0000c91e    0000005c     robot.obj (.text:Command_DriveStraight)
+                  0000c97a    0000005c     robot.obj (.text:Command_ReverseStraight)
+                  0000c9d6    0000005c     timer_b.obj (.text:Timer_B_initUpMode)
+                  0000ca32    0000005c     robot.obj (.text:applyMixedDrive)
+                  0000ca8e    0000005c     robot.obj (.text:initRobot)
+                  0000caea    0000005c     otos.obj (.text:otos_write_register_bytes)
+                  0000cb46    0000005a     robot.obj (.text:Command_Sequence)
+                  0000cba0    0000005a     esp.obj (.text:ESP_Init)
+                  0000cbfa    00000058     robot.obj (.text:chainAndThenDriveToXY)
+                  0000cc52    00000058     rts430x_lc_sd_eabi.lib : div32u.asm.obj (.text)
+                  0000ccaa    00000056     main.obj (.text:Display_WriteLineIfChanged)
+                  0000cd00    00000056     robot.obj (.text:updateRobot)
+                  0000cd56    00000054     robot.obj (.text:Command_DriveUntil)
+                  0000cdaa    00000054     robot.obj (.text:chainUntilSelective)
+                  0000cdfe    00000052     init.obj (.text:Init_Conditions)
+                  0000ce50    0000004e     robot.obj (.text:chainUntil)
+                  0000ce9e    0000004e     menu.obj (.text:setLine)
+                  0000ceec    0000004e     robot.obj (.text:setTurnToAngleDisplay)
+                  0000cf3a    0000004c     robot.obj (.text:chainAndThenDriveUntil)
+                  0000cf86    0000004c     robot.obj (.text:chainAndThenTurnToAngle)
+                  0000cfd2    0000004a     robot.obj (.text:chainAndThenSpinCCW)
+                  0000d01c    0000004a     robot.obj (.text:chainAndThenSpinCW)
+                  0000d066    0000004a     detector.obj (.text:detectorSetBlackRangeFromCurrent)
+                  0000d0b0    0000004a     detector.obj (.text:detectorSetWhiteRangeFromCurrent)
+                  0000d0fa    0000004a     rts430x_lc_sd_eabi.lib : fs_cmp.asm.obj (.text)
+                  0000d144    0000004a     serial.obj (.text:uart_read_frame)
+                  0000d18e    00000048     robot.obj (.text:Command_Spin)
+                  0000d1d6    00000048     robot.obj (.text:chainAndThenDriveStraight)
+                  0000d21e    00000048     robot.obj (.text:chainAndThenFollowLine)
+                  0000d266    00000048     robot.obj (.text:chainAndThenForward)
+                  0000d2ae    00000048     robot.obj (.text:chainAndThenReverse)
+                  0000d2f6    00000048     robot.obj (.text:chainAndThenReverseStraight)
+                  0000d33e    00000048     robot.obj (.text:chainAndThenWait)
+                  0000d386    00000048     motors.obj (.text:clampPWM)
+                  0000d3ce    00000048     motors.obj (.text:pwmCountsFromPercent)
+                  0000d416    00000046     rts430x_lc_sd_eabi.lib : fs_tou.asm.obj (.text)
+                  0000d45c    00000044     LCD.obj (.text:Display_Update)
+                  0000d4a0    00000042     menu.obj (.text:renderPosition)
+                  0000d4e2    00000040     LCD.obj (.text:Init_SPI_B1)
+                  0000d522    00000040     rts430x_lc_sd_eabi.lib : cpy_util.asm.obj (.text:__memcpy_far)
+                  0000d562    00000040     robot.obj (.text:chainAndThenAlignLeftToLine)
+                  0000d5a2    00000040     robot.obj (.text:chainAndThenDriveToLine)
+                  0000d5e2    00000040     rts430x_lc_sd_eabi.lib : div32s.asm.obj (.text)
+                  0000d622    0000003e                            : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
+                  0000d660    0000003e                            : asr32.asm.obj (.text:l_asr_const)
+                  0000d69e    0000003e                            : lsr32.asm.obj (.text:l_lsr_const)
+                  0000d6dc    0000003c     robot.obj (.text:Command_Reverse)
+                  0000d718    0000003c     FRWP_INIT_LIB_CCS_msp430_large_code_small_data.lib : frwp_init.obj (.text:__mpu_init)
+                  0000d754    0000003c     rts430x_lc_sd_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  0000d790    0000003c     menu.obj (.text:renderIrCalibrate)
+                  0000d7cc    0000003a     robot.obj (.text:Command_Forward)
+                  0000d806    0000003a     robot.obj (.text:Command_Wait)
+                  0000d840    0000003a     menu.obj (.text:Menu_OnSW1)
+                  0000d87a    00000036     esp.obj (.text:ESP_ParseCIFSR)
+                  0000d8b0    00000036     motors.obj (.text:Timer_CCR_Interval_From_Frequency)
+                  0000d8e6    00000036     robot.obj (.text:commandResetRecursive)
+                  0000d91c    00000036     rts430x_lc_sd_eabi.lib : fs_itof.asm.obj (.text)
+                  0000d952    00000036                            : strstr.c.obj (.text:strstr)
+                  0000d988    00000034     adc.obj (.text:ADC_init)
+                  0000d9bc    00000034     motors.obj (.text:driveSpin)
+                  0000d9f0    00000032     main.obj (.text:ScheduleMissionCommands)
+                  0000da22    00000032     motors.obj (.text:driveForward)
+                  0000da54    00000032     motors.obj (.text:driveReverse)
+                  0000da86    00000032     motors.obj (.text:driveSpinReverse)
+                  0000dab8    00000030     menu.obj (.text:Menu_OnSW2)
+                  0000dae8    0000002e     adc.obj (.text:ADC_SelectAndStart)
+                  0000db16    0000002e     switches.obj (.text:Init_Switches)
+                  0000db44    0000002e     menu.obj (.text:Menu_Init)
+                  0000db72    0000002e     serial.obj (.text:uart_init)
+                  0000dba0    0000002e     serial.obj (.text:uart_send_buf)
+                  0000dbce    0000002c     esp.obj (.text:ESP_IPPollUpdate)
+                  0000dbfa    0000002c     adc.obj (.text:getBatteryVoltage)
+                  0000dc26    0000002c     rts430x_lc_sd_eabi.lib : div16s.asm.obj (.text)
+                  0000dc52    0000002a     robot.obj (.text:chainSchedule)
+                  0000dc7c    0000002a     rts430x_lc_sd_eabi.lib : strncmp.c.obj (.text:strncmp)
+                  0000dca6    0000002a     otos.obj (.text:wait_scl_high)
+                  0000dcd0    00000028     motors.obj (.text:Motors_DriveSpinPWM)
+                  0000dcf8    00000028     LCD.obj (.text:WriteData)
+                  0000dd20    00000028     LCD.obj (.text:WriteIns)
+                  0000dd48    00000028     adc.obj (.text:getThumbWheel)
+                  0000dd70    00000026     gpio.obj (.text:GPIO_setAsInputPinWithPullUpResistor)
+                  0000dd96    00000026     robot.obj (.text:chainWithDisplay)
+                  0000ddbc    00000026     otos.obj (.text:getHeading)
+                  0000dde2    00000024     motors.obj (.text:Motors_DriveForwardPWM)
+                  0000de06    00000024     motors.obj (.text:Motors_DriveReversePWM)
+                  0000de2a    00000024     motors.obj (.text:Motors_DriveSpinReversePWM)
+                  0000de4e    00000024     rts430x_lc_sd_eabi.lib : fs_utof.asm.obj (.text)
+                  0000de72    00000024                            : mult32_f5hw.asm.obj (.text)
+                  0000de96    00000024     menu.obj (.text:setLcdMode)
+                  0000deba    00000022     display.obj (.text:Display_Process)
+                  0000dedc    00000022     otos.obj (.text:zeroHeading)
+                  0000defe    00000020     motors.obj (.text:Motors_Service)
+                  0000df1e    00000020     esp.obj (.text:esp_is_num_start)
+                  0000df3e    00000020     otos.obj (.text:getPositionX)
+                  0000df5e    00000020     otos.obj (.text:getPositionY)
+                  0000df7e    00000020     robot.obj (.text:robotCurvatureWatchdog)
+                  0000df9e    00000020     robot.obj (.text:scheduleCommand)
+                  0000dfbe    0000001e     adc.obj (.text:ADC_disableConversions)
+                  0000dfdc    0000001e     gpio.obj (.text:GPIO_setAsOutputPin)
+                  0000dffa    0000001e     otos.obj (.text:i2c_stop)
+                  0000e018    0000001e     LCD.obj (.text:lcd_BIG_mid)
+                  0000e036    0000001c     pid.obj (.text:PID_IsDone)
+                  0000e052    0000001c     LCD.obj (.text:SPI_B1_write)
+                  0000e06e    0000001c     rts430x_lc_sd_eabi.lib : mult1632_f5hw.asm.obj (.text:__mpyul)
+                  0000e08a    0000001c     robot.obj (.text:chainAppend)
+                  0000e0a6    0000001c     LCD.obj (.text:lcd_out)
+                  0000e0c2    0000001a     gpio.obj (.text:GPIO_getInputPinValue)
+                  0000e0dc    0000001a     ports.obj (.text:Init_Ports)
+                  0000e0f6    0000001a     otos.obj (.text:i2c_start)
+                  0000e110    00000018     adc.obj (.text:ADC_startConversion)
+                  0000e128    00000018     LCD.obj (.text:ClrDisplay_Buffer_0)
+                  0000e140    00000018     LCD.obj (.text:ClrDisplay_Buffer_1)
+                  0000e158    00000018     LCD.obj (.text:ClrDisplay_Buffer_2)
+                  0000e170    00000018     LCD.obj (.text:ClrDisplay_Buffer_3)
+                  0000e188    00000018     esp.obj (.text:ESP_SendCommand)
+                  0000e1a0    00000018     esp.obj (.text:ESP_SetPendingEvent)
+                  0000e1b8    00000018     otos.obj (.text:read_sda)
+                  0000e1d0    00000018     rts430x_lc_sd_eabi.lib : mult16_f5hw.asm.obj (.text)
+                  0000e1e8    00000018     robot.obj (.text:secondsToTicks)
+                  0000e200    00000016     adc.obj (.text:ADC_configureMemory)
+                  0000e216    00000016     LCD.obj (.text:ClrDisplay)
+                  0000e22c    00000016     gpio.obj (.text:GPIO_setOutputLowOnPin)
+                  0000e242    00000016     robot.obj (.text:isRobotBusy)
+                  0000e258    00000016     rts430x_lc_sd_eabi.lib : div16u.asm.obj (.text)
+                  0000e26e    00000016     LCD.obj (.text:spi_chipselect_idle)
+                  0000e284    00000014     adc.obj (.text:ADC_setupSamplingTimer)
+                  0000e298    00000014     detector.obj (.text:clampAdc)
+                  0000e2ac    00000012     otos.obj (.text:Init_IMU)
+                  0000e2be    00000012     menu.obj (.text:Menu_ConsumeCancelMissionRequest)
+                  0000e2d0    00000012     menu.obj (.text:Menu_ConsumeRunMissionRequest)
+                  0000e2e2    00000012     switches.obj (.text:Switch1_ConsumePress)
+                  0000e2f4    00000012     switches.obj (.text:Switch2_ConsumePress)
+                  0000e306    00000012     rts430x_lc_sd_eabi.lib : memcpy.c.obj (.text:memcpy)
+                  0000e318    00000012     robot.obj (.text:resetRobot)
+                  0000e32a    00000012     otos.obj (.text:scl_low)
+                  0000e33c    00000012     otos.obj (.text:sda_low)
+                  0000e34e    00000012     LCD.obj (.text:spi_chipselect_active)
+                  0000e360    00000010     robot.obj (.text:getDisplayName)
+                  0000e370    00000010     detector.obj (.text:getRaw)
+                  0000e380    00000010     adc.obj (.text:setThumbWheelMenuCount)
+                  0000e390    0000000e     adc.obj (.text:ADC_setResolution)
+                  0000e39e    0000000e     LCD.obj (.text:DisplayOnOff)
+                  0000e3ac    0000000e     timers.obj (.text:Init_Timers)
+                  0000e3ba    0000000e     motors.obj (.text:Motors_IsSettled)
+                  0000e3c8    0000000e     otos.obj (.text:bytes_to_int16)
+                  0000e3d6    0000000e     LCD.obj (.text:lcd_4line)
+                  0000e3e4    0000000e     otos.obj (.text:otos_delay)
+                  0000e3f2    0000000c     otos.obj (.text:IMU_Process)
+                  0000e3fe    0000000a     adc.obj (.text:ADC_setDataReadBackFormat)
+                  0000e408    0000000a     pid.obj (.text:PID_Reset)
+                  0000e412    0000000a     rts430x_lc_sd_eabi.lib : abs.c.obj (.text:abs)
+                  0000e41c    0000000a     robot.obj (.text:chainDriveStraightMs)
+                  0000e426    0000000a     robot.obj (.text:chainReverseMs)
+                  0000e430    0000000a     robot.obj (.text:chainSpinCCWMs)
+                  0000e43a    0000000a     robot.obj (.text:chainSpinCWMs)
+                  0000e444    0000000a     robot.obj (.text:chainWait)
+                  0000e44e    0000000a     switches.obj (.text:enable_switch_SW1)
+                  0000e458    0000000a     switches.obj (.text:enable_switch_SW2)
+                  0000e462    0000000a     rts430x_lc_sd_eabi.lib : fs_neg.asm.obj (.text)
+                  0000e46c    0000000a     otos.obj (.text:scl_high)
+                  0000e476    0000000a     otos.obj (.text:sda_high)
+                  0000e480    00000008     adc.obj (.text:ADC_clearInterrupt)
+                  0000e488    00000008     adc.obj (.text:ADC_enable)
+                  0000e490    00000008     adc.obj (.text:ADC_enableInterrupt)
+                  0000e498    00000008     system.obj (.text:enable_interrupts)
+                  0000e4a0    00000006     esp.obj (.text:ESP_GetIPString)
+                  0000e4a6    00000006     esp.obj (.text:ESP_GetStartupState)
+                  0000e4ac    00000006     menu.obj (.text:Menu_SetMissionRunning)
+                  0000e4b2    00000006     timer_b.obj (.text:Timer_B_startCounter)
+                  0000e4b8    00000006     rts430x_lc_sd_eabi.lib : exit.c.obj (.text:abort)
+                  0000e4be    00000006     robot.obj (.text:chainReset)
+                  0000e4c4    00000006     motors.obj (.text:driveStop)
+                  0000e4ca    00000006     LCD.obj (.text:spi_reset_active)
+                  0000e4d0    00000006     LCD.obj (.text:spi_reset_idle)
+                  0000e4d6    00000004     rts430x_lc_sd_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
+                  0000e4da    00000002     menu.obj (.text:Menu_NotifyESPCommandReceived)
+                  0000e4dc    00000002     switches.obj (.text:Switch_Process)
+                  0000e4de    00000002     rts430x_lc_sd_eabi.lib : startup.c.obj (.text:_system_post_cinit)
 
 .text:_isr 
-*          0    0000e0c8    00000296     
-                  0000e0c8    00000088     switches.obj (.text:_isr:PORT2_ISR)
-                  0000e150    00000088     switches.obj (.text:_isr:PORT4_ISR)
-                  0000e1d8    00000064     adc.obj (.text:_isr:ADC_ISR)
-                  0000e23c    00000064     serial.obj (.text:_isr:EUSCI_A0_RX_ISR)
-                  0000e2a0    00000030     timers.obj (.text:_isr:Timer0_B1_ISR)
-                  0000e2d0    0000002a     timers.obj (.text:_isr:Timer0_B0_ISR)
-                  0000e2fa    00000028     debug_pc.obj (.text:_isr:EUSCI_A1_RX_ISR)
-                  0000e322    00000020     rts430x_lc_sd_eabi.lib : boot.c.obj (.text:_isr:_c_int00_noargs_mpu)
-                  0000e342    0000000a     timers.obj (.text:_isr:Timer1_B0_ISR)
-                  0000e34c    0000000a     timers.obj (.text:_isr:Timer1_B1_ISR)
-                  0000e356    00000008     rts430x_lc_sd_eabi.lib : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
+*          0    0000e4e0    00000296     
+                  0000e4e0    00000088     switches.obj (.text:_isr:PORT2_ISR)
+                  0000e568    00000088     switches.obj (.text:_isr:PORT4_ISR)
+                  0000e5f0    00000064     adc.obj (.text:_isr:ADC_ISR)
+                  0000e654    00000064     serial.obj (.text:_isr:EUSCI_A0_RX_ISR)
+                  0000e6b8    00000030     timers.obj (.text:_isr:Timer0_B1_ISR)
+                  0000e6e8    0000002a     timers.obj (.text:_isr:Timer0_B0_ISR)
+                  0000e712    00000028     debug_pc.obj (.text:_isr:EUSCI_A1_RX_ISR)
+                  0000e73a    00000020     rts430x_lc_sd_eabi.lib : boot.c.obj (.text:_isr:_c_int00_noargs_mpu)
+                  0000e75a    0000000a     timers.obj (.text:_isr:Timer1_B0_ISR)
+                  0000e764    0000000a     timers.obj (.text:_isr:Timer1_B1_ISR)
+                  0000e76e    00000008     rts430x_lc_sd_eabi.lib : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
 
 .bss       0    00002000    00000503     UNINITIALIZED
                   00002000    000003dc     robot.obj (.bss:active_chain)
@@ -431,21 +437,21 @@ section   page    origin      length       input sections
                   00002501    00000001     (.common:sw2_debounce_active)
                   00002502    00000001     (.common:update_display)
 
-.data      0    000026f0    0000013b     UNINITIALIZED
-                  000026f0    000000aa     robot.obj (.data)
-                  0000279a    00000020     otos.obj (.data:g_otos)
-                  000027ba    00000014     main.obj (.data)
-                  000027ce    00000010     detector.obj (.data)
-                  000027de    00000010     esp.obj (.data:s_ip_string)
-                  000027ee    0000000e     motors.obj (.data)
-                  000027fc    0000000c     adc.obj (.data)
-                  00002808    0000000b     esp.obj (.data)
-                  00002813    00000001     --HOLE--
-                  00002814    0000000b     menu.obj (.data)
-                  0000281f    00000001     --HOLE--
-                  00002820    00000006     serial.obj (.data)
-                  00002826    00000003     switches.obj (.data)
-                  00002829    00000002     debug_pc.obj (.data)
+.data      0    000026f0    00000143     UNINITIALIZED
+                  000026f0    000000b2     robot.obj (.data)
+                  000027a2    00000020     otos.obj (.data:g_otos)
+                  000027c2    00000014     main.obj (.data)
+                  000027d6    00000010     detector.obj (.data)
+                  000027e6    00000010     esp.obj (.data:s_ip_string)
+                  000027f6    0000000e     motors.obj (.data)
+                  00002804    0000000c     adc.obj (.data)
+                  00002810    0000000b     esp.obj (.data)
+                  0000281b    00000001     --HOLE--
+                  0000281c    0000000b     menu.obj (.data)
+                  00002827    00000001     --HOLE--
+                  00002828    00000006     serial.obj (.data)
+                  0000282e    00000003     switches.obj (.data)
+                  00002831    00000002     debug_pc.obj (.data)
 
 .stack     0    00002f60    000000a0     UNINITIALIZED
                   00002f60    00000002     rts430x_lc_sd_eabi.lib : boot.c.obj (.stack)
@@ -562,15 +568,15 @@ MODULE SUMMARY
        Total:                       692     0         57     
                                                              
     .\
-       robot.obj                    10504   129       1260   
-       menu.obj                     2144    342       11     
-       esp.obj                      1396    802       47     
-       otos.obj                     1282    0         32     
+       robot.obj                    11018   129       1268   
+       menu.obj                     2540    362       11     
+       esp.obj                      1374    802       47     
+       otos.obj                     1314    0         32     
        ports.obj                    900     0         0      
        motors.obj                   694     0         14     
        detector.obj                 540     0         16     
        timers.obj                   484     36        0      
-       main.obj                     424     0         58     
+       main.obj                     422     0         58     
        switches.obj                 376     4         3      
        adc.obj                      346     10        12     
        pid.obj                      352     0         0      
@@ -581,7 +587,7 @@ MODULE SUMMARY
        debug_pc.obj                 40      2         2      
        system.obj                   8       0         0      
     +--+----------------------------+-------+---------+---------+
-       Total:                       20366   1327      1539   
+       Total:                       21284   1347      1547   
                                                              
     .\driverlib\MSP430FR2xx_4xx\
        adc.obj                      196     0         0      
@@ -603,6 +609,7 @@ MODULE SUMMARY
        fs_div.asm.obj               144     0         0      
        autoinit.c.obj               124     0         0      
        fs_toi.asm.obj               104     0         0      
+       cvtfd.c.obj                  100     0         0      
        div32u.asm.obj               88      0         0      
        fs_cmp.asm.obj               74      0         0      
        fs_tou.asm.obj               70      0         0      
@@ -645,26 +652,26 @@ MODULE SUMMARY
        int45.asm.obj                0       2         0      
        startup.c.obj                2       0         0      
     +--+----------------------------+-------+---------+---------+
-       Total:                       2304    32        0      
+       Total:                       2404    32        0      
                                                              
        Stack:                       0       0         160    
-       Linker Generated:            0       216       0      
+       Linker Generated:            0       224       0      
     +--+----------------------------+-------+---------+---------+
-       Grand Total:                 23832   1603      1756   
+       Grand Total:                 24850   1631      1764   
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 000084b8 records: 2, size/record: 8, table size: 16
-	.data: load addr=00008400, load size=000000a6 bytes, run addr=000026f0, run size=0000013b bytes, compression=lzss
-	.bss: load addr=000084b2, load size=00000006 bytes, run addr=00002000, run size=00000503 bytes, compression=zero_init
-binit @ 000084c8 records: 1, size/record: 12, table size: 16
+__TI_cinit_table @ 000084c0 records: 2, size/record: 8, table size: 16
+	.data: load addr=00008400, load size=000000ae bytes, run addr=000026f0, run size=00000143 bytes, compression=lzss
+	.bss: load addr=000084ba, load size=00000006 bytes, run addr=00002000, run size=00000503 bytes, compression=zero_init
+binit @ 000084d0 records: 1, size/record: 12, table size: 16
 	.TI.ramfunc: load addr=00008000, load size=000001ec, run addr=00002504, run size=000001ec, compression=none
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 000084a6 records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 000084ae records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_zero_init
 	index: 1, handler: __TI_decompress_lzss
 	index: 2, handler: __TI_decompress_none
@@ -704,17 +711,17 @@ address   name
 00000712  ADCMEM0                              
 00000713  ADCMEM0_H                            
 00000712  ADCMEM0_L                            
-0000e1d8  ADC_ISR                              
-0000e068  ADC_clearInterrupt                   
-0000dde8  ADC_configureMemory                  
-0000dba6  ADC_disableConversions               
-0000e070  ADC_enable                           
-0000e078  ADC_enableInterrupt                  
-0000d592  ADC_init                             
-0000dfe6  ADC_setDataReadBackFormat            
-0000df78  ADC_setResolution                    
-0000de6c  ADC_setupSamplingTimer               
-0000dcf8  ADC_startConversion                  
+0000e5f0  ADC_ISR                              
+0000e480  ADC_clearInterrupt                   
+0000e200  ADC_configureMemory                  
+0000dfbe  ADC_disableConversions               
+0000e488  ADC_enable                           
+0000e490  ADC_enableInterrupt                  
+0000d988  ADC_init                             
+0000e3fe  ADC_setDataReadBackFormat            
+0000e390  ADC_setResolution                    
+0000e284  ADC_setupSamplingTimer               
+0000e110  ADC_startConversion                  
 00000660  BAKMEM0                              
 00000661  BAKMEM0_H                            
 00000660  BAKMEM0_L                            
@@ -763,7 +770,7 @@ address   name
 00000672  BAKMEM9                              
 00000673  BAKMEM9_H                            
 00000672  BAKMEM9_L                            
-0000e0a0  C$$EXIT                              
+0000e4b8  C$$EXIT                              
 000002ee  CAPTIOCTL                            
 000002ef  CAPTIOCTL_H                          
 000002ee  CAPTIOCTL_L                          
@@ -842,39 +849,39 @@ address   name
 00000190  CSCTL8                               
 00000191  CSCTL8_H                             
 00000190  CSCTL8_L                             
-0000ddfe  ClrDisplay                           
-0000dd10  ClrDisplay_Buffer_0                  
-0000dd28  ClrDisplay_Buffer_1                  
-0000dd40  ClrDisplay_Buffer_2                  
-0000dd58  ClrDisplay_Buffer_3                  
-0000c344  Command_AlignLeftToLine              
-0000c522  Command_DriveStraight                
-0000c3a4  Command_DriveToLine                  
-0000bb38  Command_DriveToXY                    
-0000c95a  Command_DriveUntil                   
-0000b950  Command_FollowLine                   
-0000d3d6  Command_Forward                      
-0000d2e6  Command_Reverse                      
-0000c57e  Command_ReverseStraight              
-0000c74a  Command_Sequence                     
-0000cd92  Command_Spin                         
-0000c280  Command_TurnToAngle                  
-0000d410  Command_Wait                         
-0000df86  DisplayOnOff                         
-0000dac2  Display_Process                      
-0000d0a8  Display_Update                       
-0000c8ae  Display_WriteLineIfChanged           
-0000e088  ESP_GetIPString                      
-0000e08e  ESP_GetStartupState                  
-0000d7aa  ESP_IPPollUpdate                     
-0000bdf6  ESP_Init                             
-0000a168  ESP_ParseIPDFrame                    
-0000a550  ESP_ProcessStartup                   
-0000b316  ESP_ScheduleEvent                    
-0000dd70  ESP_SendCommand                      
-0000dd88  ESP_SetPendingEvent                  
-0000e23c  EUSCI_A0_RX_ISR                      
-0000e2fa  EUSCI_A1_RX_ISR                      
+0000e216  ClrDisplay                           
+0000e128  ClrDisplay_Buffer_0                  
+0000e140  ClrDisplay_Buffer_1                  
+0000e158  ClrDisplay_Buffer_2                  
+0000e170  ClrDisplay_Buffer_3                  
+0000c740  Command_AlignLeftToLine              
+0000c91e  Command_DriveStraight                
+0000c7a0  Command_DriveToLine                  
+0000bedc  Command_DriveToXY                    
+0000cd56  Command_DriveUntil                   
+0000bcf4  Command_FollowLine                   
+0000d7cc  Command_Forward                      
+0000d6dc  Command_Reverse                      
+0000c97a  Command_ReverseStraight              
+0000cb46  Command_Sequence                     
+0000d18e  Command_Spin                         
+0000c67c  Command_TurnToAngle                  
+0000d806  Command_Wait                         
+0000e39e  DisplayOnOff                         
+0000deba  Display_Process                      
+0000d45c  Display_Update                       
+0000ccaa  Display_WriteLineIfChanged           
+0000e4a0  ESP_GetIPString                      
+0000e4a6  ESP_GetStartupState                  
+0000dbce  ESP_IPPollUpdate                     
+0000cba0  ESP_Init                             
+0000a388  ESP_ParseIPDFrame                    
+0000a770  ESP_ProcessStartup                   
+0000b630  ESP_ScheduleEvent                    
+0000e188  ESP_SendCommand                      
+0000e1a0  ESP_SetPendingEvent                  
+0000e654  EUSCI_A0_RX_ISR                      
+0000e712  EUSCI_A1_RX_ISR                      
 000001a0  FRCTL0                               
 000001a1  FRCTL0_H                             
 000001a0  FRCTL0_L                             
@@ -884,10 +891,10 @@ address   name
 000001a6  GCCTL1                               
 000001a7  GCCTL1_H                             
 000001a6  GCCTL1_L                             
-0000dcaa  GPIO_getInputPinValue                
-0000d978  GPIO_setAsInputPinWithPullUpResistor 
-0000dbc4  GPIO_setAsOutputPin                  
-0000de14  GPIO_setOutputLowOnPin               
+0000e0c2  GPIO_getInputPinValue                
+0000dd70  GPIO_setAsInputPinWithPullUpResistor 
+0000dfdc  GPIO_setAsOutputPin                  
+0000e22c  GPIO_setOutputLowOnPin               
 000006c4  ICCILSR0                             
 000006c5  ICCILSR0_H                           
 000006c4  ICCILSR0_L                           
@@ -906,26 +913,26 @@ address   name
 000006c0  ICCSC                                
 000006c1  ICCSC_H                              
 000006c0  ICCSC_L                              
-0000dfda  IMU_Process                          
-0000c21c  Init_ADC                             
-0000c018  Init_Clocks                          
-0000ca02  Init_Conditions                      
-0000de94  Init_IMU                             
-0000ae46  Init_LCD                             
-0000b080  Init_Port1                           
-0000b44a  Init_Port2                           
-0000b1d2  Init_Port3                           
-0000b576  Init_Port4                           
-0000c2e2  Init_Port5                           
-0000b608  Init_Port6                           
-0000dcc4  Init_Ports                           
-0000d0ec  Init_SPI_B1                          
-0000d6f2  Init_Switch                          
-0000d6f2  Init_Switches                        
-0000b7b8  Init_Timer_B0                        
-0000bbae  Init_Timer_B1                        
-0000c150  Init_Timer_B3                        
-0000df94  Init_Timers                          
+0000e3f2  IMU_Process                          
+0000c550  Init_ADC                             
+0000c34c  Init_Clocks                          
+0000cdfe  Init_Conditions                      
+0000e2ac  Init_IMU                             
+0000b164  Init_LCD                             
+0000b39e  Init_Port1                           
+0000b764  Init_Port2                           
+0000b4f0  Init_Port3                           
+0000b890  Init_Port4                           
+0000c6de  Init_Port5                           
+0000b922  Init_Port6                           
+0000e0dc  Init_Ports                           
+0000d4e2  Init_SPI_B1                          
+0000db16  Init_Switch                          
+0000db16  Init_Switches                        
+0000bad2  Init_Timer_B0                        
+0000bf52  Init_Timer_B1                        
+0000c484  Init_Timer_B3                        
+0000e3ac  Init_Timers                          
 000004c4  MAC                                  
 000004da  MAC32H                               
 000004db  MAC32H_H                             
@@ -965,21 +972,21 @@ address   name
 000004c2  MPYS_L                               
 000004c1  MPY_H                                
 000004c0  MPY_L                                
-0000dea6  Menu_ConsumeCancelMissionRequest     
-0000deb8  Menu_ConsumeRunMissionRequest        
-0000d7d6  Menu_Init                            
-0000e0c2  Menu_NotifyESPCommandReceived        
-0000d44a  Menu_OnSW1                           
-0000d720  Menu_OnSW2                           
-0000c7a4  Menu_Render                          
-0000e094  Menu_SetMissionRunning               
-0000b8d0  Menu_Update                          
-0000d9ea  Motors_DriveForwardPWM               
-0000da0e  Motors_DriveReversePWM               
-0000d8d8  Motors_DriveSpinPWM                  
-0000da32  Motors_DriveSpinReversePWM           
-0000dfa2  Motors_IsSettled                     
-0000db06  Motors_Service                       
+0000e2be  Menu_ConsumeCancelMissionRequest     
+0000e2d0  Menu_ConsumeRunMissionRequest        
+0000db44  Menu_Init                            
+0000e4da  Menu_NotifyESPCommandReceived        
+0000d840  Menu_OnSW1                           
+0000dab8  Menu_OnSW2                           
+0000c5b4  Menu_Render                          
+0000e4ac  Menu_SetMissionRunning               
+0000bc72  Menu_Update                          
+0000dde2  Motors_DriveForwardPWM               
+0000de06  Motors_DriveReversePWM               
+0000dcd0  Motors_DriveSpinPWM                  
+0000de2a  Motors_DriveSpinReversePWM           
+0000e3ba  Motors_IsSettled                     
+0000defe  Motors_Service                       
 000004c8  OP2                                  
 000004e2  OP2H                                 
 000004e3  OP2H_H                               
@@ -989,8 +996,8 @@ address   name
 000004e0  OP2L_L                               
 000004c9  OP2_H                                
 000004c8  OP2_L                                
-0000bc9a  OTOS_Begin                           
-0000bd0e  OTOS_CalibrateImu                    
+0000c03e  OTOS_Begin                           
+0000c0b2  OTOS_CalibrateImu                    
 00000204  P1DIR                                
 0000021a  P1IE                                 
 00000218  P1IES                                
@@ -1159,8 +1166,8 @@ address   name
 00000256  PCSELC                               
 00000257  PCSELC_H                             
 00000256  PCSELC_L                             
-0000c1b6  PID_Init                             
-0000dc1e  PID_IsDone                           
+0000c4ea  PID_Init                             
+0000e036  PID_IsDone                           
 00000324  PJDIR                                
 00000325  PJDIR_H                              
 00000324  PJDIR_L                              
@@ -1194,8 +1201,8 @@ address   name
 0000012a  PMMIFG                               
 0000012b  PMMIFG_H                             
 0000012a  PMMIFG_L                             
-0000e0c8  PORT2_ISR                            
-0000e150  PORT4_ISR                            
+0000e4e0  PORT2_ISR                            
+0000e568  PORT4_ISR                            
 000004e4  RES0                                 
 000004e5  RES0_H                               
 000004e4  RES0_L                               
@@ -1307,7 +1314,7 @@ address   name
 00000104  SFRRPCR                              
 00000105  SFRRPCR_H                            
 00000104  SFRRPCR_L                            
-0000dc3a  SPI_B1_write                         
+0000e052  SPI_B1_write                         
 000004ce  SUMEXT                               
 000004cf  SUMEXT_H                             
 000004ce  SUMEXT_L                             
@@ -1350,11 +1357,11 @@ address   name
 0000015a  SYSUNIV                              
 0000015b  SYSUNIV_H                            
 0000015a  SYSUNIV_L                            
-0000af0a  Software_Trim                        
-0000deca  Switch1_ConsumePress                 
-0000dedc  Switch2_ConsumePress                 
-0000e0c4  Switch_Process                       
-0000e0c4  Switches_Process                     
+0000b228  Software_Trim                        
+0000e2e2  Switch1_ConsumePress                 
+0000e2f4  Switch2_ConsumePress                 
+0000e4dc  Switch_Process                       
+0000e4dc  Switches_Process                     
 00000392  TB0CCR0                              
 00000393  TB0CCR0_H                            
 00000392  TB0CCR0_L                            
@@ -1500,12 +1507,12 @@ address   name
 00000451  TB3R_H                               
 00000450  TB3R_L                               
 000024f4  Time_Sequence                        
-0000e2d0  Timer0_B0_ISR                        
-0000e2a0  Timer0_B1_ISR                        
-0000e342  Timer1_B0_ISR                        
-0000e34c  Timer1_B1_ISR                        
-0000c5da  Timer_B_initUpMode                   
-0000e09a  Timer_B_startCounter                 
+0000e6e8  Timer0_B0_ISR                        
+0000e6b8  Timer0_B1_ISR                        
+0000e75a  Timer1_B0_ISR                        
+0000e764  Timer1_B1_ISR                        
+0000c9d6  Timer_B_initUpMode                   
+0000e4b2  Timer_B_startCounter                 
 00000510  UCA0ABCTL                            
 00000511  UCA0ABCTL_H                          
 00000510  UCA0ABCTL_L                          
@@ -1683,21 +1690,21 @@ address   name
 000001cc  WDTCTL                               
 000001cd  WDTCTL_H                             
 000001cc  WDTCTL_L                             
-0000d900  WriteData                            
-0000d928  WriteIns                             
+0000dcf8  WriteData                            
+0000dd20  WriteIns                             
 00003000  __STACK_END                          
 000000a0  __STACK_SIZE                         
-000084c8  __TI_BINIT_Base                      
-000084d8  __TI_BINIT_Limit                     
-000084b8  __TI_CINIT_Base                      
-000084c8  __TI_CINIT_Limit                     
-000084c8  __TI_CINIT_Warm                      
-000084a6  __TI_Handler_Table_Base              
-000084b2  __TI_Handler_Table_Limit             
-0000e356  __TI_ISR_TRAP                        
-0000b9cc  __TI_auto_init_nopinit_hold_wdt      
-0000a858  __TI_decompress_lzss                 
-0000d35e  __TI_decompress_none                 
+000084d0  __TI_BINIT_Base                      
+000084e0  __TI_BINIT_Limit                     
+000084c0  __TI_CINIT_Base                      
+000084d0  __TI_CINIT_Limit                     
+000084d0  __TI_CINIT_Warm                      
+000084ae  __TI_Handler_Table_Base              
+000084ba  __TI_Handler_Table_Limit             
+0000e76e  __TI_ISR_TRAP                        
+0000bd70  __TI_auto_init_nopinit_hold_wdt      
+0000ab74  __TI_decompress_lzss                 
+0000d754  __TI_decompress_none                 
 0000ffce  __TI_int22                           
 0000ffd0  __TI_int23                           
 0000ffd2  __TI_int24                           
@@ -1725,168 +1732,173 @@ address   name
 ffffffff  __TI_pprof_out_hndl                  
 ffffffff  __TI_prof_data_size                  
 ffffffff  __TI_prof_data_start                 
-000084c8  __TI_table_binit                     
-0000d22c  __TI_zero_init                       
+000084d0  __TI_table_binit                     
+0000d622  __TI_zero_init                       
 ffffffff  __c_args__                           
-0000d12c  __memcpy_far                         
+0000d522  __memcpy_far                         
 00000001  __mpu_enable                         
-0000d322  __mpu_init                           
-0000a306  __mspabi_addf                        
-0000ccfe  __mspabi_cmpf                        
-0000b69a  __mspabi_divf                        
-0000d82e  __mspabi_divi                        
-0000d1ec  __mspabi_divli                       
-0000de40  __mspabi_divu                        
-0000c856  __mspabi_divul                       
-0000c080  __mspabi_fixfi                       
-0000d062  __mspabi_fixfu                       
-0000d526  __mspabi_fltif                       
-0000da56  __mspabi_fltuf                       
-0000afc8  __mspabi_mpyf                        
-0000ddb8  __mspabi_mpyi_f5hw                   
-0000da7a  __mspabi_mpyl_f5hw                   
-0000dc56  __mspabi_mpyul_f5hw                  
-0000e04a  __mspabi_negf                        
-0000d82e  __mspabi_remi                        
-0000d1ec  __mspabi_remli                       
-0000de40  __mspabi_remu                        
-0000c856  __mspabi_remul                       
-0000d2a2  __mspabi_sral_1                      
-0000d27e  __mspabi_sral_10                     
-0000d27a  __mspabi_sral_11                     
-0000d276  __mspabi_sral_12                     
-0000d272  __mspabi_sral_13                     
-0000d26e  __mspabi_sral_14                     
-0000d26a  __mspabi_sral_15                     
-0000d29e  __mspabi_sral_2                      
-0000d29a  __mspabi_sral_3                      
-0000d296  __mspabi_sral_4                      
-0000d292  __mspabi_sral_5                      
-0000d28e  __mspabi_sral_6                      
-0000d28a  __mspabi_sral_7                      
-0000d286  __mspabi_sral_8                      
-0000d282  __mspabi_sral_9                      
-0000d2e0  __mspabi_srll_1                      
-0000d2bc  __mspabi_srll_10                     
-0000d2b8  __mspabi_srll_11                     
-0000d2b4  __mspabi_srll_12                     
-0000d2b0  __mspabi_srll_13                     
-0000d2ac  __mspabi_srll_14                     
-0000d2a8  __mspabi_srll_15                     
-0000d2dc  __mspabi_srll_2                      
-0000d2d8  __mspabi_srll_3                      
-0000d2d4  __mspabi_srll_4                      
-0000d2d0  __mspabi_srll_5                      
-0000d2cc  __mspabi_srll_6                      
-0000d2c8  __mspabi_srll_7                      
-0000d2c4  __mspabi_srll_8                      
-0000d2c0  __mspabi_srll_9                      
-0000a300  __mspabi_subf                        
-0000e322  _c_int00_noargs_mpu                  
+0000d718  __mpu_init                           
+0000a526  __mspabi_addf                        
+0000d0fa  __mspabi_cmpf                        
+0000c618  __mspabi_cvtfd                       
+0000b9b4  __mspabi_divf                        
+0000dc26  __mspabi_divi                        
+0000d5e2  __mspabi_divli                       
+0000e258  __mspabi_divu                        
+0000cc52  __mspabi_divul                       
+0000c3b4  __mspabi_fixfi                       
+0000d416  __mspabi_fixfu                       
+0000d91c  __mspabi_fltif                       
+0000de4e  __mspabi_fltuf                       
+0000b2e6  __mspabi_mpyf                        
+0000e1d0  __mspabi_mpyi_f5hw                   
+0000de72  __mspabi_mpyl_f5hw                   
+0000e06e  __mspabi_mpyul_f5hw                  
+0000e462  __mspabi_negf                        
+0000dc26  __mspabi_remi                        
+0000d5e2  __mspabi_remli                       
+0000e258  __mspabi_remu                        
+0000cc52  __mspabi_remul                       
+0000d698  __mspabi_sral_1                      
+0000d674  __mspabi_sral_10                     
+0000d670  __mspabi_sral_11                     
+0000d66c  __mspabi_sral_12                     
+0000d668  __mspabi_sral_13                     
+0000d664  __mspabi_sral_14                     
+0000d660  __mspabi_sral_15                     
+0000d694  __mspabi_sral_2                      
+0000d690  __mspabi_sral_3                      
+0000d68c  __mspabi_sral_4                      
+0000d688  __mspabi_sral_5                      
+0000d684  __mspabi_sral_6                      
+0000d680  __mspabi_sral_7                      
+0000d67c  __mspabi_sral_8                      
+0000d678  __mspabi_sral_9                      
+0000d6d6  __mspabi_srll_1                      
+0000d6b2  __mspabi_srll_10                     
+0000d6ae  __mspabi_srll_11                     
+0000d6aa  __mspabi_srll_12                     
+0000d6a6  __mspabi_srll_13                     
+0000d6a2  __mspabi_srll_14                     
+0000d69e  __mspabi_srll_15                     
+0000d6d2  __mspabi_srll_2                      
+0000d6ce  __mspabi_srll_3                      
+0000d6ca  __mspabi_srll_4                      
+0000d6c6  __mspabi_srll_5                      
+0000d6c2  __mspabi_srll_6                      
+0000d6be  __mspabi_srll_7                      
+0000d6ba  __mspabi_srll_8                      
+0000d6b6  __mspabi_srll_9                      
+0000a520  __mspabi_subf                        
+0000e73a  _c_int00_noargs_mpu                  
 0000fffe  _reset_vector                        
 00002f60  _stack                               
-0000e0c6  _system_post_cinit                   
-0000e0be  _system_pre_init                     
-0000e0a0  abort                                
-0000dffa  abs                                  
-00002802  adc_battery_raw                      
-000027fe  adc_left_det_raw                     
-00002800  adc_right_det_raw                    
-000027fc  adc_thumb_raw                        
-0000276c  align_line_detector_kd               
-00002770  align_line_detector_ki               
-00002768  align_line_detector_kp               
-00002780  align_line_detector_tolerance_raw    
-00002774  align_line_heading_kp                
-0000277c  align_line_heading_tolerance_deg     
-00002760  align_line_left_base_percent         
-00002764  align_line_right_base_percent        
-00002778  align_line_target_delta_deg          
-0000a764  applySpeedSet                        
+0000e4de  _system_post_cinit                   
+0000e4d6  _system_pre_init                     
+0000e4b8  abort                                
+0000e412  abs                                  
+0000280a  adc_battery_raw                      
+00002806  adc_left_det_raw                     
+00002808  adc_right_det_raw                    
+00002804  adc_thumb_raw                        
+00002774  align_line_detector_kd               
+00002778  align_line_detector_ki               
+00002770  align_line_detector_kp               
+00002788  align_line_detector_tolerance_raw    
+0000277c  align_line_heading_kp                
+00002784  align_line_heading_tolerance_deg     
+00002768  align_line_left_base_percent         
+0000276c  align_line_right_base_percent        
+00002780  align_line_target_delta_deg          
+0000aa80  applySpeedSet                        
 000024fc  backlight_blink_enable               
-000027c8  baud_hi                              
-000027be  black_all                            
-000027ba  black_line_left                      
-000027bc  black_line_right                     
-0000e004  chainDriveStraightMs                 
-0000e00e  chainForward                         
-0000e018  chainReverseMs                       
-0000e022  chainSpinCCWMs                       
-0000e02c  chainSpinCWMs                        
-0000b12a  copy_in                              
+000027d0  baud_hi                              
+000027c6  black_all                            
+000027c2  black_line_left                      
+000027c4  black_line_right                     
+0000e41c  chainDriveStraightMs                 
+0000e426  chainReverseMs                       
+0000e430  chainSpinCCWMs                       
+0000e43a  chainSpinCWMs                        
+0000e444  chainWait                            
+0000b448  copy_in                              
 000024fd  current_character                    
-0000cc6a  detectorSetBlackRangeFromCurrent     
-0000ccb4  detectorSetWhiteRangeFromCurrent     
-000027d8  detector_left_black_max              
-000027d6  detector_left_black_min              
-000027d0  detector_left_white_max              
-000027ce  detector_left_white_min              
-000027dc  detector_right_black_max             
-000027da  detector_right_black_min             
-000027d4  detector_right_white_max             
-000027d2  detector_right_white_min             
+0000d066  detectorSetBlackRangeFromCurrent     
+0000d0b0  detectorSetWhiteRangeFromCurrent     
+000027e0  detector_left_black_max              
+000027de  detector_left_black_min              
+000027d8  detector_left_white_max              
+000027d6  detector_left_white_min              
+000027e4  detector_right_black_max             
+000027e2  detector_right_black_min             
+000027dc  detector_right_white_max             
+000027da  detector_right_white_min             
 000024e2  display                              
 000024fe  display_changed                      
 00002420  display_line                         
-0000d62e  driveForward                         
-0000d660  driveReverse                         
-0000d5fa  driveSpin                            
-0000d692  driveSpinReverse                     
-0000e0ac  driveStop                            
+0000da22  driveForward                         
+0000da54  driveReverse                         
+0000d9bc  driveSpin                            
+0000da86  driveSpinReverse                     
+0000e4c4  driveStop                            
 00002744  drive_straight_base_percent          
 00002750  drive_straight_correction_sign       
 0000274c  drive_straight_deadband_deg          
 00002740  drive_straight_kd                    
 0000273c  drive_straight_kp                    
 00002748  drive_straight_max_correction_percent
-0000278c  drive_to_line_approach_gain          
-00002784  drive_to_line_max_percent            
-00002788  drive_to_line_min_percent            
+00002794  drive_to_line_approach_gain          
+0000278c  drive_to_line_max_percent            
+00002790  drive_to_line_min_percent            
+00002764  drive_to_xy_komega                   
+00002760  drive_to_xy_kv                       
 00002758  drive_to_xy_speed_percent            
 0000275c  drive_to_xy_tolerance_in             
-0000e080  enable_interrupts                    
-0000e036  enable_switch_SW1                    
-0000e040  enable_switch_SW2                    
-0000884a  esp_commands                         
-0000acb8  format_float                         
+0000e498  enable_interrupts                    
+0000e44e  enable_switch_SW1                    
+0000e458  enable_switch_SW2                    
+00008856  esp_commands                         
+0000afd6  format_float                         
 00008400  fram_rw_start                        
 00008400  fram_rx_start                        
-0000d802  getBatteryVoltage                    
+0000dbfa  getBatteryVoltage                    
 0000269a  getDetectorValue                     
 000025a4  getDetectorWhiteLevel                
-0000d9c4  getHeading                           
-0000db46  getPositionY                         
-0000df58  getRawDetectorValue                  
-0000d950  getThumbWheel                        
+0000ddbc  getHeading                           
+0000df3e  getPositionX                         
+0000df5e  getPositionY                         
+0000e370  getRawDetectorValue                  
+0000dd48  getThumbWheel                        
 00000001  info_fram_protection                 
-0000c692  initRobot                            
-0000de2a  isRobotBusy                          
-0000dfbe  lcd_4line                            
-0000dc00  lcd_BIG_mid                          
-0000dc8e  lcd_out                              
-0000a432  main                                 
-0000deee  memcpy                               
+0000ca8e  initRobot                            
+0000e242  isRobotBusy                          
+0000e3d6  lcd_4line                            
+0000e018  lcd_BIG_mid                          
+0000e0a6  lcd_out                              
+0000a652  main                                 
+0000e306  memcpy                               
 000024f0  one_second_timer                     
 000024ff  one_time                             
 00000001  program_fram_protection              
-000027c0  project7count                        
-000027c6  project7flag                         
-000027c4  project7lock                         
-0000df00  resetRobot                           
-0000db66  robotCurvatureWatchdog               
-0000df68  setThumbWheelMenuCount               
-0000df36  spi_chipselect_active                
-0000de56  spi_chipselect_idle                  
-0000e0b2  spi_reset_active                     
-0000e0b8  spi_reset_idle                       
+000027c8  project7count                        
+000027ce  project7flag                         
+000027cc  project7lock                         
+0000a984  renderSignedFloat1                   
+0000e318  resetRobot                           
+0000df7e  robotCurvatureWatchdog               
+0000e380  setThumbWheelMenuCount               
+0000e34e  spi_chipselect_active                
+0000e26e  spi_chipselect_idle                  
+0000e4ca  spi_reset_active                     
+0000e4d0  spi_reset_idle                       
 00000000  start_protection_offset_address      
-0000d884  strncmp                              
-0000d55c  strstr                               
+0000dc7c  strncmp                              
+0000d952  strstr                               
 00002500  sw1_debounce_active                  
 000024f6  sw1_debounce_count                   
 00002501  sw2_debounce_active                  
 000024f8  sw2_debounce_count                   
-0000e0c4  switch_control                       
+0000e4dc  switch_control                       
 0000244c  turnPID                              
 00002754  turn_angle_tolerance_deg             
 00002718  turn_ff_ks_percent                   
@@ -1903,13 +1915,13 @@ ffffffff  __c_args__
 0000272c  turn_sysid_ramp_start_pwm_percent    
 00002730  turn_sysid_ramp_step_pwm_percent     
 00002728  turn_sysid_step_pwm_percent          
-0000d74e  uart_init                            
-0000cd48  uart_read_frame                      
-0000d77c  uart_send_buf                        
-0000c904  updateRobot                          
+0000db72  uart_init                            
+0000d144  uart_read_frame                      
+0000dba0  uart_send_buf                        
+0000cd00  updateRobot                          
 00002502  update_display                       
 000024fa  update_display_count                 
-0000dae4  zeroHeading                          
+0000dedc  zeroHeading                          
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -2867,262 +2879,267 @@ address   name
 00002754  turn_angle_tolerance_deg             
 00002758  drive_to_xy_speed_percent            
 0000275c  drive_to_xy_tolerance_in             
-00002760  align_line_left_base_percent         
-00002764  align_line_right_base_percent        
-00002768  align_line_detector_kp               
-0000276c  align_line_detector_kd               
-00002770  align_line_detector_ki               
-00002774  align_line_heading_kp                
-00002778  align_line_target_delta_deg          
-0000277c  align_line_heading_tolerance_deg     
-00002780  align_line_detector_tolerance_raw    
-00002784  drive_to_line_max_percent            
-00002788  drive_to_line_min_percent            
-0000278c  drive_to_line_approach_gain          
-000027ba  black_line_left                      
-000027bc  black_line_right                     
-000027be  black_all                            
-000027c0  project7count                        
-000027c4  project7lock                         
-000027c6  project7flag                         
-000027c8  baud_hi                              
-000027ce  detector_left_white_min              
-000027d0  detector_left_white_max              
-000027d2  detector_right_white_min             
-000027d4  detector_right_white_max             
-000027d6  detector_left_black_min              
-000027d8  detector_left_black_max              
-000027da  detector_right_black_min             
-000027dc  detector_right_black_max             
-000027fc  adc_thumb_raw                        
-000027fe  adc_left_det_raw                     
-00002800  adc_right_det_raw                    
-00002802  adc_battery_raw                      
+00002760  drive_to_xy_kv                       
+00002764  drive_to_xy_komega                   
+00002768  align_line_left_base_percent         
+0000276c  align_line_right_base_percent        
+00002770  align_line_detector_kp               
+00002774  align_line_detector_kd               
+00002778  align_line_detector_ki               
+0000277c  align_line_heading_kp                
+00002780  align_line_target_delta_deg          
+00002784  align_line_heading_tolerance_deg     
+00002788  align_line_detector_tolerance_raw    
+0000278c  drive_to_line_max_percent            
+00002790  drive_to_line_min_percent            
+00002794  drive_to_line_approach_gain          
+000027c2  black_line_left                      
+000027c4  black_line_right                     
+000027c6  black_all                            
+000027c8  project7count                        
+000027cc  project7lock                         
+000027ce  project7flag                         
+000027d0  baud_hi                              
+000027d6  detector_left_white_min              
+000027d8  detector_left_white_max              
+000027da  detector_right_white_min             
+000027dc  detector_right_white_max             
+000027de  detector_left_black_min              
+000027e0  detector_left_black_max              
+000027e2  detector_right_black_min             
+000027e4  detector_right_black_max             
+00002804  adc_thumb_raw                        
+00002806  adc_left_det_raw                     
+00002808  adc_right_det_raw                    
+0000280a  adc_battery_raw                      
 00002f60  _stack                               
 00003000  __STACK_END                          
 00008400  fram_rw_start                        
 00008400  fram_rx_start                        
-000084a6  __TI_Handler_Table_Base              
-000084b2  __TI_Handler_Table_Limit             
-000084b8  __TI_CINIT_Base                      
-000084c8  __TI_BINIT_Base                      
-000084c8  __TI_CINIT_Limit                     
-000084c8  __TI_CINIT_Warm                      
-000084c8  __TI_table_binit                     
-000084d8  __TI_BINIT_Limit                     
-0000884a  esp_commands                         
-0000a168  ESP_ParseIPDFrame                    
-0000a300  __mspabi_subf                        
-0000a306  __mspabi_addf                        
-0000a432  main                                 
-0000a550  ESP_ProcessStartup                   
-0000a764  applySpeedSet                        
-0000a858  __TI_decompress_lzss                 
-0000acb8  format_float                         
-0000ae46  Init_LCD                             
-0000af0a  Software_Trim                        
-0000afc8  __mspabi_mpyf                        
-0000b080  Init_Port1                           
-0000b12a  copy_in                              
-0000b1d2  Init_Port3                           
-0000b316  ESP_ScheduleEvent                    
-0000b44a  Init_Port2                           
-0000b576  Init_Port4                           
-0000b608  Init_Port6                           
-0000b69a  __mspabi_divf                        
-0000b7b8  Init_Timer_B0                        
-0000b8d0  Menu_Update                          
-0000b950  Command_FollowLine                   
-0000b9cc  __TI_auto_init_nopinit_hold_wdt      
-0000bb38  Command_DriveToXY                    
-0000bbae  Init_Timer_B1                        
-0000bc9a  OTOS_Begin                           
-0000bd0e  OTOS_CalibrateImu                    
-0000bdf6  ESP_Init                             
-0000c018  Init_Clocks                          
-0000c080  __mspabi_fixfi                       
-0000c150  Init_Timer_B3                        
-0000c1b6  PID_Init                             
-0000c21c  Init_ADC                             
-0000c280  Command_TurnToAngle                  
-0000c2e2  Init_Port5                           
-0000c344  Command_AlignLeftToLine              
-0000c3a4  Command_DriveToLine                  
-0000c522  Command_DriveStraight                
-0000c57e  Command_ReverseStraight              
-0000c5da  Timer_B_initUpMode                   
-0000c692  initRobot                            
-0000c74a  Command_Sequence                     
-0000c7a4  Menu_Render                          
-0000c856  __mspabi_divul                       
-0000c856  __mspabi_remul                       
-0000c8ae  Display_WriteLineIfChanged           
-0000c904  updateRobot                          
-0000c95a  Command_DriveUntil                   
-0000ca02  Init_Conditions                      
-0000cc6a  detectorSetBlackRangeFromCurrent     
-0000ccb4  detectorSetWhiteRangeFromCurrent     
-0000ccfe  __mspabi_cmpf                        
-0000cd48  uart_read_frame                      
-0000cd92  Command_Spin                         
-0000d062  __mspabi_fixfu                       
-0000d0a8  Display_Update                       
-0000d0ec  Init_SPI_B1                          
-0000d12c  __memcpy_far                         
-0000d1ec  __mspabi_divli                       
-0000d1ec  __mspabi_remli                       
-0000d22c  __TI_zero_init                       
-0000d26a  __mspabi_sral_15                     
-0000d26e  __mspabi_sral_14                     
-0000d272  __mspabi_sral_13                     
-0000d276  __mspabi_sral_12                     
-0000d27a  __mspabi_sral_11                     
-0000d27e  __mspabi_sral_10                     
-0000d282  __mspabi_sral_9                      
-0000d286  __mspabi_sral_8                      
-0000d28a  __mspabi_sral_7                      
-0000d28e  __mspabi_sral_6                      
-0000d292  __mspabi_sral_5                      
-0000d296  __mspabi_sral_4                      
-0000d29a  __mspabi_sral_3                      
-0000d29e  __mspabi_sral_2                      
-0000d2a2  __mspabi_sral_1                      
-0000d2a8  __mspabi_srll_15                     
-0000d2ac  __mspabi_srll_14                     
-0000d2b0  __mspabi_srll_13                     
-0000d2b4  __mspabi_srll_12                     
-0000d2b8  __mspabi_srll_11                     
-0000d2bc  __mspabi_srll_10                     
-0000d2c0  __mspabi_srll_9                      
-0000d2c4  __mspabi_srll_8                      
-0000d2c8  __mspabi_srll_7                      
-0000d2cc  __mspabi_srll_6                      
-0000d2d0  __mspabi_srll_5                      
-0000d2d4  __mspabi_srll_4                      
-0000d2d8  __mspabi_srll_3                      
-0000d2dc  __mspabi_srll_2                      
-0000d2e0  __mspabi_srll_1                      
-0000d2e6  Command_Reverse                      
-0000d322  __mpu_init                           
-0000d35e  __TI_decompress_none                 
-0000d3d6  Command_Forward                      
-0000d410  Command_Wait                         
-0000d44a  Menu_OnSW1                           
-0000d526  __mspabi_fltif                       
-0000d55c  strstr                               
-0000d592  ADC_init                             
-0000d5fa  driveSpin                            
-0000d62e  driveForward                         
-0000d660  driveReverse                         
-0000d692  driveSpinReverse                     
-0000d6f2  Init_Switch                          
-0000d6f2  Init_Switches                        
-0000d720  Menu_OnSW2                           
-0000d74e  uart_init                            
-0000d77c  uart_send_buf                        
-0000d7aa  ESP_IPPollUpdate                     
-0000d7d6  Menu_Init                            
-0000d802  getBatteryVoltage                    
-0000d82e  __mspabi_divi                        
-0000d82e  __mspabi_remi                        
-0000d884  strncmp                              
-0000d8d8  Motors_DriveSpinPWM                  
-0000d900  WriteData                            
-0000d928  WriteIns                             
-0000d950  getThumbWheel                        
-0000d978  GPIO_setAsInputPinWithPullUpResistor 
-0000d9c4  getHeading                           
-0000d9ea  Motors_DriveForwardPWM               
-0000da0e  Motors_DriveReversePWM               
-0000da32  Motors_DriveSpinReversePWM           
-0000da56  __mspabi_fltuf                       
-0000da7a  __mspabi_mpyl_f5hw                   
-0000dac2  Display_Process                      
-0000dae4  zeroHeading                          
-0000db06  Motors_Service                       
-0000db46  getPositionY                         
-0000db66  robotCurvatureWatchdog               
-0000dba6  ADC_disableConversions               
-0000dbc4  GPIO_setAsOutputPin                  
-0000dc00  lcd_BIG_mid                          
-0000dc1e  PID_IsDone                           
-0000dc3a  SPI_B1_write                         
-0000dc56  __mspabi_mpyul_f5hw                  
-0000dc8e  lcd_out                              
-0000dcaa  GPIO_getInputPinValue                
-0000dcc4  Init_Ports                           
-0000dcf8  ADC_startConversion                  
-0000dd10  ClrDisplay_Buffer_0                  
-0000dd28  ClrDisplay_Buffer_1                  
-0000dd40  ClrDisplay_Buffer_2                  
-0000dd58  ClrDisplay_Buffer_3                  
-0000dd70  ESP_SendCommand                      
-0000dd88  ESP_SetPendingEvent                  
-0000ddb8  __mspabi_mpyi_f5hw                   
-0000dde8  ADC_configureMemory                  
-0000ddfe  ClrDisplay                           
-0000de14  GPIO_setOutputLowOnPin               
-0000de2a  isRobotBusy                          
-0000de40  __mspabi_divu                        
-0000de40  __mspabi_remu                        
-0000de56  spi_chipselect_idle                  
-0000de6c  ADC_setupSamplingTimer               
-0000de94  Init_IMU                             
-0000dea6  Menu_ConsumeCancelMissionRequest     
-0000deb8  Menu_ConsumeRunMissionRequest        
-0000deca  Switch1_ConsumePress                 
-0000dedc  Switch2_ConsumePress                 
-0000deee  memcpy                               
-0000df00  resetRobot                           
-0000df36  spi_chipselect_active                
-0000df58  getRawDetectorValue                  
-0000df68  setThumbWheelMenuCount               
-0000df78  ADC_setResolution                    
-0000df86  DisplayOnOff                         
-0000df94  Init_Timers                          
-0000dfa2  Motors_IsSettled                     
-0000dfbe  lcd_4line                            
-0000dfda  IMU_Process                          
-0000dfe6  ADC_setDataReadBackFormat            
-0000dffa  abs                                  
-0000e004  chainDriveStraightMs                 
-0000e00e  chainForward                         
-0000e018  chainReverseMs                       
-0000e022  chainSpinCCWMs                       
-0000e02c  chainSpinCWMs                        
-0000e036  enable_switch_SW1                    
-0000e040  enable_switch_SW2                    
-0000e04a  __mspabi_negf                        
-0000e068  ADC_clearInterrupt                   
-0000e070  ADC_enable                           
-0000e078  ADC_enableInterrupt                  
-0000e080  enable_interrupts                    
-0000e088  ESP_GetIPString                      
-0000e08e  ESP_GetStartupState                  
-0000e094  Menu_SetMissionRunning               
-0000e09a  Timer_B_startCounter                 
-0000e0a0  C$$EXIT                              
-0000e0a0  abort                                
-0000e0ac  driveStop                            
-0000e0b2  spi_reset_active                     
-0000e0b8  spi_reset_idle                       
-0000e0be  _system_pre_init                     
-0000e0c2  Menu_NotifyESPCommandReceived        
-0000e0c4  Switch_Process                       
-0000e0c4  Switches_Process                     
-0000e0c4  switch_control                       
-0000e0c6  _system_post_cinit                   
-0000e0c8  PORT2_ISR                            
-0000e150  PORT4_ISR                            
-0000e1d8  ADC_ISR                              
-0000e23c  EUSCI_A0_RX_ISR                      
-0000e2a0  Timer0_B1_ISR                        
-0000e2d0  Timer0_B0_ISR                        
-0000e2fa  EUSCI_A1_RX_ISR                      
-0000e322  _c_int00_noargs_mpu                  
-0000e342  Timer1_B0_ISR                        
-0000e34c  Timer1_B1_ISR                        
-0000e356  __TI_ISR_TRAP                        
+000084ae  __TI_Handler_Table_Base              
+000084ba  __TI_Handler_Table_Limit             
+000084c0  __TI_CINIT_Base                      
+000084d0  __TI_BINIT_Base                      
+000084d0  __TI_CINIT_Limit                     
+000084d0  __TI_CINIT_Warm                      
+000084d0  __TI_table_binit                     
+000084e0  __TI_BINIT_Limit                     
+00008856  esp_commands                         
+0000a388  ESP_ParseIPDFrame                    
+0000a520  __mspabi_subf                        
+0000a526  __mspabi_addf                        
+0000a652  main                                 
+0000a770  ESP_ProcessStartup                   
+0000a984  renderSignedFloat1                   
+0000aa80  applySpeedSet                        
+0000ab74  __TI_decompress_lzss                 
+0000afd6  format_float                         
+0000b164  Init_LCD                             
+0000b228  Software_Trim                        
+0000b2e6  __mspabi_mpyf                        
+0000b39e  Init_Port1                           
+0000b448  copy_in                              
+0000b4f0  Init_Port3                           
+0000b630  ESP_ScheduleEvent                    
+0000b764  Init_Port2                           
+0000b890  Init_Port4                           
+0000b922  Init_Port6                           
+0000b9b4  __mspabi_divf                        
+0000bad2  Init_Timer_B0                        
+0000bc72  Menu_Update                          
+0000bcf4  Command_FollowLine                   
+0000bd70  __TI_auto_init_nopinit_hold_wdt      
+0000bedc  Command_DriveToXY                    
+0000bf52  Init_Timer_B1                        
+0000c03e  OTOS_Begin                           
+0000c0b2  OTOS_CalibrateImu                    
+0000c34c  Init_Clocks                          
+0000c3b4  __mspabi_fixfi                       
+0000c484  Init_Timer_B3                        
+0000c4ea  PID_Init                             
+0000c550  Init_ADC                             
+0000c5b4  Menu_Render                          
+0000c618  __mspabi_cvtfd                       
+0000c67c  Command_TurnToAngle                  
+0000c6de  Init_Port5                           
+0000c740  Command_AlignLeftToLine              
+0000c7a0  Command_DriveToLine                  
+0000c91e  Command_DriveStraight                
+0000c97a  Command_ReverseStraight              
+0000c9d6  Timer_B_initUpMode                   
+0000ca8e  initRobot                            
+0000cb46  Command_Sequence                     
+0000cba0  ESP_Init                             
+0000cc52  __mspabi_divul                       
+0000cc52  __mspabi_remul                       
+0000ccaa  Display_WriteLineIfChanged           
+0000cd00  updateRobot                          
+0000cd56  Command_DriveUntil                   
+0000cdfe  Init_Conditions                      
+0000d066  detectorSetBlackRangeFromCurrent     
+0000d0b0  detectorSetWhiteRangeFromCurrent     
+0000d0fa  __mspabi_cmpf                        
+0000d144  uart_read_frame                      
+0000d18e  Command_Spin                         
+0000d416  __mspabi_fixfu                       
+0000d45c  Display_Update                       
+0000d4e2  Init_SPI_B1                          
+0000d522  __memcpy_far                         
+0000d5e2  __mspabi_divli                       
+0000d5e2  __mspabi_remli                       
+0000d622  __TI_zero_init                       
+0000d660  __mspabi_sral_15                     
+0000d664  __mspabi_sral_14                     
+0000d668  __mspabi_sral_13                     
+0000d66c  __mspabi_sral_12                     
+0000d670  __mspabi_sral_11                     
+0000d674  __mspabi_sral_10                     
+0000d678  __mspabi_sral_9                      
+0000d67c  __mspabi_sral_8                      
+0000d680  __mspabi_sral_7                      
+0000d684  __mspabi_sral_6                      
+0000d688  __mspabi_sral_5                      
+0000d68c  __mspabi_sral_4                      
+0000d690  __mspabi_sral_3                      
+0000d694  __mspabi_sral_2                      
+0000d698  __mspabi_sral_1                      
+0000d69e  __mspabi_srll_15                     
+0000d6a2  __mspabi_srll_14                     
+0000d6a6  __mspabi_srll_13                     
+0000d6aa  __mspabi_srll_12                     
+0000d6ae  __mspabi_srll_11                     
+0000d6b2  __mspabi_srll_10                     
+0000d6b6  __mspabi_srll_9                      
+0000d6ba  __mspabi_srll_8                      
+0000d6be  __mspabi_srll_7                      
+0000d6c2  __mspabi_srll_6                      
+0000d6c6  __mspabi_srll_5                      
+0000d6ca  __mspabi_srll_4                      
+0000d6ce  __mspabi_srll_3                      
+0000d6d2  __mspabi_srll_2                      
+0000d6d6  __mspabi_srll_1                      
+0000d6dc  Command_Reverse                      
+0000d718  __mpu_init                           
+0000d754  __TI_decompress_none                 
+0000d7cc  Command_Forward                      
+0000d806  Command_Wait                         
+0000d840  Menu_OnSW1                           
+0000d91c  __mspabi_fltif                       
+0000d952  strstr                               
+0000d988  ADC_init                             
+0000d9bc  driveSpin                            
+0000da22  driveForward                         
+0000da54  driveReverse                         
+0000da86  driveSpinReverse                     
+0000dab8  Menu_OnSW2                           
+0000db16  Init_Switch                          
+0000db16  Init_Switches                        
+0000db44  Menu_Init                            
+0000db72  uart_init                            
+0000dba0  uart_send_buf                        
+0000dbce  ESP_IPPollUpdate                     
+0000dbfa  getBatteryVoltage                    
+0000dc26  __mspabi_divi                        
+0000dc26  __mspabi_remi                        
+0000dc7c  strncmp                              
+0000dcd0  Motors_DriveSpinPWM                  
+0000dcf8  WriteData                            
+0000dd20  WriteIns                             
+0000dd48  getThumbWheel                        
+0000dd70  GPIO_setAsInputPinWithPullUpResistor 
+0000ddbc  getHeading                           
+0000dde2  Motors_DriveForwardPWM               
+0000de06  Motors_DriveReversePWM               
+0000de2a  Motors_DriveSpinReversePWM           
+0000de4e  __mspabi_fltuf                       
+0000de72  __mspabi_mpyl_f5hw                   
+0000deba  Display_Process                      
+0000dedc  zeroHeading                          
+0000defe  Motors_Service                       
+0000df3e  getPositionX                         
+0000df5e  getPositionY                         
+0000df7e  robotCurvatureWatchdog               
+0000dfbe  ADC_disableConversions               
+0000dfdc  GPIO_setAsOutputPin                  
+0000e018  lcd_BIG_mid                          
+0000e036  PID_IsDone                           
+0000e052  SPI_B1_write                         
+0000e06e  __mspabi_mpyul_f5hw                  
+0000e0a6  lcd_out                              
+0000e0c2  GPIO_getInputPinValue                
+0000e0dc  Init_Ports                           
+0000e110  ADC_startConversion                  
+0000e128  ClrDisplay_Buffer_0                  
+0000e140  ClrDisplay_Buffer_1                  
+0000e158  ClrDisplay_Buffer_2                  
+0000e170  ClrDisplay_Buffer_3                  
+0000e188  ESP_SendCommand                      
+0000e1a0  ESP_SetPendingEvent                  
+0000e1d0  __mspabi_mpyi_f5hw                   
+0000e200  ADC_configureMemory                  
+0000e216  ClrDisplay                           
+0000e22c  GPIO_setOutputLowOnPin               
+0000e242  isRobotBusy                          
+0000e258  __mspabi_divu                        
+0000e258  __mspabi_remu                        
+0000e26e  spi_chipselect_idle                  
+0000e284  ADC_setupSamplingTimer               
+0000e2ac  Init_IMU                             
+0000e2be  Menu_ConsumeCancelMissionRequest     
+0000e2d0  Menu_ConsumeRunMissionRequest        
+0000e2e2  Switch1_ConsumePress                 
+0000e2f4  Switch2_ConsumePress                 
+0000e306  memcpy                               
+0000e318  resetRobot                           
+0000e34e  spi_chipselect_active                
+0000e370  getRawDetectorValue                  
+0000e380  setThumbWheelMenuCount               
+0000e390  ADC_setResolution                    
+0000e39e  DisplayOnOff                         
+0000e3ac  Init_Timers                          
+0000e3ba  Motors_IsSettled                     
+0000e3d6  lcd_4line                            
+0000e3f2  IMU_Process                          
+0000e3fe  ADC_setDataReadBackFormat            
+0000e412  abs                                  
+0000e41c  chainDriveStraightMs                 
+0000e426  chainReverseMs                       
+0000e430  chainSpinCCWMs                       
+0000e43a  chainSpinCWMs                        
+0000e444  chainWait                            
+0000e44e  enable_switch_SW1                    
+0000e458  enable_switch_SW2                    
+0000e462  __mspabi_negf                        
+0000e480  ADC_clearInterrupt                   
+0000e488  ADC_enable                           
+0000e490  ADC_enableInterrupt                  
+0000e498  enable_interrupts                    
+0000e4a0  ESP_GetIPString                      
+0000e4a6  ESP_GetStartupState                  
+0000e4ac  Menu_SetMissionRunning               
+0000e4b2  Timer_B_startCounter                 
+0000e4b8  C$$EXIT                              
+0000e4b8  abort                                
+0000e4c4  driveStop                            
+0000e4ca  spi_reset_active                     
+0000e4d0  spi_reset_idle                       
+0000e4d6  _system_pre_init                     
+0000e4da  Menu_NotifyESPCommandReceived        
+0000e4dc  Switch_Process                       
+0000e4dc  Switches_Process                     
+0000e4dc  switch_control                       
+0000e4de  _system_post_cinit                   
+0000e4e0  PORT2_ISR                            
+0000e568  PORT4_ISR                            
+0000e5f0  ADC_ISR                              
+0000e654  EUSCI_A0_RX_ISR                      
+0000e6b8  Timer0_B1_ISR                        
+0000e6e8  Timer0_B0_ISR                        
+0000e712  EUSCI_A1_RX_ISR                      
+0000e73a  _c_int00_noargs_mpu                  
+0000e75a  Timer1_B0_ISR                        
+0000e764  Timer1_B1_ISR                        
+0000e76e  __TI_ISR_TRAP                        
 0000ffce  __TI_int22                           
 0000ffd0  __TI_int23                           
 0000ffd2  __TI_int24                           
@@ -3153,4 +3170,4 @@ ffffffff  __TI_prof_data_size
 ffffffff  __TI_prof_data_start                 
 ffffffff  __c_args__                           
 
-[1236 symbols]
+[1241 symbols]

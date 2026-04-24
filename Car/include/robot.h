@@ -90,6 +90,7 @@ typedef enum
     CMD_DRIVE_TO_LINE,
     CMD_ALIGN_LEFT_TO_LINE,
     CMD_FOLLOW_LINE,
+    CMD_DRIVE_DISTANCE,
     CMD_SEQUENCE,
     CMD_PARALLEL
 } CommandType;
@@ -158,6 +159,8 @@ struct RobotCommandChain
     RobotCommandChain (*withDisplay)(const char *msg);
     RobotCommandChain (*andThenDriveUntil)(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
     RobotCommandChain (*andThenDriveToXY)(float target_x_in, float target_y_in);
+    RobotCommandChain (*andThenDriveDistance)(float inches);
+    RobotCommandChain (*andThenTurnToAbsoluteAngle)(float degrees);
     void (*schedule)(void);
 };
 
@@ -174,6 +177,8 @@ void Command_TurnToAngle(Command *command, float target_angle_degrees);
 void Command_DriveStraight(Command *command, int time_seconds);
 void Command_ReverseStraight(Command *command, int time_seconds);
 void Command_DriveToXY(Command *command, float target_x_in, float target_y_in);
+void Command_DriveDistance(Command *command, float inches);
+void Command_TurnToAbsoluteAngle(Command *command, float degrees);
 void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUntilFlag stop_right_flag);
 void Command_DriveToLine(Command *command);
 void Command_AlignLeftToLine(Command *command);
@@ -194,6 +199,8 @@ RobotCommandChain chainAlignLeftToLine(void);
 RobotCommandChain chainFollowLine(int time_seconds);
 RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
+RobotCommandChain chainDriveDistance(float inches);
+RobotCommandChain chainTurnToAbsoluteAngle(float degrees);
 RobotCommandChain chainDriveStraightMs(unsigned int ms);
 RobotCommandChain chainReverseMs(unsigned int ms);
 RobotCommandChain chainSpinCWMs(unsigned int ms, unsigned char duty_percent);
@@ -232,6 +239,8 @@ extern float line_follow_max_correction_percent;
 extern float turn_angle_tolerance_deg;
 extern float drive_to_xy_speed_percent;
 extern float drive_to_xy_tolerance_in;
+extern float drive_to_xy_kv;
+extern float drive_to_xy_komega;
 unsigned char isRobotBusy(void);
 
 /* Streaming curvature drive — preempts any active timed command and applies

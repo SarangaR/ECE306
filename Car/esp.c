@@ -3,6 +3,8 @@
 #include "include/serial.h"
 #include "include/robot.h"
 #include "include/ports.h"
+#include "include/menu.h"
+#include "include/otos.h"
 #include <string.h>
 
 const ESPCommand esp_commands[ESP_CMD_COUNT] =
@@ -58,8 +60,7 @@ void ESP_Init(void)
     __delay_cycles(800000UL);
     P3OUT |= IOT_EN;
 
-    __delay_cycles(8000000UL);
-    __delay_cycles(8000000UL);
+    __delay_cycles(80000000UL);
 
     s_startup_state = ESP_STARTUP_WAIT_MAC_OK;
     ESP_SendCommand(ESP_CMD_SET_MAC);
@@ -157,7 +158,6 @@ void ESP_SendCommand(ESPCommandID id)
     uart_send_buf(esp_commands[id].cmd);
 }
 
-/* ── Minimal float parser used for the C (curvature) command ────────────── */
 static float esp_parse_float(const char **pp)
 {
     const char *p = *pp;
@@ -209,6 +209,8 @@ uint8_t ESP_ParseIPDFrame(const char *frame, ESPCommandEvent *out)
     out->time_units   = 0U;
     out->fwd_percent  = 0.0f;
     out->turn_percent = 0.0f;
+    out->float_value  = 0.0f;
+    out->pad_number   = 0U;
     out->pin[0]       = '\0';
 
     p = frame;
@@ -226,7 +228,6 @@ uint8_t ESP_ParseIPDFrame(const char *frame, ESPCommandEvent *out)
 
     if (strncmp(out->pin, ESP_COMMAND_PIN, 4U) != 0) { return 0U; }
 
-    /* ── C: streaming curvature command  ^<PIN>C<fwd>,<turn> ─────────────── */
     if (*p == 'C')
     {
         p++;
@@ -241,7 +242,71 @@ uint8_t ESP_ParseIPDFrame(const char *frame, ESPCommandEvent *out)
         return 1U;
     }
 
-    /* ── F / B / R / L: timed commands  ^<PIN><DIR><int> ─────────────────── */
+    if (*p == 'P')
+    {
+        out->direction = ESP_DIR_FOLLOW_LINE;
+        out->valid = 1U;
+        return 1U;
+    }
+
+    if (*p == 'T')
+    {
+        out->direction = ESP_DIR_ROUTE;
+        out->valid = 1U;
+        return 1U;
+    }
+
+    if (*p == 'E')
+    {
+        out->direction = ESP_DIR_ENTER_CIRCLE;
+        out->valid = 1U;
+        return 1U;
+    }
+
+    if (*p == 'X')
+    {
+        out->direction = ESP_DIR_EXIT_CIRCLE;
+        out->valid = 1U;
+        return 1U;
+    }
+
+    if (*p == 'Z')
+    {
+        out->direction = ESP_DIR_ZERO_OTOS;
+        out->valid = 1U;
+        return 1U;
+    }
+
+    if (*p == 'D')
+    {
+        p++;
+        if (!esp_is_num_start(*p)) { return 0U; }
+        out->float_value = esp_parse_float(&p);
+        out->direction   = ESP_DIR_DRIVE_DISTANCE;
+        out->valid       = 1U;
+        return 1U;
+    }
+
+    if (*p == 'A')
+    {
+        p++;
+        if (!esp_is_num_start(*p)) { return 0U; }
+        out->float_value = esp_parse_float(&p);
+        out->direction   = ESP_DIR_TURN_ABSOLUTE;
+        out->valid       = 1U;
+        return 1U;
+    }
+
+    if (*p == 'N')
+    {
+        p++;
+        if ((*p < '1') || (*p > '8')) { return 0U; }
+        out->pad_number = (unsigned int)(*p - '0');
+        out->direction  = ESP_DIR_PAD_DISPLAY;
+        out->valid      = 1U;
+        return 1U;
+    }
+
     switch (*p)
     {
         case 'F':  out->direction = ESP_DIR_FORWARD;  break;
@@ -273,10 +338,6 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
     switch (evt->direction)
     {
         case ESP_DIR_CURVATURE:
-            /* Streaming speed-set — bypasses the chain scheduler.
-               applySpeedSet() preempts any active timed command and drives
-               motors directly.  The main-loop watchdog stops the car if no
-               C command arrives within ~300 ms. */
             applySpeedSet(evt->fwd_percent, evt->turn_percent);
             break;
 
@@ -295,6 +356,48 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
         case ESP_DIR_LEFT:
             chainSpinCWMs(500U, 40U).schedule();
             break;
+            
+        case ESP_DIR_FOLLOW_LINE:
+            chainDriveStraight(5).untilSelective(&black_line_left, &black_line_right).andThenAlignLeftToLine().andThenFollowLine(3600).schedule();
+            break;
+
+        case ESP_DIR_DRIVE_DISTANCE:
+            chainDriveDistance(evt->float_value).schedule();
+            break;
+
+        case ESP_DIR_TURN_ABSOLUTE:
+            chainTurnToAbsoluteAngle(evt->float_value).schedule();
+            break;
+
+        case ESP_DIR_ROUTE:
+            chainWait(2)
+                .andThenDriveDistance(36.0f)
+                .andThenTurnToAbsoluteAngle(90.0f)
+                .andThenDriveDistance(24.0f)
+                .andThenTurnToAbsoluteAngle(180.0f)
+                .andThenDriveDistance(12.0f)
+                .schedule();
+            break;
+
+        case ESP_DIR_PAD_DISPLAY:
+            Menu_SetPadArrival((int)evt->pad_number);
+            break;
+
+        case ESP_DIR_ENTER_CIRCLE:
+            chainTurnToAngle(90.0f).andThenDriveDistance(24.0f).schedule();
+            break;
+
+        case ESP_DIR_EXIT_CIRCLE:
+            chainTurnToAngle(-90.0f).andThenDriveStraight(2).schedule();
+            break;
+
+        case ESP_DIR_ZERO_OTOS:
+        {
+            static const sfe_otos_pose2d_t zero = {0.0f, 0.0f, 0.0f};
+            (void)OTOS_SetPosition(&zero);
+            zeroHeading();
+            break;
+        }
 
         default:
             break;
@@ -368,7 +471,4 @@ void ESP_IPPollUpdate(unsigned long tick)
     if (s_startup_state != ESP_STARTUP_DONE) { return; }
     if ((tick - s_last_ip_poll_tick) >= 50UL)
     {
-        s_last_ip_poll_tick = tick;
-        ESP_SendCommand(ESP_CMD_GET_IP_MAC);
-    }
-}
+        s_last_ip_poll_tick = 

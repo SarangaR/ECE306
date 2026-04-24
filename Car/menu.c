@@ -2,20 +2,21 @@
 #include <string.h>
 #include "include/menu.h"
 #include "include/functions.h"
+#include "include/otos.h"
 #include "include/adc.h"
 #include "include/detector.h"
 #include "include/esp.h"
 
 #define LINE_LEN (10U)
-#define ROOT_ITEM_COUNT (4U)
+#define ROOT_ITEM_COUNT (6U)
 
 
 #define IR_CAL_EXIT_THRESHOLD (100)
 
 #define BATTERY_FULL_V (4.20f)
-#define BATTERY_EMPTY_V (3.60f)
-#define BATTERY_CAPACITY_MAH (5000U)
-#define BATTERY_EST_DRAW_MA (1000U)
+#define BATTERY_EMPTY_V (3.50f)
+#define BATTERY_CAPACITY_MAH (6500U)
+#define BATTERY_EST_DRAW_MA (200U)
 
 typedef enum
 {
@@ -23,7 +24,9 @@ typedef enum
     PAGE_IR_CAL,
     PAGE_RUN_MISSION,
     PAGE_BATTERY,
-    PAGE_ESP_CMD
+    PAGE_ESP_CMD,
+    PAGE_POSITION,
+    PAGE_FINAL_DEMO
 } MenuPage;
 
 typedef struct
@@ -36,11 +39,13 @@ static const RootItem root_items[ROOT_ITEM_COUNT] = {
     {"IR Cal",     PAGE_IR_CAL},
     {"Run Mission",PAGE_RUN_MISSION},
     {"Battery",    PAGE_BATTERY},
-    {"ESP Cmds",   PAGE_ESP_CMD}
+    {"ESP Cmds",   PAGE_ESP_CMD},
+    {"Position",   PAGE_POSITION},
+    {"Final Demo", PAGE_FINAL_DEMO}
 };
 
 static const char root_icons[ROOT_ITEM_COUNT] = {
-    'I', 'M', 'B', 'E'
+    'I', 'M', 'B', 'E', 'P', 'F'
 };
 
 static MenuPage current_page = PAGE_MAIN;
@@ -53,6 +58,7 @@ static unsigned char mission_run_request = 0U;
 static unsigned char mission_cancel_request = 0U;
 static unsigned char mission_is_running = 0U;
 static unsigned char lcd_big_mode = 0U;
+static int s_pad_number = 0;
 
 
 static void setLine(unsigned int line, const char *text)
@@ -164,7 +170,7 @@ static int batteryPercent(float voltage)
         return 100;
     }
 
-    percent = ((voltage - BATTERY_EMPTY_V) * 100.0f) / (BATTERY_FULL_V - BATTERY_EMPTY_V);
+    percent = ((voltage - BATTERY_EMPTY_V) / (BATTERY_FULL_V - BATTERY_EMPTY_V)) * 100.0f;
     if (percent < 0.0f)
     {
         percent = 0.0f;
@@ -235,15 +241,16 @@ static void renderRunMission(void)
     setLine(0U, "Run Mission");
     if (mission_is_running)
     {
-        setLine(1U, "Running");
-        setLine(2U, "Wait...");
+        renderSignedFloat1(1U, 'X', getPositionX());
+        renderSignedFloat1(2U, 'Y', getPositionY());
+        setLine(3U, "SW2 Stop");
     }
     else
     {
         setLine(1U, "Ready");
         setLine(2U, "SW1 Start");
+        setLine(3U, "SW2 Back");
     }
-    setLine(3U, "SW2 Back");
 }
 
 static void renderESPCmd(void)
@@ -337,6 +344,80 @@ static void renderESPCmd(void)
     }
 }
 
+static void renderSignedFloat1(unsigned int line, char prefix, float value)
+{
+    char out[11] = "X:+000.0  ";
+    char sign;
+    unsigned int av;
+
+    out[0] = prefix;
+
+    if (value < 0.0f)
+    {
+        sign = '-';
+        value = -value;
+    }
+    else
+    {
+        sign = '+';
+    }
+
+    if (value > 999.9f) { value = 999.9f; }
+    av = (unsigned int)(value * 10.0f + 0.5f);
+
+    out[2] = sign;
+    out[3] = (char)('0' + ((av / 1000U) % 10U));
+    out[4] = (char)('0' + ((av /  100U) % 10U));
+    out[5] = (char)('0' + ((av /   10U) % 10U));
+    out[6] = '.';
+    out[7] = (char)('0' + (av % 10U));
+    out[10] = '\0';
+    Display_WriteLineIfChanged(line, out);
+}
+
+static void renderPosition(void)
+{
+    setLcdMode(0U);
+    setLine(0U, "Position");
+    renderSignedFloat1(1U, 'X', getPositionX());
+    renderSignedFloat1(2U, 'Y', getPositionY());
+    setLine(3U, "SW2 Back");
+}
+
+static void renderFinalDemo(void)
+{
+    char line0[11] = "Arrived at";
+    char line1[11] = "Pad       ";
+    unsigned int v;
+
+    setLcdMode(0U);
+
+    Display_WriteLineIfChanged(0U, line0);
+
+    if (s_pad_number >= 1 && s_pad_number <= 8)
+    {
+        v = (unsigned int)s_pad_number;
+        line1[4] = (char)('0' + v);
+        line1[5] = ' ';
+        line1[6] = ' ';
+        line1[7] = ' ';
+        line1[8] = ' ';
+        line1[9] = ' ';
+    }
+    line1[10] = '\0';
+    Display_WriteLineIfChanged(1U, line1);
+
+    Display_WriteLineIfChanged(2U, "Saranga   ");
+    Display_WriteLineIfChanged(3U, "Rajagopala");
+}
+
+void Menu_SetPadArrival(int pad_number)
+{
+    s_pad_number = pad_number;
+    current_page = PAGE_FINAL_DEMO;
+    setThumbWheelMenuCount(1U);
+}
+
 void Menu_Init(void)
 {
     current_page = PAGE_MAIN;
@@ -401,6 +482,8 @@ void Menu_Update(void)
     case PAGE_RUN_MISSION:
     case PAGE_BATTERY:
     case PAGE_ESP_CMD:
+    case PAGE_POSITION:
+    case PAGE_FINAL_DEMO:
         setThumbWheelMenuCount(1U);
         break;
 
@@ -436,6 +519,14 @@ void Menu_Render(void)
 
     case PAGE_ESP_CMD:
         renderESPCmd();
+        break;
+
+    case PAGE_POSITION:
+        renderPosition();
+        break;
+
+    case PAGE_FINAL_DEMO:
+        renderFinalDemo();
         break;
 
     default:
@@ -489,6 +580,7 @@ void Menu_OnSW2(void)
     if (current_page != PAGE_MAIN)
     {
         current_page = PAGE_MAIN;
+        s_pad_number = 0;
         setThumbWheelMenuCount(ROOT_ITEM_COUNT);
     }
 }

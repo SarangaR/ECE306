@@ -36,12 +36,8 @@ void Display_WriteLineIfChanged(unsigned int line, const char *text10)
 }
 
 static void ScheduleMissionCommands(void)
-{
-    // Update this chain to change mission behavior.
-    chainForward(2)
-        .andThenWait(1)
-        .andThenSpinCW(1)
-        .schedule();
+{   
+    chainWait(1.0).andThenDriveToXY(0.0f, 5.0f).schedule();
 }
 
 void main(void)

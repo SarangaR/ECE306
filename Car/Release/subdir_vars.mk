@@ -133,14 +133,12 @@ C_SRCS__QUOTED += \
 "../esp.c" \
 "../init.c" \
 "../led.c" \
-"../main.c" \
 "../menu.c" \
 "../motors.c" \
 "../otos.c" \
 "../pid.c" \
 "../ports.c" \
 "../ringbuffer.c" \
-"../robot.c" \
 "../serial.c" \
 "../switches.c" \
 "../system.c" \
