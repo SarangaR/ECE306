@@ -10,6 +10,7 @@ volatile uint16_t adc_battery_raw   = 0;
 
 static volatile unsigned int adc_channel_index = ADC_THUMB;
 static volatile unsigned int thumbwheel_menu_count = 1U;
+static volatile int last_thumb = 0;
 
 #define ADC_RIGHT_DETECTOR_OFFSET_RAW (0U)
 #define ADC_REF_VOLTAGE (3.3f)
@@ -87,7 +88,18 @@ int getThumbWheel(void)
         scaled = count - 1U;
     }
 
+    last_thumb = (int)scaled;
+
     return (int)scaled;
+}
+
+int getThumbWheelMoved(void) {
+    int thumb = getThumbWheel();
+    if (thumb != last_thumb) 
+    {
+        return 1;
+    }
+    return 0;
 }
 
 float getBatteryVoltage(void)

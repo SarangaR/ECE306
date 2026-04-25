@@ -10,6 +10,7 @@
 #include "include/timers.h"
 #include "include/macros.h"
 #include "include/ports.h"
+#include "include/dac.h"
 #include <string.h>
 
 void Init_Timers(void)
@@ -116,7 +117,6 @@ __interrupt void Timer0_B1_ISR(void)
         P2IFG &= ~SW2;  // Clear any edge that arrived during debounce window
         P2IE  |=  SW2;  // Re-enable SW2 port interrupt
         break;
-
     default:
         break;
     }

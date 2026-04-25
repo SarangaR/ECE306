@@ -48,6 +48,8 @@ timers.obj: ../include/timers.h
 timers.obj: ../include/macros.h
 timers.obj: ../include/display.h
 timers.obj: ../include/ports.h
+timers.obj: ../include/dac.h
+timers.obj: C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h
 timers.obj: C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/xlocale/_string.h
 
@@ -146,6 +148,10 @@ C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/wdt_a.h:
 ../include/display.h:
 
 ../include/ports.h:
+
+../include/dac.h:
+
+C:/Users/sarng/Documents/ECE306/Car/driverlib/MSP430FR2xx_4xx/driverlib.h:
 
 C:/ti/ccs2041/ccs/tools/compiler/ti-cgt-msp430_21.6.1.LTS/include/string.h:
 

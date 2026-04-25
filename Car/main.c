@@ -10,7 +10,8 @@
 #include "include/serial.h"
 #include "include/esp.h"
 #include "include/debug_pc.h"
-// #include "include/otos.h"
+#include "include/detector.h"
+#include "include/dac.h"
 
 // Global Variables
 volatile unsigned int black_line_left = 0;
@@ -61,6 +62,7 @@ void main(void)
     Menu_Init();
 
     P6OUT |= LCD_BACKLITE;
+    P2OUT |= IR_LED;
 
     while (ALWAYS)
     {
@@ -73,13 +75,10 @@ void main(void)
                 ESP_ProcessStartup(esp_frame);
                 if (ESP_ParseIPDFrame(esp_frame, &evt))
                 {
-                    /* Curvature (C) commands are streaming speed-sets and must
-                       always be accepted — they preempt any active command
-                       themselves.  All other commands respect isRobotBusy(). */
                     if ((evt.direction == ESP_DIR_CURVATURE) || !isRobotBusy())
                     {
                         ESP_SetPendingEvent(&evt);
-                        Menu_NotifyESPCommandReceived();
+                        Menu_NotifyESPCommandReceived(&evt);
                         ESP_ScheduleEvent(&evt);
                     }
                 }
@@ -127,6 +126,16 @@ void main(void)
         Menu_SetMissionRunning(isRobotBusy());
         Menu_Update();
         Menu_Render();
+
+        if (getDetectedColor(DETECTOR_LEFT) == COLOR_BLACK)
+        {
+            black_line_left = 1;
+        }
+
+        if (getDetectedColor(DETECTOR_RIGHT) == COLOR_BLACK)
+        {
+            black_line_right = 1;
+        }
 
         Display_Process();
         P3OUT ^= TEST_PROBE;

@@ -1,6 +1,20 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "esp.h"
+
+typedef enum
+{
+    BL_NONE = 0,
+    BL_START,
+    BL_INTERCEPT,
+    BL_TURN,
+    BL_TRAVEL,
+    BL_CIRCLE,
+    BL_EXIT,
+    BL_STOP
+} BLState;
+
 void Menu_Init(void);
 void Menu_Update(void);
 void Menu_Render(void);
@@ -10,12 +24,10 @@ unsigned char Menu_ConsumeRunMissionRequest(void);
 unsigned char Menu_ConsumeCancelMissionRequest(void);
 void Menu_SetMissionRunning(unsigned char running);
 
-/* Call after a valid ESP command has been parsed to trigger the big-display
-   countdown on the ESP Cmds menu page (Project 09). */
-void Menu_NotifyESPCommandReceived(void);
+void Menu_NotifyESPCommandReceived(const ESPCommandEvent *evt);
 
-/* Called by ESP handler for the N command — sets pad number and switches to
-   the Final Demo display page. */
 void Menu_SetPadArrival(int pad_number);
+
+void Menu_SetBLState(BLState state);
 
 #endif // MENU_H

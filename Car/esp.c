@@ -358,7 +358,8 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
             
         case ESP_DIR_FOLLOW_LINE:
-            chainDriveStraight(5).untilSelective(&black_line_left, &black_line_right).andThenAlignLeftToLine().andThenFollowLine(3600).schedule();
+            Menu_SetBLState(BL_START);
+            chainWait(1).andThenDriveStraight(30).untilSelective(&black_line_left, &black_line_right).andThenWait(1).andThenAlignLeftToLine().andThenWait(1).andThenFollowLine(3600).schedule();
             break;
 
         case ESP_DIR_DRIVE_DISTANCE:
@@ -370,12 +371,12 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ROUTE:
-            chainWait(2)
-                .andThenDriveDistance(36.0f)
+            chainWait(1)
+                .andThenDriveDistance(36.0f).withTimeout(5000)
                 .andThenTurnToAbsoluteAngle(90.0f)
-                .andThenDriveDistance(24.0f)
+                .andThenDriveDistance(24.0f).withTimeout(5000)
                 .andThenTurnToAbsoluteAngle(180.0f)
-                .andThenDriveDistance(12.0f)
+                .andThenDriveDistance(12.0f).withTimeout(5000)
                 .schedule();
             break;
 
@@ -384,11 +385,13 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ENTER_CIRCLE:
-            chainTurnToAngle(90.0f).andThenDriveDistance(24.0f).schedule();
+            Menu_SetBLState(BL_CIRCLE);
+            chainTurnToAngle(90.0f).andThenWait(15).andThenDriveDistance(24.0f).andThenWait(15).schedule();
             break;
 
         case ESP_DIR_EXIT_CIRCLE:
-            chainTurnToAngle(-90.0f).andThenDriveStraight(2).schedule();
+            Menu_SetBLState(BL_EXIT);
+            chainTurnToAngle(-90.0f).andThenWait(15).andThenDriveStraight(2).andThenWait(15).schedule();
             break;
 
         case ESP_DIR_ZERO_OTOS:
@@ -471,4 +474,7 @@ void ESP_IPPollUpdate(unsigned long tick)
     if (s_startup_state != ESP_STARTUP_DONE) { return; }
     if ((tick - s_last_ip_poll_tick) >= 50UL)
     {
-        s_last_ip_poll_tick = 
+        s_last_ip_poll_tick = tick;
+        ESP_SendCommand(ESP_CMD_GET_IP_MAC);
+    }
+}

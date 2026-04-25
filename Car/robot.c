@@ -637,6 +637,18 @@ static RobotCommandChain chainAndThenTurnToAbsoluteAngle(float degrees)
     return getChainApi();
 }
 
+static RobotCommandChain chainWithTimeout(unsigned int timeout_ms)
+{
+    if (active_chain.count == 0)
+    {
+        return getChainApi();
+    }
+
+    active_chain.commands[active_chain.count - 1U].timeout_ticks =
+        COMMAND_TICKS_FROM_MS(timeout_ms);
+    return getChainApi();
+}
+
 static void chainSchedule(void)
 {
     if ((active_robot == 0) || (active_chain.count == 0))
@@ -670,6 +682,7 @@ static RobotCommandChain getChainApi(void)
     chain_api_local.andThenDriveToXY = chainAndThenDriveToXY;
     chain_api_local.andThenDriveDistance = chainAndThenDriveDistance;
     chain_api_local.andThenTurnToAbsoluteAngle = chainAndThenTurnToAbsoluteAngle;
+    chain_api_local.withTimeout = chainWithTimeout;
     chain_api_local.schedule = chainSchedule;
 
     return chain_api_local;
@@ -1139,8 +1152,6 @@ static void commandTick(Command *command)
         white_difference = absoluteFloat(left_white_level - right_white_level);
         avg_white = 0.5f * (left_white_level + right_white_level);
 
-        /* If both sensors agree and we are still in white approach range,
-           use IMU heading hold to drive straight. */
         if ((white_difference <= drive_to_line_equal_tolerance) &&
             (avg_white > drive_to_line_black_lock_level))
         {
@@ -1236,12 +1247,25 @@ static void commandTick(Command *command)
         left_color  = getDetectorValue(DETECTOR_RIGHT);
         right_color = getDetectorValue(DETECTOR_LEFT);
 
-        left_pwm = pwmCountsFromPercentFloatSigned(100.0);
-        right_pwm = pwmCountsFromPercentFloatSigned(-100.0);
+        left_pwm = pwmCountsFromPercentFloatSigned(60.0);
+        right_pwm = pwmCountsFromPercentFloatSigned(-60.0);
+
+        applyMixedDrive(left_pwm, right_pwm);
+
+        if (right_color - left_color > 50) //right is greater by 50 means it is on black.
+        {
+            if (command->pwm_counter < 255U)
+            {
+                command->pwm_counter++;
+            }
+        }
+        else {
+            command->pwm_counter = 0U;
+        }
 
         int BLACK_LEVEL = 70;
 
-        applyMixedDrive(left_pwm, right_pwm);
+     
                                    
         if ((left_color > BLACK_LEVEL) && (right_color < left_color))
         {
@@ -1578,10 +1602,16 @@ case CMD_FOLLOW_LINE:
         Motors_DriveForwardPWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
 
         command->elapsed_ticks++;
-        if (command->elapsed_ticks >= secondsToTicks(60))
         {
-            driveStop();
-            command->finished = 1;
+            /* Hard deadline: user-supplied timeout, or fallback 60-second limit */
+            unsigned int deadline = (command->timeout_ticks > 0U)
+                                    ? command->timeout_ticks
+                                    : (unsigned int)secondsToTicks(60);
+            if (command->elapsed_ticks >= deadline)
+            {
+                driveStop();
+                command->finished = 1;
+            }
         }
         break;
     }
@@ -2005,8 +2035,9 @@ void Command_FollowLine(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
-    lf_heading_acc = 0;
-    lf_prev_heading = getHeading();
+    lf_heading_acc     = 0;
+    lf_junction_frames = 0;
+    lf_prev_heading    = getHeading();
 }
 
 void Command_ReverseStraight(Command *command, int time_seconds)
@@ -2089,6 +2120,7 @@ void Command_DriveDistance(Command *command, float inches)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->timeout_ticks = 0;   /* 0 = use the built-in 60-second hard limit */
 }
 
 void Command_TurnToAbsoluteAngle(Command *command, float degrees)

@@ -24,6 +24,7 @@ extern volatile uint16_t adc_battery_raw;
 void Init_ADC(void);
 void setThumbWheelMenuCount(unsigned int item_count);
 int getThumbWheel(void);
+int getThumbWheelMoved(void);
 float getBatteryVoltage(void);
 
 #endif // ADC_H

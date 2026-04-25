@@ -52,6 +52,23 @@ static float lf_heading_acc = 0;
 static float lf_last_lap_tick = 0;
 static int lf_coastFrames = 0;
 static int lf_coastMv     = 0;
+static int lf_junction_frames = 0;  /* consecutive frames where both sensors see black */
+
+/* ── Follow-line failsafe thresholds ─────────────────────────────────────── */
+/* Detector value above which a sensor is considered "on black" */
+#define LF_BOTH_BLACK_THRESHOLD   (70)
+/* Detector value below which a sensor is considered "off the line" (white) */
+#define LF_BOTH_WHITE_THRESHOLD   (LF_LOSS_THRESHOLD)
+/* Sustained both-black frames required to declare a junction (~300 ms @ 50 Hz) */
+#define LF_JUNCTION_CONFIRM_FRAMES (15)
+/* Max frames to coast on last-known mv before amplifying the recovery turn */
+#define LF_COAST_MAX_FRAMES       (25)
+/*
+ * Steering bias applied while confirmed at a junction.
+ * Negative  → left turn  (counterclockwise around the circle).
+ * Tune the magnitude if the robot overshoots / undershoots the circle entry.
+ */
+#define LF_CIRCLE_BIAS            (-45)
 
 #define CHAIN_MAX_COMMANDS (COMMAND_MAX_CHILDREN)
 
@@ -130,6 +147,7 @@ struct Command
     DriveUntilFlag drive_until_left_flag;
     DriveUntilFlag drive_until_right_flag;
     const char *display_message;
+    unsigned int timeout_ticks;  /* 0 = no timeout; DriveDistance uses this as a hard deadline */
 };
 
 typedef struct
@@ -161,6 +179,7 @@ struct RobotCommandChain
     RobotCommandChain (*andThenDriveToXY)(float target_x_in, float target_y_in);
     RobotCommandChain (*andThenDriveDistance)(float inches);
     RobotCommandChain (*andThenTurnToAbsoluteAngle)(float degrees);
+    RobotCommandChain (*withTimeout)(unsigned int timeout_ms);
     void (*schedule)(void);
 };
 
