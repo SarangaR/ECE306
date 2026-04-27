@@ -13,22 +13,26 @@ struct ContentView: View {
     private enum Field { case ip, port }
     @FocusState private var focusedField: Field?
 
+    // 28 pt keeps every glass edge well clear of the screen bezel.
+    private let hPad: CGFloat = 28
+
     var body: some View {
         ZStack(alignment: .bottom) {
 
-            // ── Layered background ────────────────────────────────────────────
             backgroundCanvas
 
-            // ── Main scaffold ─────────────────────────────────────────────────
             VStack(spacing: 0) {
 
                 headerBar
                     .padding(.vertical, 6)
+                    .padding(.horizontal, hPad)
 
                 tabSwitcher
                     .padding(.bottom, 10)
+                    .padding(.horizontal, hPad)
 
-                // Swipeable pages
+                // TabView with .page style manages its own horizontal extent;
+                // each tab applies its own hPad internally.
                 TabView(selection: $selectedTab) {
                     driveTab.tag(Tab.drive)
                     controlsTab.tag(Tab.controls)
@@ -38,11 +42,9 @@ struct ContentView: View {
 
                 connectionBar
                     .padding(.bottom, 8)
+                    .padding(.horizontal, hPad)
             }
-            // Single authoritative horizontal margin — all children inherit it
-            .padding(.horizontal, 20)
 
-            // ── Toast ─────────────────────────────────────────────────────────
             if vm.toastVisible {
                 toastBadge
                     .padding(.bottom, 100)
@@ -78,26 +80,30 @@ struct ContentView: View {
     }
 
     // MARK: - Header ──────────────────────────────────────────────────────────
+    // ZStack guarantees the title is always exactly centred regardless of
+    // whether the left pill (gamepad name) is wider than the right pill.
 
     private var headerBar: some View {
-        HStack(spacing: 0) {
-            StatusPill(
-                icon: "gamecontroller.fill",
-                label: vm.gamepad.connectedGamepadName ?? "No Gamepad",
-                active: vm.gamepad.connectedGamepadName != nil,
-                color: .green
-            )
-            Spacer()
+        ZStack {
             Text("💥  Car Controller")
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(.white)
-            Spacer()
-            StatusPill(
-                icon: vm.car.isConnected ? "wifi" : "wifi.slash",
-                label: vm.car.statusText,
-                active: vm.car.isConnected,
-                color: .green
-            )
+
+            HStack {
+                StatusPill(
+                    icon: "gamecontroller.fill",
+                    label: vm.gamepad.connectedGamepadName ?? "No Gamepad",
+                    active: vm.gamepad.connectedGamepadName != nil,
+                    color: .green
+                )
+                Spacer()
+                StatusPill(
+                    icon: vm.car.isConnected ? "wifi" : "wifi.slash",
+                    label: vm.car.statusText,
+                    active: vm.car.isConnected,
+                    color: .green
+                )
+            }
         }
     }
 
@@ -106,7 +112,7 @@ struct ContentView: View {
     private var tabSwitcher: some View {
         HStack(spacing: 0) {
             tabPill(label: "Drive",    icon: "gamecontroller.fill",  tab: .drive)
-            tabPill(label: "Controls", icon: "slider.horizontal.3", tab: .controls)
+            tabPill(label: "Controls", icon: "slider.horizontal.3",  tab: .controls)
         }
         .padding(3)
         .glassEffect(.regular, in: Capsule())
@@ -114,25 +120,27 @@ struct ContentView: View {
 
     private func tabPill(label: String, icon: String, tab: Tab) -> some View {
         let active = selectedTab == tab
-        return Button {
-            withAnimation(.easeInOut(duration: 0.22)) { selectedTab = tab }
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .semibold))
-                Text(label)
-                    .font(.system(size: 13, weight: .semibold))
-            }
-            .foregroundStyle(active ? Color.white : Color.white.opacity(0.4))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 9)
-            .background {
-                if active {
-                    Capsule().fill(Color.white.opacity(0.16))
-                }
-            }
+        return HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .semibold))
+            Text(label)
+                .font(.system(size: 13, weight: .semibold))
         }
-        .buttonStyle(.plain)
+        .foregroundStyle(active ? Color.white : Color.white.opacity(0.4))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 9)
+        .background {
+            if active { Capsule().fill(Color.white.opacity(0.16)) }
+        }
+        // .contentShape makes the whole padded area hittable (not just the text).
+        // .highPriorityGesture beats the TabView page-swipe recognizer so taps
+        // on the pills are never stolen by the scroll gesture underneath.
+        .contentShape(Rectangle())
+        .highPriorityGesture(
+            TapGesture().onEnded {
+                withAnimation(.easeInOut(duration: 0.22)) { selectedTab = tab }
+            }
+        )
         .animation(.easeInOut(duration: 0.22), value: selectedTab)
     }
 
@@ -142,46 +150,38 @@ struct ContentView: View {
         VStack(spacing: 8) {
             joystickModeToggle
 
-            // GeometryReader fills the remaining space and sizes the joystick(s)
-            // to exactly what's available — no fixed magic numbers.
             GeometryReader { geo in
                 let w = geo.size.width
                 let h = geo.size.height
 
                 if vm.dualJoystickMode {
-                    HStack(spacing: 8) {
-                        // Each stick gets half the width minus the gap
-                        let stickSize = min(w / 2 - 4, h - 28)
-                        dualStickCell(
-                            position: $vm.leftJoystickPosition,
-                            lock: .vertical, label: "FWD",
-                            size: stickSize
-                        )
-                        dualStickCell(
-                            position: $vm.rightJoystickPosition,
-                            lock: .horizontal, label: "TURN",
-                            size: stickSize
-                        )
+                    // Reserve ~90 pt height for label + readout chrome.
+                    // Give each stick 16 pt of breathing room per side.
+                    let size = min(w / 2 - 16, h - 90)
+                    HStack(spacing: 0) {
+                        stickCell(position: $vm.leftJoystickPosition,
+                                  lock: .vertical,   label: "FWD",  size: size)
+                        stickCell(position: $vm.rightJoystickPosition,
+                                  lock: .horizontal, label: "TURN", size: size)
                     }
                     .frame(width: w, height: h)
                 } else {
-                    let stickSize = min(w - 8, h - 8)
+                    // Single stick: 24 pt margin each side, cap at 340 pt.
+                    let size = min(w - 48, min(h - 90, 340))
                     VStack {
-                        JoystickView(
-                            position: $vm.leftJoystickPosition,
-                            axisLock: .free,
-                            baseSize: stickSize
-                        )
+                        JoystickView(position: $vm.leftJoystickPosition,
+                                     axisLock: .free, baseSize: size)
                     }
                     .frame(width: w, height: h)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .padding(.horizontal, hPad)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func dualStickCell(
+    private func stickCell(
         position: Binding<CGPoint>,
         lock: JoystickView.AxisLock,
         label: String,
@@ -233,9 +233,7 @@ struct ContentView: View {
                     .padding(.top, 4)
             }
             .padding(.vertical, 4)
-            // Extra horizontal padding inside the scroll content keeps glass
-            // effects from kissing the edge of the screen.
-            .padding(.horizontal, 2)
+            .padding(.horizontal, hPad)
         }
         .scrollIndicators(.hidden)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -260,48 +258,45 @@ struct ContentView: View {
     }
 
     // MARK: - Pad Arrival Row ─────────────────────────────────────────────────
+    // No send button — increment/decrement immediately transmits the pad number.
 
     private var padArrivalRow: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 12) {
             Text("Pad Arrival")
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(Color.white.opacity(0.65))
                 .fixedSize()
 
-            Spacer(minLength: 4)
+            Spacer(minLength: 0)
 
-            Button { if vm.padNumber > 1 { vm.padNumber -= 1 } } label: {
+            Button {
+                if vm.padNumber > 1 { vm.padNumber -= 1; vm.sendPad() }
+            } label: {
                 Image(systemName: "minus")
                     .font(.system(size: 14, weight: .bold))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.glass)
+            .disabled(!vm.car.isConnected)
 
             Text("Pad \(vm.padNumber)")
                 .font(.system(size: 15, weight: .bold, design: .monospaced))
                 .foregroundStyle(.white)
-                .frame(minWidth: 64)
+                .frame(minWidth: 52)
                 .contentTransition(.numericText())
                 .animation(.easeInOut(duration: 0.15), value: vm.padNumber)
 
-            Button { if vm.padNumber < 8 { vm.padNumber += 1 } } label: {
+            Button {
+                if vm.padNumber < 8 { vm.padNumber += 1; vm.sendPad() }
+            } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 14, weight: .bold))
-                    .frame(width: 38, height: 38)
+                    .frame(width: 44, height: 44)
             }
-            .buttonStyle(.glass)
-
-            Button { vm.sendPad() } label: {
-                Text("Send")
-                    .font(.system(size: 14, weight: .semibold))
-                    .padding(.horizontal, 18)
-                    .frame(height: 38)
-            }
-            .tint(vm.car.isConnected ? .blue : Color(white: 0.3))
             .buttonStyle(.glass)
             .disabled(!vm.car.isConnected)
         }
-        .padding(.horizontal, 14)
+        .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14))
     }
@@ -316,7 +311,7 @@ struct ContentView: View {
                     .foregroundStyle(Color.white.opacity(0.5))
                     .font(.system(size: 13))
                     .frame(width: 18)
-                TextField("Car IP  (e.g. 192.168.1.100)", text: $vm.ipAddress)
+                TextField("192.168.x.x", text: $vm.ipAddress)
                     .foregroundStyle(.white)
                     .keyboardType(.decimalPad)
                     .autocorrectionDisabled()
@@ -332,7 +327,7 @@ struct ContentView: View {
                 .foregroundStyle(.white)
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.center)
-                .frame(width: 58)
+                .frame(width: 56)
                 .focused($focusedField, equals: .port)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 10)
@@ -352,7 +347,7 @@ struct ContentView: View {
                     Text(connectButtonLabel)
                         .font(.system(size: 14, weight: .semibold))
                 }
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 18)
                 .padding(.vertical, 10)
             }
             .tint(connectButtonTint)
@@ -433,7 +428,7 @@ private struct CarButton: View {
                 Text(label)
                     .font(.system(size: 14, weight: .semibold))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.82)
+                    .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)

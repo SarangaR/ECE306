@@ -46,7 +46,13 @@ final class CarConnection {
     // MARK: - Connection Lifecycle
 
     func connect(host: String, port: UInt16) {
-        disconnect()
+        // Cancel the old connection first and give the remote end a moment to
+        // process the RST before we fire a new SYN.  Without this pause the
+        // server sees RST immediately followed by SYN and replies with RST.
+        let previous = connection
+        connection = nil
+        previous?.cancel()
+
         state = .connecting
 
         let nwHost = NWEndpoint.Host(host)
@@ -65,23 +71,38 @@ final class CarConnection {
         conn.stateUpdateHandler = { [weak self] newState in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                // Ignore callbacks from a connection that has already been
+                // replaced.  Without this guard, the old connection's .cancelled
+                // callback would nil-out the new connection reference and kill
+                // any in-progress attempt.
+                guard self.connection === conn else { return }
+
                 switch newState {
                 case .ready:
                     self.state = .connected
                     self.onStateChange?(.connected)
+
                 case .failed(let error):
-                    let s = ConnectionState.failed("Error: \(error.localizedDescription)")
+                    print("[CarConnection] failed: \(error)")
+                    let s = ConnectionState.failed("Error")
                     self.state = s
                     self.connection = nil
                     self.onStateChange?(s)
+
                 case .cancelled:
+                    // Only reached when WE cancel the active connection
+                    // (e.g. user taps Disconnect).  Replaced connections are
+                    // filtered by the guard above.
                     self.state = .disconnected
                     self.connection = nil
                     self.onStateChange?(.disconnected)
-                case .waiting(let error):
-                    let s = ConnectionState.failed("Waiting: \(error.localizedDescription)")
-                    self.state = s
-                    self.onStateChange?(s)
+
+                case .waiting:
+                    // Network.framework is waiting for a path improvement
+                    // (e.g. Wi-Fi not yet ready).  Don't report as failure —
+                    // just stay in .connecting and let the retry loop handle it.
+                    print("[CarConnection] waiting for path…")
+
                 default:
                     break
                 }
@@ -92,9 +113,10 @@ final class CarConnection {
     }
 
     func disconnect() {
-        connection?.cancel()
+        let conn = connection
         connection = nil
         state = .disconnected
+        conn?.cancel()
     }
 
     // MARK: - Car Commands
@@ -138,7 +160,6 @@ final class CarConnection {
         String(format: "%.1f", value)
     }
 
-    // Throttle drive-command log to ~1 Hz so the console stays readable
     private var driveLogCounter = 0
 
     private func send(_ message: String) {
@@ -148,12 +169,12 @@ final class CarConnection {
         if isDrive {
             driveLogCounter += 1
             if driveLogCounter % 50 == 0 {
-                let status = connection != nil ? "🟢 connected" : "🔴 no connection"
-                print("[CarController TX] \(status)  \(trimmed)")
+                let status = connection != nil ? "🟢" : "🔴"
+                print("[CarController TX] \(status) \(trimmed)")
             }
         } else {
-            let status = connection != nil ? "🟢 connected" : "🔴 no connection"
-            print("[CarController TX] \(status)  \(trimmed)")
+            let status = connection != nil ? "🟢" : "🔴"
+            print("[CarController TX] \(status) \(trimmed)")
         }
 
         guard let data = message.data(using: .utf8) else { return }
