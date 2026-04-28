@@ -1827,18 +1827,6 @@ unsigned char isRobotBusy(void)
     return 0U;
 }
 
-/* ── Streaming curvature drive ─────────────────────────────────────────────
- *
- *  fwd_pct  : forward speed percent  (-100 = full reverse, +100 = full fwd)
- *  turn_pct : turn rate percent      (-100 = hard left,    +100 = hard right)
- *
- *  Curvature model:
- *    left  = fwd_pct + turn_pct     (clamped to ±100)
- *    right = fwd_pct - turn_pct     (clamped to ±100)
- *
- *  Any active timed command is preempted so the robot responds immediately.
- * ────────────────────────────────────────────────────────────────────────── */
-
 static unsigned long  s_curvature_last_tick = 0UL;
 static unsigned char  s_curvature_active    = 0U;
 
