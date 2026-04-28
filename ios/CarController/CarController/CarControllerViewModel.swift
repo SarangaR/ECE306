@@ -1,5 +1,6 @@
 import SwiftUI
 import ActivityKit
+import GameController
 
 /// Central coordinator for car connection, gamepad input, and UI state.
 /// Owned by ContentView as a @State property so it lives for the app's lifetime.
@@ -25,10 +26,6 @@ final class CarControllerViewModel {
     /// false = left Y + left X (single stick, free movement)
     var dualJoystickMode: Bool = UserDefaults.standard.object(forKey: "dualJoystickMode") as? Bool ?? true
 
-    /// When true the drive loop is suppressed so autonomous commands aren't
-    /// immediately overridden by a C0,0 keep-alive tick.
-    var autonomousMode: Bool = false
-
     // Connection form — persisted across launches
     var ipAddress: String = UserDefaults.standard.string(forKey: "carIPAddress") ?? ""
     var portText:  String = UserDefaults.standard.string(forKey: "carPort")      ?? "3107"
@@ -42,9 +39,14 @@ final class CarControllerViewModel {
 
     // MARK: - Private
 
-    private var driveTimer:  DispatchSourceTimer?
-    private var retryTask:   Task<Void, Never>?
+    private var driveTimer:   DispatchSourceTimer?
+    private var retryTask:    Task<Void, Never>?
     private var liveActivity: Activity<CarActivityAttributes>?
+
+    /// Tracks whether a non-zero drive command was last sent.
+    /// When the stick returns to zero we send exactly one stop command, then go silent
+    /// until the stick moves again. This keeps the wire quiet during autonomous commands.
+    private var wasDriving: Bool = false
 
     // MARK: - Init
 
@@ -82,31 +84,56 @@ final class CarControllerViewModel {
     // MARK: - Drive Tick
 
     func sendDriveTick() {
-        guard car.isConnected else { return }
-
-        let fwd: Double
-        let trn: Double
-
-        if gamepad.connectedGamepadName != nil {
-            fwd = gamepad.analogForward
-            trn = dualJoystickMode ? gamepad.analogTurn : gamepad.analogTurnSingleMode
-        } else if dualJoystickMode {
-            fwd = leftJoystickPosition.y  * 100
-            trn = rightJoystickPosition.x * 100
-        } else {
-            fwd = leftJoystickPosition.y * 100
-            trn = leftJoystickPosition.x * 100
+        guard car.isConnected else {
+            wasDriving = false
+            return
         }
 
-        if autonomousMode {
-            if abs(fwd) > 5 || abs(trn) > 5 {
-                autonomousMode = false
-            } else {
-                return
-            }
+        // ── Gather input ──────────────────────────────────────────────────
+        var fwd: Double = 0
+        var trn: Double = 0
+
+        // Read gamepad axes directly from GCController so we always get the
+        // live hardware value — avoids any @Observable / MainActor threading
+        // issues with stored properties set from GCController callbacks.
+        let deadzone = 0.07
+        if let pad = GCController.current?.extendedGamepad {
+            var rawFwd = Double(pad.leftThumbstick.yAxis.value)
+            if abs(rawFwd) < deadzone { rawFwd = 0 }
+            fwd = rawFwd * 100
+
+            let rawX = dualJoystickMode
+                ? Double(pad.rightThumbstick.xAxis.value)
+                : Double(pad.leftThumbstick.xAxis.value)
+            var rawTrn = rawX
+            if abs(rawTrn) < deadzone { rawTrn = 0 }
+            trn = rawTrn * 100
         }
 
-        car.sendDrive(forward: fwd, turn: trn)
+        // On-screen joystick — whichever axis has larger magnitude wins,
+        // so both gamepad and touch work simultaneously.
+        let joystickFwd = leftJoystickPosition.y * 100
+        let joystickTrn = dualJoystickMode
+            ? rightJoystickPosition.x * 100
+            : leftJoystickPosition.x * 100
+
+        if abs(joystickFwd) > abs(fwd) { fwd = joystickFwd }
+        if abs(joystickTrn) > abs(trn) { trn = joystickTrn }
+
+        // ── Send only when needed ─────────────────────────────────────────
+        // 2 % deadzone prevents tiny float noise from waking up the car.
+        let isMoving = abs(fwd) > 2 || abs(trn) > 2
+
+        if isMoving {
+            car.sendDrive(forward: fwd, turn: trn)
+            wasDriving = true
+        } else if wasDriving {
+            // Transitioning from moving → stopped: send one explicit stop,
+            // then stay silent so autonomous commands aren't overridden.
+            car.sendStop()
+            wasDriving = false
+        }
+        // If !isMoving && !wasDriving: already stopped, send nothing.
     }
 
     // MARK: - Connection
@@ -128,7 +155,7 @@ final class CarControllerViewModel {
 
     func disconnect() {
         cancelRetries()
-        autonomousMode = false
+        wasDriving = false
         car.sendStop()
         car.disconnect()
         leftJoystickPosition  = .zero
@@ -148,17 +175,18 @@ final class CarControllerViewModel {
                 guard let self else { return }
                 self.connect()
 
-                // Poll for up to 5 s in 200 ms increments
-                for _ in 0..<25 {
+                // Poll for up to 6 s in 200 ms increments.
+                for _ in 0..<30 {
                     if Task.isCancelled || self.car.isConnected { break }
                     try? await Task.sleep(for: .milliseconds(200))
                 }
 
                 if Task.isCancelled || self.car.isConnected { break }
 
-                // Connected → the callback will clear isRetrying
-                // Not connected → pause 3 s before next attempt
-                try? await Task.sleep(for: .seconds(3))
+                // Pause before the next attempt.  The 1 s gap lets the robot's
+                // TCP stack fully process our RST from the cancel before we
+                // send a new SYN — otherwise the server may RST the new attempt.
+                try? await Task.sleep(for: .seconds(1))
             }
             if !Task.isCancelled {
                 self?.isRetrying = false
@@ -175,35 +203,21 @@ final class CarControllerViewModel {
     // MARK: - Actions
 
     func stop() {
-        autonomousMode = false
+        wasDriving = false
         leftJoystickPosition  = .zero
         rightJoystickPosition = .zero
         car.sendStop()
     }
 
-    func sendLineFollow() {
-        autonomousMode = true
-        car.sendLineFollow()
-    }
-
-    func sendLRoute() {
-        autonomousMode = true
-        car.sendLRoute()
-    }
-
-    func sendEnterCircle() {
-        autonomousMode = true
-        car.sendEnterCircle()
-    }
-
-    func sendExitCircle() {
-        autonomousMode = true
-        car.sendExitCircle()
-    }
+    func sendLineFollow()  { car.sendLineFollow() }
+    func sendLRoute()      { car.sendLRoute() }
+    func sendEnterCircle() { car.sendEnterCircle() }
+    func sendExitCircle()  { car.sendExitCircle() }
 
     func sendPad() {
+        guard car.isConnected else { return }
         car.sendPadArrival(padNumber)
-        toast("Pad \(padNumber) sent")
+        toast("→ Pad \(padNumber)")
     }
 
     // MARK: - Joystick Mode
@@ -227,12 +241,9 @@ final class CarControllerViewModel {
                 self.retryTask?.cancel()
                 self.startLiveActivity()
             case .disconnected:
-                // Update the Live Activity to show "Offline" — it stays visible
-                // until the app is explicitly killed (terminateLiveActivity)
                 self.updateLiveActivityDisconnected()
             case .failed:
                 self.updateLiveActivityDisconnected()
-                // If we were in retry mode, the retry loop keeps going
             default:
                 break
             }
@@ -241,7 +252,7 @@ final class CarControllerViewModel {
 
     private func startLiveActivity() {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-        terminateLiveActivity()   // dismiss any stale activity before starting fresh
+        terminateLiveActivity()
 
         let attrs   = CarActivityAttributes(carIP: ipAddress)
         let state   = CarActivityAttributes.ContentState(isConnected: true, statusText: "Connected")
@@ -254,9 +265,6 @@ final class CarControllerViewModel {
         )
     }
 
-    /// Update the Live Activity state to "Offline" without dismissing it.
-    /// The activity stays visible in the Dynamic Island / Lock Screen so the
-    /// user can see the car disconnected, then open the app to reconnect.
     private func updateLiveActivityDisconnected() {
         guard let activity = liveActivity else { return }
         Task {
@@ -266,8 +274,6 @@ final class CarControllerViewModel {
         }
     }
 
-    /// Actually end and immediately dismiss the Live Activity.
-    /// Called when the app is being terminated (swipe-to-close).
     private func terminateLiveActivity() {
         guard let activity = liveActivity else { return }
         liveActivity = nil
@@ -302,14 +308,12 @@ final class CarControllerViewModel {
         gamepad.onPadIncrement = { [weak self] in
             guard let self else { return }
             if padNumber < 8 { padNumber += 1 }
-            car.sendPadArrival(padNumber)
-            toast("Pad \(padNumber)")
+            sendPad()
         }
         gamepad.onPadDecrement = { [weak self] in
             guard let self else { return }
             if padNumber > 1 { padNumber -= 1 }
-            car.sendPadArrival(padNumber)
-            toast("Pad \(padNumber)")
+            sendPad()
         }
     }
 }
