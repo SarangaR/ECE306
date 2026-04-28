@@ -7,6 +7,8 @@
 #include "include/otos.h"
 #include <string.h>
 
+#pragma PERSISTENT(Port_event)
+
 const ESPCommand esp_commands[ESP_CMD_COUNT] =
 {
     { ESP_CMD_CHECK_COMM,        "AT",                                              "Check comm"        },
@@ -29,7 +31,7 @@ const ESPCommand esp_commands[ESP_CMD_COUNT] =
     { ESP_CMD_CREATE_SERVER,     "AT+CIPSERVER=1," ESP_TCP_PORT_STR,                "Create TCP server" },
     { ESP_CMD_CHECK_LINK_STATUS, "AT+STATUS?",                                      "Link status"       },
     { ESP_CMD_CHECK_CONN_STATE,  "AT+CWSTATE?",                                     "Conn state"        },
-    { ESP_CMD_PING,              "AT+PING=\"8.8.8.8\"",                             "Ping 8.8.8.8"      },
+    { ESP_CMD_PING,              "AT+PING=\"www.google.com\"",                             "Ping 8.8.8.8"      },
     { ESP_CMD_SET_MAC,           "AT+CIPSTAMAC=\"" ESP_MAC_ADDRESS "\"",            "Set MAC"           }
 };
 
@@ -38,7 +40,7 @@ static ESPStartupState s_startup_state = ESP_STARTUP_WAIT_READY;
 static ESPCommandEvent s_pending_event;
 static unsigned char   s_has_pending = 0U;
 
-static char            s_ip_string[16] = "No IP";
+static char s_ip_string[16] = "No IP";
 static unsigned long   s_last_ip_poll_tick = 0UL;
 static uint8_t         s_wifi_connected = 0U;
 
@@ -47,6 +49,23 @@ static uint8_t         s_wifi_connected = 0U;
 static ESPCommandEvent s_cmd_queue[ESP_CMD_QUEUE_SIZE];
 static uint8_t         s_q_head = 0U;
 static uint8_t         s_q_tail = 0U;
+
+static unsigned char   s_led_on        = 0U;
+static unsigned long   s_led_on_tick   = 0UL;
+static unsigned char   s_ip_poll_done  = 0U;
+
+/* Callback scheduled by ESP_DIR_ROUTE to auto-start line following once the
+   route drive finishes, without both chains needing to be in memory at once. */
+static void route_then_follow_line(void)
+{
+    chainWait(5).withBLState(BL_START)
+        .andThenDriveStraight(30).until(&black_all)
+        .andThenWait(5).withBLState(BL_INTERCEPT)
+        .andThenAlignLeftToLine().withBLState(BL_TURN)
+        .andThenWait(5)
+        .andThenFollowLine(3600).withBLState(BL_TRAVEL)
+        .schedule();
+}
 
 void ESP_Init(void)
 {
@@ -57,18 +76,16 @@ void ESP_Init(void)
     s_wifi_connected      = 0U;
 
     P3OUT &= ~IOT_EN;
-    __delay_cycles(800000UL);
+    __delay_cycles(800000UL);   /* ~100 ms reset pulse */
     P3OUT |= IOT_EN;
 
-    __delay_cycles(80000000UL);
-
-    s_startup_state = ESP_STARTUP_WAIT_MAC_OK;
-    ESP_SendCommand(ESP_CMD_SET_MAC);
+    s_startup_state = ESP_STARTUP_WAIT_READY;
 }
 
 static void ESP_ParseCIFSR(const char *frame)
 {
     const char *p = strstr(frame, "+CIFSR:STAIP,\"");
+    char        new_ip[16];
     unsigned int j;
 
     if (!p) { return; }
@@ -76,11 +93,19 @@ static void ESP_ParseCIFSR(const char *frame)
     j = 0U;
     while (j < 15U && *p != '"' && *p != '\0')
     {
-        s_ip_string[j] = *p;
+        new_ip[j] = *p;
         j++;
         p++;
     }
-    s_ip_string[j] = '\0';
+    new_ip[j] = '\0';
+
+    /* Only store real IPs — ignore 0.0.0.0 so the last known IP
+       is preserved in FRAM across reboots and shown instantly on boot. */
+    if (new_ip[0] != '0')
+    {
+        unsigned int k;
+        for (k = 0U; k <= j; k++) { s_ip_string[k] = new_ip[k]; }
+    }
 }
 
 void ESP_ProcessStartup(const char *frame)
@@ -89,14 +114,45 @@ void ESP_ProcessStartup(const char *frame)
 
     ESP_ParseCIFSR(frame);
 
+    if (strstr(frame, "WIFI GOT IP") != 0)
+    {
+        ESP_SendCommand(ESP_CMD_GET_IP_MAC);
+    }
+
     if (s_startup_state == ESP_STARTUP_DONE) { return; }
+
+    if (s_startup_state == ESP_STARTUP_WAIT_READY)
+    {
+        if (strstr(frame, "OK") != 0)
+        {
+            s_startup_state = ESP_STARTUP_WAIT_MAC_OK;
+            ESP_SendCommand(ESP_CMD_SET_MAC);
+        }
+        return;
+    }
 
     if (s_startup_state == ESP_STARTUP_WAIT_MAC_OK)
     {
         if (strstr(frame, "OK") != 0)
         {
+            /* MAC set command acknowledged — now verify it actually took */
+            s_startup_state = ESP_STARTUP_WAIT_MAC_VERIFY;
+            ESP_SendCommand(ESP_CMD_GET_MAC);   /* AT+CIPSTAMAC? */
+        }
+    }
+    else if (s_startup_state == ESP_STARTUP_WAIT_MAC_VERIFY)
+    {
+        if (strstr(frame, ESP_MAC_ADDRESS) != 0)
+        {
+            /* MAC confirmed — proceed with WiFi check */
             s_startup_state = ESP_STARTUP_WAIT_WIFI;
             ESP_SendCommand(ESP_CMD_CHECK_CONN_STATE);
+        }
+        else if (strstr(frame, "OK") != 0)
+        {
+            /* Got OK but MAC doesn't match — retry the set command */
+            s_startup_state = ESP_STARTUP_WAIT_MAC_OK;
+            ESP_SendCommand(ESP_CMD_SET_MAC);
         }
     }
     else if (s_startup_state == ESP_STARTUP_WAIT_WIFI)
@@ -358,8 +414,15 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
             
         case ESP_DIR_FOLLOW_LINE:
-            Menu_SetBLState(BL_START);
-            chainWait(1).andThenDriveStraight(30).untilSelective(&black_line_left, &black_line_right).andThenWait(1).andThenAlignLeftToLine().andThenWait(1).andThenFollowLine(3600).schedule();
+            chainWait(10).withBLState(BL_START)
+                .andThenDriveStraight(30).until(&black_all)
+                .andThenWait(10).withBLState(BL_INTERCEPT)
+                .andThenAlignLeftToLine().withBLState(BL_TURN)
+                .andThenWait(10)
+                .andThenFollowLine(10).withBLState(BL_TRAVEL)
+                .andThenWait(10).withBLState(BL_CIRCLE)
+                .andThenFollowLine(3600)
+                .schedule();
             break;
 
         case ESP_DIR_DRIVE_DISTANCE:
@@ -371,13 +434,19 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ROUTE:
+            /* Schedule the drive route (7 commands).  When it finishes,
+               route_then_follow_line() is called automatically to build and
+               schedule the follow-line chain (6 commands) fresh, so both
+               chains never occupy memory at the same time. */
             chainWait(1)
                 .andThenDriveDistance(36.0f).withTimeout(5000)
-                .andThenTurnToAbsoluteAngle(90.0f)
-                .andThenDriveDistance(24.0f).withTimeout(5000)
-                .andThenTurnToAbsoluteAngle(180.0f)
-                .andThenDriveDistance(12.0f).withTimeout(5000)
+                .andThenTurnToAbsoluteAngle(90.0f).withTimeout(2000)
+                .andThenDriveDistance(42.0f).withTimeout(5000)
+                .andThenTurnToAbsoluteAngle(180.0f).withTimeout(2000)
+                .andThenDriveDistance(11.0f).withTimeout(5000)
+                .andThenWait(5).withBLState(BL_PAD_8)
                 .schedule();
+            robotSetOnComplete(route_then_follow_line);
             break;
 
         case ESP_DIR_PAD_DISPLAY:
@@ -385,20 +454,27 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ENTER_CIRCLE:
-            Menu_SetBLState(BL_CIRCLE);
-            chainTurnToAngle(90.0f).andThenWait(15).andThenDriveDistance(24.0f).andThenWait(15).schedule();
+            chainWait(15).withBLState(BL_CIRCLE)
+            .andThenTurnToAngle(90.0f)
+            .andThenWait(1)
+            .andThenDriveDistance(24.0f)
+            .andThenWait(1)
+            .schedule();
             break;
 
         case ESP_DIR_EXIT_CIRCLE:
-            Menu_SetBLState(BL_EXIT);
-            chainTurnToAngle(-90.0f).andThenWait(15).andThenDriveStraight(2).andThenWait(15).schedule();
+            chainWait(15).withBLState(BL_EXIT)
+            .andThenTurnToAngle(-90.0f)
+            .andThenWait(1)
+            .andThenDriveDistance(24.0).withTimeout(5000)
+            .andThenWait(15).withBLState(BL_STOP)
+            .schedule();
             break;
 
         case ESP_DIR_ZERO_OTOS:
         {
-            static const sfe_otos_pose2d_t zero = {0.0f, 0.0f, 0.0f};
-            (void)OTOS_SetPosition(&zero);
-            zeroHeading();
+            OTOS_FullReset();
+            __delay_cycles(8000000);
             break;
         }
 
@@ -469,10 +545,48 @@ const char *ESP_GetIPString(void)
     return s_ip_string;
 }
 
+void ESP_StopIPPolling(void)
+{
+    s_ip_poll_done = 1U;
+}
+
 void ESP_IPPollUpdate(unsigned long tick)
 {
+    /* Turn off activity LED after one main-loop tick (~20 ms) */
+    if (s_led_on && (tick != s_led_on_tick))
+    {
+        P2OUT  &= ~IOT_RUN_RED;
+        s_led_on = 0U;
+    }
+
+    if (s_startup_state == ESP_STARTUP_WAIT_READY)
+    {
+        /* Poll AT every second until the ESP responds OK */
+        if ((tick - s_last_ip_poll_tick) >= 50UL)
+        {
+            s_last_ip_poll_tick = tick;
+            ESP_SendCommand(ESP_CMD_CHECK_COMM);
+        }
+        return;
+    }
+
     if (s_startup_state != ESP_STARTUP_DONE) { return; }
-    if ((tick - s_last_ip_poll_tick) >= 50UL)
+
+    if (s_ip_poll_done) {
+        /* Send ping every 2 seconds (100 ticks × 20 ms) and blink IOT_RUN_RED */
+        if ((tick - s_last_ip_poll_tick) >= 100UL)
+        {
+            s_last_ip_poll_tick = tick;
+            P2OUT       |= IOT_RUN_RED;
+            s_led_on     = 1U;
+            s_led_on_tick = tick;
+            ESP_SendCommand(ESP_CMD_PING);
+        }
+        return;
+    }
+
+    /* Poll CIFSR every main-loop tick (~20 ms) */
+    if ((tick - s_last_ip_poll_tick) >= 1UL)
     {
         s_last_ip_poll_tick = tick;
         ESP_SendCommand(ESP_CMD_GET_IP_MAC);

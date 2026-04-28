@@ -590,6 +590,41 @@ otos_err_t OTOS_ResetTracking(void)
   return otos_write_register_bytes(OTOS_REG_RESET, &value, 1U);
 }
 
+otos_err_t OTOS_FullReset(void)
+{
+  otos_err_t err;
+
+  /* 1. Reset position tracking (clears X/Y/H back to zero) */
+  err = OTOS_ResetTracking();
+  if (err != OTOS_ERR_OK)
+  {
+    return err;
+  }
+
+  /* 2. Brief delay to let the reset register take effect (~3 ms) */
+  __delay_cycles(24000U);
+
+  /* 3. Recalibrate the IMU gyro with 255 samples, blocking until done
+   *    (~612 ms total at 2.4 ms per sample) */
+  err = OTOS_CalibrateImu(255U, 1U);
+  if (err != OTOS_ERR_OK)
+  {
+    return err;
+  }
+
+  /* 4. Zero the software heading offset so getHeading() reads 0 from here */
+  g_otos.headingZeroOffsetDeg = 0.0;
+  g_otos.packetCount = 0U;
+
+  err = OTOS_ResetTracking();
+  if (err != OTOS_ERR_OK)
+  {
+    return err;
+  }
+
+  return OTOS_ERR_OK;
+}
+
 otos_err_t OTOS_GetSignalProcessConfig(sfe_otos_signal_process_config_t *config)
 {
   if (config == 0)
@@ -782,6 +817,9 @@ void Init_IMU(void)
 {
   if (OTOS_Begin())
   {
+    /* Allow the OTOS IMU to stabilize after power-on before sampling bias.
+       300 ms at 8 MHz = 2,400,000 cycles. */
+    __delay_cycles(2400000UL);
     OTOS_CalibrateImu(255U, 1U);
   }
 }
@@ -805,7 +843,7 @@ float getHeading(void)
 void zeroHeading(void)
 {
   IMU_Process();
-  g_otos.headingZeroOffsetDeg = (float)g_otos.rawChannels[0] * 0.01f;
+  g_otos.headingZeroOffsetDeg = ((float)g_otos.rawChannels[0] * 0.01f) - g_otos.headingZeroOffsetDeg;
 }
 
 uint8_t IMU_HasValidStartupAngle(void)

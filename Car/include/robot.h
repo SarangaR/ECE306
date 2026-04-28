@@ -27,16 +27,16 @@
 #define LF_KD_SCALED        (LF_KD * LF_GAIN_SCALE)
 
 #define LF_TARGET_SUM       (138)
-#define LF_KP_SUM_SCALED    (512)     // ~0.3 * 1024 — tune this
+#define LF_KP_SUM_SCALED    (102)     // ~0.3 * 1024 — tune this
 
 #define LF_INTEGRAL_MAX     (5000)
 #define LF_INTEGRAL_MIN     (-5000)
 #define LF_CORRECTION_MAX   (100)
 #define LF_CORRECTION_MIN   (-100)
-#define LF_LOSS_THRESHOLD   (30)
+#define LF_LOSS_THRESHOLD   (40)
 #define LF_FRICTION_FLOOR (45)
 
-#define TURN_KP_UNSCALED (5.0f)
+#define TURN_KP_UNSCALED (4.0f)
 #define TURN_KI_UNSCALED (0.025f)
 #define TURN_KD_UNSCALED (12.0f)
 
@@ -147,7 +147,8 @@ struct Command
     DriveUntilFlag drive_until_left_flag;
     DriveUntilFlag drive_until_right_flag;
     const char *display_message;
-    unsigned int timeout_ticks;  /* 0 = no timeout; DriveDistance uses this as a hard deadline */
+    unsigned int timeout_ticks;       /* 0 = no timeout; DriveDistance uses this as a hard deadline */
+    unsigned char bl_state_on_start;  /* 0 = no BL state change; N = set BL state (N-1) when command starts */
 };
 
 typedef struct
@@ -180,6 +181,7 @@ struct RobotCommandChain
     RobotCommandChain (*andThenDriveDistance)(float inches);
     RobotCommandChain (*andThenTurnToAbsoluteAngle)(float degrees);
     RobotCommandChain (*withTimeout)(unsigned int timeout_ms);
+    RobotCommandChain (*withBLState)(unsigned char bl_state);
     void (*schedule)(void);
 };
 
@@ -270,6 +272,11 @@ void applySpeedSet(float fwd_pct, float turn_pct);
 /* Call once per 50 Hz tick (pass one_second_timer).  Stops motors if no
    applySpeedSet call has arrived within ~300 ms. */
 void robotCurvatureWatchdog(unsigned long tick);
+
+/* Register a callback to be called once when the active command finishes.
+   The callback is cleared automatically after it fires, or when resetRobot()
+   is called.  Pass 0 to cancel a pending callback. */
+void robotSetOnComplete(void (*cb)(void));
 
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;

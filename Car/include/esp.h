@@ -89,8 +89,9 @@ void ESP_Init(void);
 /* Startup state — exposed here so the menu can display progress         */
 typedef enum
 {
-    ESP_STARTUP_WAIT_READY = 0,   /* (unused) legacy boot-ready wait       */
-    ESP_STARTUP_WAIT_MAC_OK,      /* Sent AT+CIPSTAMAC, waiting OK         */
+    ESP_STARTUP_WAIT_READY = 0,   /* Polling AT until ESP responds OK      */
+    ESP_STARTUP_WAIT_MAC_OK,      /* Sent AT+CIPSTAMAC=, waiting OK        */
+    ESP_STARTUP_WAIT_MAC_VERIFY,  /* Sent AT+CIPSTAMAC?, verifying MAC set */
     ESP_STARTUP_WAIT_WIFI,        /* Sent AT+CWSTATE?, checking connection  */
     ESP_STARTUP_WAIT_CWJAP,       /* Sent AT+CWJAP, waiting WIFI GOT IP    */
     ESP_STARTUP_WAIT_CIPMUX_OK,   /* Sent AT+CIPMUX=1, waiting for OK      */
@@ -128,5 +129,6 @@ void    ESP_FlushQueue(void);                      /* discard all queued command
 
 const char *ESP_GetIPString(void);
 void        ESP_IPPollUpdate(unsigned long tick);
+void        ESP_StopIPPolling(void);
 
 #endif // ESP_H

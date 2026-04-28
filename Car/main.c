@@ -53,6 +53,7 @@ void main(void)
     Init_ADC();
     Init_Switches();
 
+    Init_DAC();
     initRobot(&g_robot);
     Init_IMU();
 
@@ -75,12 +76,19 @@ void main(void)
                 ESP_ProcessStartup(esp_frame);
                 if (ESP_ParseIPDFrame(esp_frame, &evt))
                 {
-                    if ((evt.direction == ESP_DIR_CURVATURE) || !isRobotBusy())
-                    {
-                        ESP_SetPendingEvent(&evt);
-                        Menu_NotifyESPCommandReceived(&evt);
-                        ESP_ScheduleEvent(&evt);
-                    }
+                    /*
+                     * Curvature commands are always accepted (they call
+                     * applySpeedSet which handles its own preemption).
+                     *
+                     * All other commands are also always accepted: calling
+                     * .schedule() replaces robot->active_command directly,
+                     * so any incoming command naturally interrupts whatever
+                     * is currently running (e.g. line following) without
+                     * needing a STOP first.
+                     */
+                    ESP_SetPendingEvent(&evt);
+                    Menu_NotifyESPCommandReceived(&evt);
+                    ESP_ScheduleEvent(&evt);
                 }
             }
 
@@ -120,6 +128,29 @@ void main(void)
             }
         }
 
+        {
+            /* Blink onboard red LED at 1 Hz (500 ms on, 500 ms off).
+               one_second_timer ticks every ~20 ms, so 25 ticks = 500 ms. */
+            static unsigned long s_blink_tick = 0UL;
+            static unsigned char s_blink_state = 0U;
+            unsigned long t = one_second_timer;
+            if ((t - s_blink_tick) >= 25UL)
+            {
+                s_blink_tick = t;
+                s_blink_state ^= 1U;
+                if (s_blink_state) 
+                {
+                    P1OUT |=  RED_LED;
+                    P6OUT &= ~GRN_LED;
+                }
+                else 
+                { 
+                    P1OUT &= ~RED_LED;
+                    P6OUT |= GRN_LED;
+                }
+            }
+        }
+
         updateRobot(&g_robot, Time_Sequence);
         Motors_Service();
 
@@ -131,11 +162,20 @@ void main(void)
         {
             black_line_left = 1;
         }
+        else {
+            black_line_left = 0;
+        }
 
         if (getDetectedColor(DETECTOR_RIGHT) == COLOR_BLACK)
         {
             black_line_right = 1;
         }
+        else {
+            black_line_right = 0;
+        }
+
+        if (black_line_left || black_line_right) black_all = 1;
+        else black_all = 0;
 
         Display_Process();
         P3OUT ^= TEST_PROBE;

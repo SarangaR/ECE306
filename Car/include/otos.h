@@ -141,6 +141,7 @@ otos_err_t OTOS_SetLinearScalar(float scalar);
 otos_err_t OTOS_GetAngularScalar(float *scalar);
 otos_err_t OTOS_SetAngularScalar(float scalar);
 otos_err_t OTOS_ResetTracking(void);
+otos_err_t OTOS_FullReset(void);
 otos_err_t OTOS_GetSignalProcessConfig(sfe_otos_signal_process_config_t *config);
 otos_err_t OTOS_SetSignalProcessConfig(const sfe_otos_signal_process_config_t *config);
 otos_err_t OTOS_GetStatus(sfe_otos_status_t *status);

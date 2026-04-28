@@ -12,7 +12,8 @@ typedef enum
     BL_TRAVEL,
     BL_CIRCLE,
     BL_EXIT,
-    BL_STOP
+    BL_STOP,
+    BL_PAD_8
 } BLState;
 
 void Menu_Init(void);
@@ -29,5 +30,7 @@ void Menu_NotifyESPCommandReceived(const ESPCommandEvent *evt);
 void Menu_SetPadArrival(int pad_number);
 
 void Menu_SetBLState(BLState state);
+
+unsigned char Menu_IsInIRCal(void);
 
 #endif // MENU_H

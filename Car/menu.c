@@ -74,11 +74,6 @@ static unsigned long s_remote_start_tick = 0UL;
 static unsigned long s_remote_stop_tick = 0UL;
 static unsigned char s_remote_started = 0U;
 static unsigned char s_remote_stopped = 0U;
-static unsigned char s_bl_exit_seen_busy = 0U;
-static unsigned long s_bl_event_tick = 0UL;
-
-#define BL_EVENT_DWELL_TICKS (15UL * REMOTE_TICKS_PER_SEC)
-
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;
 
@@ -361,6 +356,7 @@ static void renderTopBL(void)
         case BL_CIRCLE:    setLine(0U, "BL Circle "); break;
         case BL_EXIT:      setLine(0U, "BL Exit   "); break;
         case BL_STOP:      setLine(0U, "BL Stop   "); break;
+        case BL_PAD_8:     setLine(0U, "Arrived 08"); break;
         default:           setLine(0U, "          "); break;
     }
 }
@@ -663,6 +659,11 @@ void Menu_SetBLState(BLState state)
     }
 }
 
+unsigned char Menu_IsInIRCal(void)
+{
+    return (current_page == PAGE_IR_CAL) ? 1U : 0U;
+}
+
 void Menu_Init(void)
 {
     current_page = PAGE_BOOT_IP;
@@ -737,34 +738,6 @@ void Menu_Update(void)
 
     case PAGE_REMOTE:
         setThumbWheelMenuCount(1U);
-        if (s_bl_state == BL_START)
-        {
-            if (black_line_left || black_line_right)
-            {
-                s_bl_state = BL_INTERCEPT;
-                s_bl_event_tick = one_second_timer;
-            }
-        }
-        else if (s_bl_state == BL_INTERCEPT)
-        {
-            if ((one_second_timer - s_bl_event_tick) >= BL_EVENT_DWELL_TICKS)
-            {
-                s_bl_state = BL_TURN;
-                s_bl_event_tick = one_second_timer;
-            }
-        }
-        else if (s_bl_state == BL_TURN)
-        {
-            if ((one_second_timer - s_bl_event_tick) >= BL_EVENT_DWELL_TICKS)
-            {
-                s_bl_state = BL_TRAVEL;
-            }
-        }
-        else if (s_bl_state == BL_EXIT)
-        {
-            if (mission_is_running) { s_bl_exit_seen_busy = 1U; }
-            else if (s_bl_exit_seen_busy) { Menu_SetBLState(BL_STOP); }
-        }
         break;
 
     case PAGE_BOOT_IP:
@@ -848,13 +821,23 @@ void Menu_Render(void)
     }
 }
 
+static void enter_ir_cal(void)
+{
+    current_page = PAGE_IR_CAL;
+    ir_cal_raw_valid = 0U;
+    /* Stop CIFSR polling — no need to update IP during calibration */
+    ESP_StopIPPolling();
+    /* Re-calibrate IMU now that the board is at operating temperature
+       and the robot is known to be stationary. */
+    OTOS_CalibrateImu(255U, 1U);
+}
+
 void Menu_OnSW1(void)
 {
     switch (current_page)
     {
     case PAGE_BOOT_IP:
-        current_page = PAGE_IR_CAL;
-        ir_cal_raw_valid = 0U;
+        enter_ir_cal();
         break;
 
     case PAGE_MAIN:
@@ -862,7 +845,8 @@ void Menu_OnSW1(void)
         if (current_page == PAGE_IR_CAL)
         {
             ir_cal_raw_valid = 0U;
-            int _ = getThumbWheel();
+            (void)getThumbWheel();
+            OTOS_CalibrateImu(255U, 1U);
         }
         break;
 
@@ -886,8 +870,7 @@ void Menu_OnSW2(void)
 {
     if (current_page == PAGE_BOOT_IP)
     {
-        current_page = PAGE_IR_CAL;
-        ir_cal_raw_valid = 0U;
+        enter_ir_cal();
         return;
     }
 
