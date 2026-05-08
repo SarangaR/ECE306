@@ -54,16 +54,15 @@ static unsigned char   s_led_on        = 0U;
 static unsigned long   s_led_on_tick   = 0UL;
 static unsigned char   s_ip_poll_done  = 0U;
 
-/* Callback scheduled by ESP_DIR_ROUTE to auto-start line following once the
-   route drive finishes, without both chains needing to be in memory at once. */
 static void route_then_follow_line(void)
 {
-    chainWait(5).withBLState(BL_START)
+    chainWait(1).withBLState(BL_START)
         .andThenDriveStraight(30).until(&black_all)
-        .andThenWait(5).withBLState(BL_INTERCEPT)
+        .andThenWait(1).withBLState(BL_INTERCEPT)
         .andThenAlignLeftToLine().withBLState(BL_TURN)
-        .andThenWait(5)
-        .andThenFollowLine(3600).withBLState(BL_TRAVEL)
+        .andThenFollowLine(10).withBLState(BL_TRAVEL)
+        .andThenWait(1).withBLState(BL_CIRCLE)
+        .andThenFollowLine(3600).withBLState(BL_CIRCLE)
         .schedule();
 }
 
@@ -434,17 +433,14 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ROUTE:
-            /* Schedule the drive route (7 commands).  When it finishes,
-               route_then_follow_line() is called automatically to build and
-               schedule the follow-line chain (6 commands) fresh, so both
-               chains never occupy memory at the same time. */
             chainWait(1)
+                .andThenOTOSReset()
                 .andThenDriveDistance(36.0f).withTimeout(5000)
                 .andThenTurnToAbsoluteAngle(90.0f).withTimeout(2000)
                 .andThenDriveDistance(42.0f).withTimeout(5000)
                 .andThenTurnToAbsoluteAngle(180.0f).withTimeout(2000)
                 .andThenDriveDistance(11.0f).withTimeout(5000)
-                .andThenWait(5).withBLState(BL_PAD_8)
+                .andThenWait(1).withBLState(BL_PAD_8)
                 .schedule();
             robotSetOnComplete(route_then_follow_line);
             break;
@@ -454,7 +450,7 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_ENTER_CIRCLE:
-            chainWait(15).withBLState(BL_CIRCLE)
+            chainWait(1).withBLState(BL_CIRCLE)
             .andThenTurnToAngle(90.0f)
             .andThenWait(1)
             .andThenDriveDistance(24.0f)
@@ -463,11 +459,10 @@ void ESP_ScheduleEvent(const ESPCommandEvent *evt)
             break;
 
         case ESP_DIR_EXIT_CIRCLE:
-            chainWait(15).withBLState(BL_EXIT)
+            chainWait(1).withBLState(BL_EXIT)
             .andThenTurnToAngle(-90.0f)
-            .andThenWait(1)
             .andThenDriveDistance(24.0).withTimeout(5000)
-            .andThenWait(15).withBLState(BL_STOP)
+            .andThenWait(1).withBLState(BL_STOP)
             .schedule();
             break;
 

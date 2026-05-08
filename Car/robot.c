@@ -528,6 +528,18 @@ static RobotCommandChain chainAndThenAlignLeftToLine(void)
     return getChainApi();
 }
 
+static RobotCommandChain chainAndThenOTOSReset(void)
+{
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    Command_OTOSReset(&active_chain.commands[active_chain.count]);
+    chainAppend(&active_chain.commands[active_chain.count]);
+    return getChainApi();
+}
+
 static RobotCommandChain chainAndThenFollowLine(int time_seconds)
 {
     if (active_chain.count >= CHAIN_MAX_COMMANDS)
@@ -691,6 +703,7 @@ static RobotCommandChain getChainApi(void)
     chain_api_local.andThenDriveToLine = chainAndThenDriveToLine;
     chain_api_local.andThenAlignLeftToLine = chainAndThenAlignLeftToLine;
     chain_api_local.andThenFollowLine      = chainAndThenFollowLine;
+    chain_api_local.andThenOTOSReset       = chainAndThenOTOSReset;
     chain_api_local.until = chainUntil;
     chain_api_local.untilSelective = chainUntilSelective;
     chain_api_local.withDisplay = chainWithDisplay;
@@ -1311,7 +1324,6 @@ static void commandTick(Command *command)
 
     case CMD_FOLLOW_LINE:
     {
-        // --- 1. Initialization ---
         if (!command->started)
         {
             command->started       = 1;
@@ -1339,10 +1351,6 @@ static void commandTick(Command *command)
         if ((irL < LF_LOSS_THRESHOLD) && (irR < LF_LOSS_THRESHOLD))
         {
             // CASE: OFF LINE (Both sensors are seeing white)
-            // Pivot in the direction of the last known successful correction.
-            // Note: the previous sum-based check (sumError < -138) reduced to
-            // irL + irR < 0, which can never happen.  Per-sensor thresholds are
-            // board-independent within the calibrated range.
             if (lf_last_dir > 0) {
                 leftDuty  = -70;
                 rightDuty = 70;
@@ -1354,7 +1362,6 @@ static void commandTick(Command *command)
         else if ((irL > LF_BOTH_BLACK_THRESHOLD) && (irR > LF_BOTH_BLACK_THRESHOLD))
         {
             // CASE: INTERSECTION (Both sensors are seeing black)
-            // Slow down and hunt for an edge.
             leftDuty  = 70;
             rightDuty = 70;
         }
@@ -1373,7 +1380,7 @@ static void commandTick(Command *command)
                         + (LF_KD_SCALED * derivative);
             int mv = mv_scaled >> 10;
 
-            // Store direction only during active tracking (prevents updating when erratic)
+            // Store direction only during active tracking
             if (abs(mv) > 5) {
                 lf_last_dir = (mv > 0) ? 1 : -1;
             }
@@ -1389,8 +1396,8 @@ static void commandTick(Command *command)
             int baseSpeed = LF_BASE_SPEED - abs(speedTrim);
             if (baseSpeed < 20) baseSpeed = 20;
 
-            leftDuty  = baseSpeed - mv;
-            rightDuty = baseSpeed + mv;
+            leftDuty  = LF_BASE_SPEED - mv;
+            rightDuty = LF_BASE_SPEED + mv;
         }
 
         if (leftDuty  >  100) leftDuty  =  100;
@@ -1595,6 +1602,17 @@ static void commandTick(Command *command)
         }
         break;
     }
+
+    case CMD_OTOS_RESET:
+        if (!command->started)
+        {
+            command->started = 1;
+            setCurrentCommandDisplay(getDisplayName(command, "OTOS RESET"));
+            OTOS_FullReset();
+            __delay_cycles(8000000UL);
+        }
+        command->finished = 1;
+        break;
 
     case CMD_DRIVE_DISTANCE:
     {
@@ -2069,6 +2087,29 @@ void Command_AlignLeftToLine(Command *command)
     command->bl_state_on_start = 0;
 }
 
+void Command_OTOSReset(Command *command)
+{
+    if (command == 0) { return; }
+
+    command->type                  = CMD_OTOS_RESET;
+    command->duration_ticks        = 0;
+    command->elapsed_ticks         = 0;
+    command->started               = 0;
+    command->finished              = 0;
+    command->child_count           = 0;
+    command->active_child          = 0;
+    command->target_angle          = 0.0f;
+    command->heading_start         = 0.0f;
+    command->heading_error_prev    = 0.0f;
+    command->heading_error_sum     = 0.0f;
+    command->drive_until_flag      = 0;
+    command->drive_until_left_flag = 0;
+    command->drive_until_right_flag= 0;
+    command->display_message       = 0;
+    command->bl_state_on_start     = 0;
+    command->timeout_ticks         = 0;
+}
+
 void Command_FollowLine(Command *command, int time_seconds)
 {
     if (command == 0)
@@ -2463,6 +2504,12 @@ RobotCommandChain chainFollowLine(int time_seconds)
 {
     chainReset();
     return chainAndThenFollowLine(time_seconds);
+}
+
+RobotCommandChain chainOTOSReset(void)
+{
+    chainReset();
+    return chainAndThenOTOSReset();
 }
 
 RobotCommandChain chainDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag)

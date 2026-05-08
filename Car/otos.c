@@ -1,3 +1,12 @@
+//------------------------------------------------------------------------------
+//
+//  Description: This file contains the System Configurations
+//
+//  Saranga Rajagopalan
+//  May 2026
+//  Built with IAR Embedded Workbench Version: V7.3.1.3987 (6.40.1)
+//------------------------------------------------------------------------------
+
 #include "include/otos.h"
 #include <driverlib.h>
 

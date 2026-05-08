@@ -108,6 +108,7 @@ typedef enum
     CMD_ALIGN_LEFT_TO_LINE,
     CMD_FOLLOW_LINE,
     CMD_DRIVE_DISTANCE,
+    CMD_OTOS_RESET,
     CMD_SEQUENCE,
     CMD_PARALLEL
 } CommandType;
@@ -173,6 +174,7 @@ struct RobotCommandChain
     RobotCommandChain (*andThenDriveToLine)(void);
     RobotCommandChain (*andThenAlignLeftToLine)(void);
     RobotCommandChain (*andThenFollowLine)(int time_seconds);
+    RobotCommandChain (*andThenOTOSReset)(void);
     RobotCommandChain (*until)(DriveUntilFlag stop_flag);
     RobotCommandChain (*untilSelective)(DriveUntilFlag left_stop_flag, DriveUntilFlag right_stop_flag);
     RobotCommandChain (*withDisplay)(const char *msg);
@@ -204,6 +206,7 @@ void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUn
 void Command_DriveToLine(Command *command);
 void Command_AlignLeftToLine(Command *command);
 void Command_FollowLine(Command *command, int time_seconds);
+void Command_OTOSReset(Command *command);
 void Command_Sequence(Command *command, Command **children, unsigned char child_count);
 void Command_Parallel(Command *command, Command **children, unsigned char child_count);
 
@@ -218,6 +221,7 @@ RobotCommandChain chainReverseStraight(int time_seconds);
 RobotCommandChain chainDriveToLine(void);
 RobotCommandChain chainAlignLeftToLine(void);
 RobotCommandChain chainFollowLine(int time_seconds);
+RobotCommandChain chainOTOSReset(void);
 RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
 RobotCommandChain chainDriveDistance(float inches);
