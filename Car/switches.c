@@ -32,8 +32,8 @@ void disable_switch_SW2(void)
 
 void Init_Switches(void)
 {
-    P4IES |= SW1;
-    P2IES |= SW2;
+    P4IES |= SW1; // High-to-low edge (button press with pull-up)
+    P2IES |= SW2; // High-to-low edge (button press with pull-up)
 
     sw1_event = FALSE;
     sw2_event = FALSE;
@@ -64,14 +64,17 @@ void Switches_Process(void)
 
 void Switch_Process(void)
 {
+    // Menu actions are bound in main.c by consuming switch events.
 }
 
 void Switch1_Process(void)
 {
+    // Switch behavior is handled in main.c.
 }
 
 void Switch2_Process(void)
 {
+    // Switch behavior is handled in main.c.
 }
 
 unsigned char Switch1_ConsumePress(void)

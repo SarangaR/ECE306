@@ -10,6 +10,7 @@
 #include "include/timers.h"
 #include "include/macros.h"
 #include "include/ports.h"
+#include "include/dac.h"
 #include <string.h>
 
 void Init_Timers(void)
@@ -115,6 +116,18 @@ __interrupt void Timer0_B1_ISR(void)
         TB0CCTL2 &= ~CCIE;
         P2IFG &= ~SW2;  // Clear any edge that arrived during debounce window
         P2IE  |=  SW2;  // Re-enable SW2 port interrupt
+        break;
+
+    case 14:  // overflow – DAC soft-start ramp (fires at 5 Hz in up mode)
+        DAC_data -= 100U;
+        SAC3DAT   = DAC_data;
+        if (DAC_data <= DAC_Limit)
+        {
+            DAC_data = DAC_Adjust;   // 4.00 V, empirically calibrated
+            SAC3DAT  = DAC_data;
+            TB0CTL  &= ~TBIE;        // disable Timer B0 overflow interrupt
+            RED_LED_OFF;
+        }
         break;
 
     default:

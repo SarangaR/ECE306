@@ -1,12 +1,10 @@
 {
   "name": "car-controller",
-  "version": "2.0.0",
-  "description": "Web joystick controller for ECE306 robot car",
-  "main": "bridge.js",
+  "version": "1.0.0",
+  "description": "Web D-pad controller for ECE306 robot car",
+  "main": "server.js",
   "scripts": {
-    "bridge": "node bridge.js",
-    "start":  "node bridge.js",
-    "legacy": "node server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "ws": "^8.18.0"

@@ -27,16 +27,16 @@
 #define LF_KD_SCALED        (LF_KD * LF_GAIN_SCALE)
 
 #define LF_TARGET_SUM       (138)
-#define LF_KP_SUM_SCALED    (512)     // ~0.3 * 1024 — tune this
+#define LF_KP_SUM_SCALED    (102)     // ~0.3 * 1024 — tune this
 
 #define LF_INTEGRAL_MAX     (5000)
 #define LF_INTEGRAL_MIN     (-5000)
 #define LF_CORRECTION_MAX   (100)
 #define LF_CORRECTION_MIN   (-100)
-#define LF_LOSS_THRESHOLD   (30)
+#define LF_LOSS_THRESHOLD   (40)
 #define LF_FRICTION_FLOOR (45)
 
-#define TURN_KP_UNSCALED (5.0f)
+#define TURN_KP_UNSCALED (4.0f)
 #define TURN_KI_UNSCALED (0.025f)
 #define TURN_KD_UNSCALED (12.0f)
 
@@ -52,6 +52,23 @@ static float lf_heading_acc = 0;
 static float lf_last_lap_tick = 0;
 static int lf_coastFrames = 0;
 static int lf_coastMv     = 0;
+static int lf_junction_frames = 0;  /* consecutive frames where both sensors see black */
+
+/* ── Follow-line failsafe thresholds ─────────────────────────────────────── */
+/* Detector value above which a sensor is considered "on black" */
+#define LF_BOTH_BLACK_THRESHOLD   (70)
+/* Detector value below which a sensor is considered "off the line" (white) */
+#define LF_BOTH_WHITE_THRESHOLD   (LF_LOSS_THRESHOLD)
+/* Sustained both-black frames required to declare a junction (~300 ms @ 50 Hz) */
+#define LF_JUNCTION_CONFIRM_FRAMES (15)
+/* Max frames to coast on last-known mv before amplifying the recovery turn */
+#define LF_COAST_MAX_FRAMES       (25)
+/*
+ * Steering bias applied while confirmed at a junction.
+ * Negative  → left turn  (counterclockwise around the circle).
+ * Tune the magnitude if the robot overshoots / undershoots the circle entry.
+ */
+#define LF_CIRCLE_BIAS            (-45)
 
 #define CHAIN_MAX_COMMANDS (COMMAND_MAX_CHILDREN)
 
@@ -90,6 +107,8 @@ typedef enum
     CMD_DRIVE_TO_LINE,
     CMD_ALIGN_LEFT_TO_LINE,
     CMD_FOLLOW_LINE,
+    CMD_DRIVE_DISTANCE,
+    CMD_OTOS_RESET,
     CMD_SEQUENCE,
     CMD_PARALLEL
 } CommandType;
@@ -129,6 +148,8 @@ struct Command
     DriveUntilFlag drive_until_left_flag;
     DriveUntilFlag drive_until_right_flag;
     const char *display_message;
+    unsigned int timeout_ticks;       /* 0 = no timeout; DriveDistance uses this as a hard deadline */
+    unsigned char bl_state_on_start;  /* 0 = no BL state change; N = set BL state (N-1) when command starts */
 };
 
 typedef struct
@@ -153,11 +174,16 @@ struct RobotCommandChain
     RobotCommandChain (*andThenDriveToLine)(void);
     RobotCommandChain (*andThenAlignLeftToLine)(void);
     RobotCommandChain (*andThenFollowLine)(int time_seconds);
+    RobotCommandChain (*andThenOTOSReset)(void);
     RobotCommandChain (*until)(DriveUntilFlag stop_flag);
     RobotCommandChain (*untilSelective)(DriveUntilFlag left_stop_flag, DriveUntilFlag right_stop_flag);
     RobotCommandChain (*withDisplay)(const char *msg);
     RobotCommandChain (*andThenDriveUntil)(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
     RobotCommandChain (*andThenDriveToXY)(float target_x_in, float target_y_in);
+    RobotCommandChain (*andThenDriveDistance)(float inches);
+    RobotCommandChain (*andThenTurnToAbsoluteAngle)(float degrees);
+    RobotCommandChain (*withTimeout)(unsigned int timeout_ms);
+    RobotCommandChain (*withBLState)(unsigned char bl_state);
     void (*schedule)(void);
 };
 
@@ -174,10 +200,13 @@ void Command_TurnToAngle(Command *command, float target_angle_degrees);
 void Command_DriveStraight(Command *command, int time_seconds);
 void Command_ReverseStraight(Command *command, int time_seconds);
 void Command_DriveToXY(Command *command, float target_x_in, float target_y_in);
+void Command_DriveDistance(Command *command, float inches);
+void Command_TurnToAbsoluteAngle(Command *command, float degrees);
 void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUntilFlag stop_right_flag);
 void Command_DriveToLine(Command *command);
 void Command_AlignLeftToLine(Command *command);
 void Command_FollowLine(Command *command, int time_seconds);
+void Command_OTOSReset(Command *command);
 void Command_Sequence(Command *command, Command **children, unsigned char child_count);
 void Command_Parallel(Command *command, Command **children, unsigned char child_count);
 
@@ -192,8 +221,11 @@ RobotCommandChain chainReverseStraight(int time_seconds);
 RobotCommandChain chainDriveToLine(void);
 RobotCommandChain chainAlignLeftToLine(void);
 RobotCommandChain chainFollowLine(int time_seconds);
+RobotCommandChain chainOTOSReset(void);
 RobotCommandChain chainAndThenDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag);
 RobotCommandChain chainDriveToXY(float target_x_in, float target_y_in);
+RobotCommandChain chainDriveDistance(float inches);
+RobotCommandChain chainTurnToAbsoluteAngle(float degrees);
 RobotCommandChain chainDriveStraightMs(unsigned int ms);
 RobotCommandChain chainReverseMs(unsigned int ms);
 RobotCommandChain chainSpinCWMs(unsigned int ms, unsigned char duty_percent);
@@ -232,11 +264,23 @@ extern float line_follow_max_correction_percent;
 extern float turn_angle_tolerance_deg;
 extern float drive_to_xy_speed_percent;
 extern float drive_to_xy_tolerance_in;
+extern float drive_to_xy_kv;
+extern float drive_to_xy_komega;
 unsigned char isRobotBusy(void);
 
+/* Streaming curvature drive — preempts any active timed command and applies
+   motor speeds immediately.  fwd_pct and turn_pct are in the range -100..100.
+   Calling with (0, 0) stops the motors and disarms the watchdog. */
 void applySpeedSet(float fwd_pct, float turn_pct);
+
+/* Call once per 50 Hz tick (pass one_second_timer).  Stops motors if no
+   applySpeedSet call has arrived within ~300 ms. */
 void robotCurvatureWatchdog(unsigned long tick);
 
+/* Register a callback to be called once when the active command finishes.
+   The callback is cleared automatically after it fires, or when resetRobot()
+   is called.  Pass 0 to cancel a pending callback. */
+void robotSetOnComplete(void (*cb)(void));
 
 extern volatile unsigned int black_line_left;
 extern volatile unsigned int black_line_right;

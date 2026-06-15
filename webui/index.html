@@ -8,341 +8,137 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Car Controller</title>
   <style>
-    /* ── Reset & base ───────────────────────────────────────────────────────── */
     *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0; padding: 0;
+      box-sizing: border-box; margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      user-select: none;
+      -webkit-touch-callout: none; user-select: none;
     }
-
     :root {
-      --bg:         #0d1117;
-      --surface:    #161b22;
-      --border:     #2a3447;
-      --text:       #e2e8f0;
-      --muted:      #8b9ab0;
-      --green:      #22c55e;
-      --red:        #ef4444;
-      --blue:       #3b82f6;
-      --blue-dark:  #1d4ed8;
-      --radius:     14px;
+      --bg:        #0d1117; --surface: #161b22; --border: #2a3447;
+      --text:      #e2e8f0; --muted:   #8b9ab0; --green:  #22c55e;
+      --red:       #ef4444; --blue:    #3b82f6; --blue-dark:#1d4ed8;
+      --orange:    #f97316; --purple:  #a855f7;  --yellow: #eab308;
+      --radius:    14px;
     }
+    html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+    .app { display:flex; flex-direction:column; height:100dvh; height:100vh;
+           padding:env(safe-area-inset-top,0) env(safe-area-inset-right,8px) env(safe-area-inset-bottom,0) env(safe-area-inset-left,8px); }
 
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+    header { display:flex; align-items:center; justify-content:space-between; padding:10px 12px 6px; flex-shrink:0; gap:8px; }
+    header h1 { font-size:1rem; font-weight:700; letter-spacing:.04em; white-space:nowrap; }
+    .header-right { display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
 
-    /* ── App shell ──────────────────────────────────────────────────────────── */
-    .app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      height: 100vh;
-      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 16px)
-               env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 16px);
-    }
+    .gp-pill { display:none; align-items:center; gap:4px; font-size:.72rem; font-weight:600;
+               color:#60a5fa; background:var(--surface); border:1px solid #1e3a5f;
+               border-radius:99px; padding:4px 9px; max-width:140px; overflow:hidden;
+               white-space:nowrap; text-overflow:ellipsis; }
+    .status-pill { display:flex; align-items:center; gap:6px; font-size:.72rem; font-weight:600;
+                   color:var(--muted); background:var(--surface); border:1px solid var(--border);
+                   border-radius:99px; padding:4px 10px; transition:color .2s,border-color .2s; white-space:nowrap; }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:var(--red); flex-shrink:0; transition:background .3s; }
+    .status-pill.connected { color:var(--green); border-color:#166534; }
+    .status-pill.connected .status-dot { background:var(--green); box-shadow:0 0 6px var(--green); }
 
-    /* ── Header ─────────────────────────────────────────────────────────────── */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px 10px;
-      flex-shrink: 0;
-    }
+    main { flex:1; display:flex; overflow:hidden; gap:8px; padding:0 4px 4px; min-height:0; }
 
-    header h1 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
+    /* ── Left column: joystick ── */
+    .left-col { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; flex:0 0 auto; }
+    .joystick-base { --js:min(46vw,40vh,240px); width:var(--js); height:var(--js);
+                     border-radius:50%; background:radial-gradient(circle at 50% 50%,#1a2035 0%,#0d1117 100%);
+                     border:2px solid var(--border); position:relative; touch-action:none; cursor:grab; }
+    .joystick-base::before,.joystick-base::after { content:''; position:absolute; background:rgba(255,255,255,.05); border-radius:2px; pointer-events:none; }
+    .joystick-base::before { width:1px; height:60%; left:50%; top:20%; transform:translateX(-50%); }
+    .joystick-base::after  { width:60%; height:1px; top:50%; left:20%; transform:translateY(-50%); }
+    .js-label { position:absolute; font-size:.65rem; font-weight:700; color:var(--muted); pointer-events:none; }
+    .js-f { top:5px;    left:50%; transform:translateX(-50%); }
+    .js-b { bottom:5px; left:50%; transform:translateX(-50%); }
+    .js-l { left:5px;   top:50%; transform:translateY(-50%); }
+    .js-r { right:5px;  top:50%; transform:translateY(-50%); }
+    .joystick-knob { --knob:calc(var(--js,220px)*.28); width:var(--knob); height:var(--knob);
+                     border-radius:50%; background:radial-gradient(circle at 38% 32%,#60a5fa,var(--blue-dark));
+                     border:2px solid var(--blue); position:absolute; top:50%; left:50%;
+                     margin-top:calc(var(--knob)/-2); margin-left:calc(var(--knob)/-2);
+                     transform:translate(0px,0px); transition:transform .12s ease-out; pointer-events:none;
+                     box-shadow:0 0 14px rgba(59,130,246,.35),inset 0 1px 0 rgba(255,255,255,.2); }
+    .joystick-base.active { cursor:grabbing; }
+    .joystick-base.active .joystick-knob { transition:none; box-shadow:0 0 26px rgba(59,130,246,.65),inset 0 1px 0 rgba(255,255,255,.2); }
+    .speed-display { font-size:.72rem; font-weight:600; font-family:'SF Mono','Fira Code',ui-monospace,monospace;
+                     color:var(--muted); letter-spacing:.05em; min-height:16px; }
+    .speed-display.active { color:var(--blue); }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    /* ── Right column: action buttons ── */
+    .right-col { flex:1; display:flex; flex-direction:column; gap:6px; overflow-y:auto; min-width:0; padding-right:2px; }
 
-    /* ── Gamepad pill ────────────────────────────────────────────────────────── */
-    .gp-pill {
-      display: none;           /* shown via JS when a controller connects */
-      align-items: center;
-      gap: 5px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      color: #60a5fa;
-      background: var(--surface);
-      border: 1px solid #1e3a5f;
-      border-radius: 99px;
-      padding: 5px 11px;
-      max-width: 160px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      animation: gp-fade-in 0.3s ease;
-    }
+    .btn-group-label { font-size:.65rem; font-weight:700; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; margin-top:4px; }
 
-    @keyframes gp-fade-in {
-      from { opacity: 0; transform: translateY(-4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .btn-row { display:flex; gap:6px; }
+    .btn-row.single { flex-direction:column; }
 
-    .gp-icon { font-style: normal; font-size: 0.9rem; }
+    .act-btn {
+      flex:1; border:none; border-radius:10px; font-size:.78rem; font-weight:700;
+      padding:10px 6px; cursor:pointer; touch-action:manipulation; white-space:nowrap;
+      transition:background .15s, transform .1s, opacity .15s; color:#fff; min-width:0;
+      display:flex; align-items:center; justify-content:center; gap:5px; text-align:center;
+    }
+    .act-btn:active { transform:scale(.95); }
+    .act-btn:disabled { opacity:.38; cursor:not-allowed; }
 
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 5px 12px;
-      transition: color 0.2s, border-color 0.2s;
-    }
+    .btn-blue    { background:#1d4ed8; }
+    .btn-green   { background:#15803d; }
+    .btn-red     { background:#991b1b; }
+    .btn-orange  { background:#c2410c; }
+    .btn-purple  { background:#7e22ce; }
+    .btn-yellow  { background:#a16207; }
+    .btn-gray    { background:#374151; }
 
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--red);
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
+    /* Pad counter */
+    .pad-row { display:flex; align-items:center; gap:8px; }
+    .pad-counter-display { flex:1; background:var(--bg); border:1.5px solid var(--border);
+                           border-radius:10px; padding:8px 10px; text-align:center;
+                           font-size:.88rem; font-weight:700; font-family:ui-monospace,monospace; }
+    .pad-adj { width:40px; height:40px; border:none; border-radius:8px; background:#374151;
+               color:#fff; font-size:1.2rem; font-weight:700; cursor:pointer; touch-action:manipulation;
+               display:flex; align-items:center; justify-content:center; }
+    .pad-adj:active { transform:scale(.9); }
 
-    .status-pill.connected { color: var(--green); border-color: #166534; }
-    .status-pill.connected .status-dot {
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-    }
+    /* ── Footer: connection ── */
+    footer { flex-shrink:0; padding:6px 8px 10px; }
+    .connect-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
+    .connect-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .mode-tabs { display:flex; gap:4px; }
+    .mode-tab { background:transparent; border:1.5px solid var(--border); border-radius:7px; color:var(--muted);
+                font-size:.72rem; font-weight:700; padding:4px 8px; cursor:pointer; transition:all .15s; }
+    .mode-tab.active { background:var(--blue-dark); border-color:var(--blue); color:#fff; }
+    .ip-input { flex:1; background:var(--bg); border:1.5px solid var(--border); border-radius:9px;
+                color:var(--text); font-size:.95rem; padding:8px 12px; outline:none;
+                transition:border-color .15s; -webkit-appearance:none; min-width:80px; }
+    .ip-input::placeholder { color:var(--muted); }
+    .ip-input:focus { border-color:var(--blue); }
+    .connect-btn { background:var(--blue-dark); border:none; border-radius:9px; color:#fff;
+                   font-size:.9rem; font-weight:700; padding:8px 16px; cursor:pointer; white-space:nowrap;
+                   transition:background .15s, transform .1s; touch-action:manipulation; }
+    .connect-btn:active { transform:scale(.96); }
+    .connect-btn.disconnect { background:#7f1d1d; }
+    .hint { font-size:.68rem; color:var(--muted); text-align:center; }
 
-    /* ── Main / joystick area ───────────────────────────────────────────────── */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      overflow: hidden;
-    }
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+             background:#3f1515; border:1px solid var(--red); color:#fca5a5; font-size:.78rem;
+             padding:8px 16px; border-radius:9px; opacity:0; transition:opacity .25s,transform .25s;
+             pointer-events:none; white-space:nowrap; max-width:90vw; text-align:center; z-index:10; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    /* ── Joystick ───────────────────────────────────────────────────────────── */
-    .joystick-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
+    @media (min-width:520px) {
+      .act-btn { font-size:.85rem; padding:11px 8px; }
     }
-
-    .joystick-base {
-      --js: min(55vw, 42vh, 280px);
-      width:  var(--js);
-      height: var(--js);
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #1a2035 0%, #0d1117 100%);
-      border: 2px solid var(--border);
-      position: relative;
-      touch-action: none;
-      cursor: grab;
-      /* subtle crosshair lines via box shadows on pseudo-elements */
-    }
-
-    /* Crosshair lines */
-    .joystick-base::before,
-    .joystick-base::after {
-      content: '';
-      position: absolute;
-      background: rgba(255,255,255,0.05);
-      border-radius: 2px;
-      pointer-events: none;
-    }
-    .joystick-base::before {
-      width: 1px; height: 60%;
-      left: 50%; top: 20%;
-      transform: translateX(-50%);
-    }
-    .joystick-base::after {
-      width: 60%; height: 1px;
-      top: 50%; left: 20%;
-      transform: translateY(-50%);
-    }
-
-    /* Subtle inner ring showing max travel radius */
-    .js-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      /* drawn via JS-computed box-shadow */
-    }
-
-    /* Cardinal direction labels */
-    .js-label {
-      position: absolute;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      pointer-events: none;
-    }
-    .js-f { top:  7px; left: 50%; transform: translateX(-50%); }
-    .js-b { bottom: 7px; left: 50%; transform: translateX(-50%); }
-    .js-l { left: 7px; top: 50%; transform: translateY(-50%); }
-    .js-r { right: 7px; top: 50%; transform: translateY(-50%); }
-
-    /* Knob */
-    .joystick-knob {
-      --knob: calc(var(--js, 260px) * 0.28);
-      width:  var(--knob);
-      height: var(--knob);
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 32%, #60a5fa, var(--blue-dark));
-      border: 2px solid var(--blue);
-      position: absolute;
-      top:  50%;
-      left: 50%;
-      /* centered via negative margin */
-      margin-top:  calc(var(--knob) / -2);
-      margin-left: calc(var(--knob) / -2);
-      transform: translate(0px, 0px);
-      transition: transform 0.12s ease-out, box-shadow 0.12s;
-      cursor: grab;
-      box-shadow: 0 0 16px rgba(59, 130, 246, 0.35),
-                  inset 0 1px 0 rgba(255,255,255,0.2);
-      pointer-events: none;  /* events captured by the base */
-    }
-
-    .joystick-base.active { cursor: grabbing; }
-    .joystick-base.active .joystick-knob {
-      transition: none;
-      box-shadow: 0 0 28px rgba(59, 130, 246, 0.65),
-                  inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-
-    /* Speed readout */
-    .speed-display {
-      font-size: 0.78rem;
-      font-weight: 600;
-      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-      min-height: 18px;
-      transition: color 0.15s;
-    }
-    .speed-display.active { color: var(--blue); }
-
-    /* ── Footer / connection panel ──────────────────────────────────────────── */
-    footer {
-      flex-shrink: 0;
-      padding: 12px 16px 20px;
-    }
-
-    .connect-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .connect-row { display: flex; gap: 10px; }
-
-    .ip-input {
-      flex: 1;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 1rem;
-      padding: 10px 14px;
-      outline: none;
-      transition: border-color 0.15s;
-      -webkit-appearance: none;
-    }
-    .ip-input::placeholder { color: var(--muted); }
-    .ip-input:focus { border-color: var(--blue); }
-
-    .connect-btn {
-      background: var(--blue-dark);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 700;
-      padding: 10px 20px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s, transform 0.1s;
-      -webkit-appearance: none;
-      touch-action: manipulation;
-    }
-    .connect-btn:active { transform: scale(0.96); }
-    .connect-btn.disconnect { background: #7f1d1d; }
-
-    .hint {
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
-    /* ── Bridge label ───────────────────────────────────────────────────────── */
-    .bridge-label {
-      display: flex;
-      align-items: center;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      white-space: nowrap;
-      padding: 0 4px;
-    }
-
-    /* ── Toast ──────────────────────────────────────────────────────────────── */
-    .toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #3f1515;
-      border: 1px solid var(--red);
-      color: #fca5a5;
-      font-size: 0.82rem;
-      padding: 9px 18px;
-      border-radius: 10px;
-      opacity: 0;
-      transition: opacity 0.25s, transform 0.25s;
-      pointer-events: none;
-      white-space: nowrap;
-      max-width: 90vw;
-      text-align: center;
-      z-index: 10;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- Header -->
   <header>
     <h1>🤖 Car Controller</h1>
     <div class="header-right">
-      <div class="gp-pill" id="gpPill">
-        <span class="gp-icon">🎮</span>
-        <span id="gpLabel">Gamepad</span>
-      </div>
+      <div class="gp-pill" id="gpPill">🎮 <span id="gpLabel">Gamepad</span></div>
       <div class="status-pill" id="statusPill">
         <span class="status-dot" id="statusDot"></span>
         <span id="statusText">OFFLINE</span>
@@ -350,9 +146,9 @@
     </div>
   </header>
 
-  <!-- Joystick -->
   <main>
-    <div class="joystick-wrap">
+    <!-- Joystick -->
+    <div class="left-col">
       <div class="joystick-base" id="jsBase">
         <span class="js-label js-f">F</span>
         <span class="js-label js-b">B</span>
@@ -362,152 +158,144 @@
       </div>
       <div class="speed-display" id="speedDisplay">fwd: 0.0  turn: 0.0</div>
     </div>
+
+    <!-- Action buttons -->
+    <div class="right-col" id="rightCol">
+
+      <div class="btn-group-label">Drive</div>
+      <div class="btn-row">
+        <button class="act-btn btn-red" id="btnStop" disabled>⏹ Stop</button>
+      </div>
+
+      <div class="btn-group-label">Line / Route</div>
+      <div class="btn-row">
+        <button class="act-btn btn-green" id="btnLineFollow" disabled title="PS4 ○">⭕ Line Follow</button>
+        <button class="act-btn btn-purple" id="btnRoute" disabled title="PS4 △">△ L-Route</button>
+      </div>
+
+      <div class="btn-group-label">Circle</div>
+      <div class="btn-row">
+        <button class="act-btn btn-orange" id="btnEnterCircle" disabled title="PS4 L1">L1 → Center</button>
+        <button class="act-btn btn-yellow" id="btnExitCircle" disabled title="PS4 R1">R1 → Exit</button>
+      </div>
+
+      <div class="btn-group-label">OTOS</div>
+      <div class="btn-row">
+        <button class="act-btn btn-gray" id="btnZeroOtos" disabled title="PS4 Share">⊙ Zero Heading &amp; Position</button>
+      </div>
+
+      <div class="btn-group-label">Pad Arrival (D-pad ↑↓)</div>
+      <div class="pad-row">
+        <button class="pad-adj" id="btnPadDown">−</button>
+        <div class="pad-counter-display" id="padDisplay">Pad 1</div>
+        <button class="pad-adj" id="btnPadUp">+</button>
+      </div>
+      <div class="btn-row">
+        <button class="act-btn btn-blue" id="btnPadSend" disabled>📍 Send Pad Arrival</button>
+      </div>
+
+    </div>
   </main>
 
-  <!-- Connection panel -->
   <footer>
     <div class="connect-card">
-
-      <!-- Row 1: Bridge WebSocket URL -->
       <div class="connect-row">
-        <label class="bridge-label" for="wsInput">Bridge</label>
-        <input
-          class="ip-input"
-          id="wsInput"
-          type="text"
-          inputmode="url"
-          placeholder="wss://your-device.tailscale.ts.net"
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <button class="connect-btn" id="wsReconnectBtn" title="Reconnect bridge">↻</button>
-      </div>
-
-      <!-- Row 2: Car IP + connect/disconnect -->
-      <div class="connect-row">
-        <input
-          class="ip-input"
-          id="ipInput"
-          type="text"
-          inputmode="decimal"
-          placeholder="192.168.x.x  (car IP)"
-          autocomplete="off"
-          spellcheck="false"
-          maxlength="15"
-        >
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tabPuter">Puter</button>
+          <button class="mode-tab" id="tabWS">Bridge</button>
+        </div>
+        <input class="ip-input" id="ipInput" type="text" inputmode="decimal"
+               placeholder="192.168.x.x" autocomplete="off" spellcheck="false" maxlength="50">
+        <input class="ip-input" id="bridgeCarIp" type="text" inputmode="decimal"
+               placeholder="Car IP" autocomplete="off" spellcheck="false" maxlength="15"
+               style="display:none; max-width:110px;">
         <button class="connect-btn" id="connectBtn">Connect</button>
       </div>
-
-      <div class="hint" id="hint">Connecting to bridge…</div>
+      <div class="hint" id="hint">Puter: enter car IP · Bridge: enter ws://laptop:8080</div>
     </div>
   </footer>
 
 </div>
-
-<!-- Error toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Puter.js for client-side TCP -->
+<script src="https://js.puter.com/v2/"></script>
 <script>
-// ── Debug ─────────────────────────────────────────────────────────────────────
-// Set DBG = false to silence all debug output.
 const DBG = true;
-function dbg(tag, ...args) { if (DBG) console.log(`[${tag}]`, ...args); }
+function dbg(t,...a){if(DBG)console.log(`[${t}]`,...a);}
 
-// ── DOM refs ─────────────────────────────────────────────────────────────────
-const statusPill    = document.getElementById('statusPill');
-const statusText    = document.getElementById('statusText');
-const speedDisplay  = document.getElementById('speedDisplay');
-const hint          = document.getElementById('hint');
-const connectBtn    = document.getElementById('connectBtn');
-const ipInput       = document.getElementById('ipInput');
-const wsInput       = document.getElementById('wsInput');
-const wsReconnectBtn= document.getElementById('wsReconnectBtn');
-const toast         = document.getElementById('toast');
-const jsBase        = document.getElementById('jsBase');
-const jsKnob        = document.getElementById('jsKnob');
+// ── DOM ────────────────────────────────────────────────────────────────────────
+const statusPill   = document.getElementById('statusPill');
+const statusText   = document.getElementById('statusText');
+const speedDisplay = document.getElementById('speedDisplay');
+const hint         = document.getElementById('hint');
+const connectBtn   = document.getElementById('connectBtn');
+const ipInput      = document.getElementById('ipInput');
+const bridgeCarIp  = document.getElementById('bridgeCarIp');
+const toast        = document.getElementById('toast');
+const jsBase       = document.getElementById('jsBase');
+const jsKnob       = document.getElementById('jsKnob');
+const gpPill       = document.getElementById('gpPill');
+const gpLabel      = document.getElementById('gpLabel');
+const padDisplay   = document.getElementById('padDisplay');
+const tabPuter     = document.getElementById('tabPuter');
+const tabWS        = document.getElementById('tabWS');
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let ws          = null;
-let wsReady     = false;
+const actionBtns = ['btnStop','btnLineFollow','btnRoute','btnEnterCircle','btnExitCircle','btnPadSend','btnZeroOtos']
+  .map(id => document.getElementById(id));
+
+// ── State ──────────────────────────────────────────────────────────────────────
 let carReady    = false;
-let wsRetryTimer= null;
+let connMode    = 'puter';  // 'puter' | 'ws'
+let puterSocket = null;
+let wsSocket    = null;
+let sendTimer   = null;
+let padNumber   = 1;
 
-// ── Bridge URL ────────────────────────────────────────────────────────────────
-// Persisted in localStorage.  Enter your Tailscale Serve URL, e.g.
-//   wss://your-device.tailscale.ts.net
-// (Use tailscale serve on the bridge device to get a free wss:// endpoint.)
-function getBridgeURL() {
-  return wsInput.value.trim();
-}
+const PIN = '1234';
 
-wsInput.value = localStorage.getItem('bridgeURL') || '';
-wsInput.addEventListener('change', () => {
-  localStorage.setItem('bridgeURL', wsInput.value.trim());
+// ── Connection mode tabs ───────────────────────────────────────────────────────
+tabPuter.addEventListener('click', () => {
+  connMode = 'puter';
+  tabPuter.classList.add('active'); tabWS.classList.remove('active');
+  ipInput.placeholder = '192.168.x.x';
+  ipInput.inputMode = 'decimal';
+  bridgeCarIp.style.display = 'none';
+  hint.textContent = 'Puter: enter car IP directly';
+});
+tabWS.addEventListener('click', () => {
+  connMode = 'ws';
+  tabWS.classList.add('active'); tabPuter.classList.remove('active');
+  ipInput.placeholder = 'ws://192.168.x.x:8080';
+  ipInput.inputMode = 'url';
+  bridgeCarIp.style.display = '';
+  hint.textContent = 'Bridge: ws://laptop-ip:8080 + car IP. Run bridge.py on laptop.';
 });
 
-// ── WebSocket ─────────────────────────────────────────────────────────────────
-function connectWS() {
-  clearTimeout(wsRetryTimer);
-  const url = getBridgeURL();
-  if (!url) {
-    setHint('Enter bridge URL above (wss://…) and tap ↻');
-    return;
+// ── Send raw TCP string ────────────────────────────────────────────────────────
+function sendRaw(str) {
+  if (!carReady) return;
+  dbg('TX', str.trim());
+  if (connMode === 'puter' && puterSocket) {
+    puterSocket.write(str);
+  } else if (connMode === 'ws' && wsSocket && wsSocket.readyState === WebSocket.OPEN) {
+    wsSocket.send(str);
   }
-  dbg('WS', `connecting → ${url}`);
-  ws = new WebSocket(url);
-
-  ws.onopen = () => {
-    wsReady = true;
-    dbg('WS', 'open');
-    setHint('Bridge connected — enter car IP and tap Connect');
-  };
-
-  ws.onclose = (e) => {
-    dbg('WS', `closed  code=${e.code}  clean=${e.wasClean}`);
-    wsReady = carReady = false;
-    joystickStop();
-    setStatus(false);
-    statusText.textContent = 'RECONNECTING…';
-    setHint('Bridge offline — check URL and tap ↻');
-    connectBtn.textContent = 'Connect';
-    connectBtn.classList.remove('disconnect');
-    wsRetryTimer = setTimeout(connectWS, 3000);
-  };
-
-  ws.onerror = (e) => { dbg('WS', 'error', e); };
-
-  ws.onmessage = (e) => {
-    let msg;
-    try { msg = JSON.parse(e.data); } catch { return; }
-    if (msg.type !== 'status') return;
-    dbg('TCP', `status ok=${msg.ok}`, msg.error ?? msg.ip ?? '');
-    if (msg.ok) {
-      carReady = true;
-      setStatus(true);
-      setHint('Drag joystick to drive · Release to stop');
-      connectBtn.textContent = 'Disconnect';
-      connectBtn.classList.add('disconnect');
-    } else {
-      carReady = false;
-      setStatus(false);
-      setHint('Enter car IP and tap Connect');
-      if (msg.error) showToast(msg.error);
-      connectBtn.textContent = 'Connect';
-      connectBtn.classList.remove('disconnect');
-      joystickStop();
-    }
-  };
 }
 
-function wsSend(obj) {
-  if (ws && wsReady) ws.send(JSON.stringify(obj));
-  else if (DBG && obj.type !== 'speed') dbg('WS', 'send dropped (not ready)', obj);
+function sendCmd(letter, value) {
+  if (value !== undefined && value !== null) {
+    sendRaw(`^${PIN}${letter}${value}\r\n`);
+  } else {
+    sendRaw(`^${PIN}${letter}\r\n`);
+  }
 }
 
-// ── Status helpers ────────────────────────────────────────────────────────────
+// ── Status helpers ─────────────────────────────────────────────────────────────
 function setStatus(ok) {
   statusPill.className = 'status-pill' + (ok ? ' connected' : '');
   statusText.textContent = ok ? 'CONNECTED' : 'OFFLINE';
+  actionBtns.forEach(b => { b.disabled = !ok; });
 }
 function setHint(m) { hint.textContent = m; }
 
@@ -519,352 +307,346 @@ function showToast(m) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// ── Deadzone ──────────────────────────────────────────────────────────────────
-const DEADZONE = 0.07;   // 7 % — filters joystick center slop
+// ── Puter TCP connect ─────────────────────────────────────────────────────────
+function connectPuter(ip) {
+  if (typeof puter === 'undefined' || !puter.net) {
+    showToast('Puter not loaded — try Bridge mode');
+    connectBtn.textContent = 'Connect';
+    return;
+  }
+  dbg('TCP', `Puter connect → ${ip}:3107`);
+  connectBtn.textContent = 'Connecting…';
+  setHint('Connecting via Puter…');
 
+  try {
+    puterSocket = new puter.net.Socket(ip, 3107);
+  } catch(e) {
+    showToast('Puter socket failed: ' + e.message);
+    connectBtn.textContent = 'Connect'; return;
+  }
+
+  puterSocket.on('open', () => {
+    dbg('TCP','Puter open');
+    carReady = true;
+    setStatus(true);
+    setHint('Connected · Use joystick or buttons');
+    connectBtn.textContent = 'Disconnect'; connectBtn.classList.add('disconnect');
+  });
+
+  puterSocket.on('error', e => {
+    dbg('TCP','Puter error', e);
+    showToast('Connection error');
+    disconnectAll();
+  });
+
+  puterSocket.on('close', () => {
+    dbg('TCP','Puter closed');
+    if (carReady) { showToast('Connection lost'); disconnectAll(); }
+  });
+
+  // We don't need to read data — the car doesn't send responses we process
+}
+
+// ── WebSocket bridge connect ──────────────────────────────────────────────────
+function connectWS(url) {
+  dbg('WS', `Bridge connect → ${url}`);
+  connectBtn.textContent = 'Connecting…';
+  setHint('Connecting to bridge…');
+
+  try {
+    wsSocket = new WebSocket(url);
+  } catch(e) {
+    showToast('Invalid WebSocket URL'); connectBtn.textContent = 'Connect'; return;
+  }
+
+  const timeout = setTimeout(() => {
+    if (wsSocket.readyState !== WebSocket.OPEN) {
+      wsSocket.close(); showToast('Bridge connection timed out');
+      connectBtn.textContent = 'Connect';
+    }
+  }, 5000);
+
+  wsSocket.onopen = () => {
+    clearTimeout(timeout);
+    dbg('WS','open');
+    const cip = bridgeCarIp.value.trim();
+    if (cip) { wsSocket.send(`CONNECT ${cip}`); dbg('WS',`sent CONNECT ${cip}`); }
+    carReady = true;
+    setStatus(true);
+    setHint('Connected via bridge · Use joystick or buttons');
+    connectBtn.textContent = 'Disconnect'; connectBtn.classList.add('disconnect');
+  };
+
+  wsSocket.onclose = () => {
+    clearTimeout(timeout);
+    dbg('WS','closed');
+    if (carReady) { showToast('Bridge connection lost'); disconnectAll(); }
+  };
+
+  wsSocket.onerror = () => {
+    dbg('WS','error');
+    showToast('Bridge connection error');
+  };
+}
+
+function disconnectAll() {
+  joystickStop();
+  carReady = false;
+  setStatus(false);
+  connectBtn.textContent = 'Connect'; connectBtn.classList.remove('disconnect');
+  setHint(connMode === 'puter' ? 'Enter car IP and tap Connect' : 'Enter bridge URL and tap Connect');
+  if (puterSocket) { try { puterSocket.close(); } catch(_){} puterSocket = null; }
+  if (wsSocket)    { try { wsSocket.close();    } catch(_){} wsSocket    = null; }
+}
+
+// ── Connect button ─────────────────────────────────────────────────────────────
+connectBtn.addEventListener('click', () => {
+  if (carReady) { disconnectAll(); return; }
+  const val = ipInput.value.trim();
+  if (!val) { showToast('Enter an address first'); return; }
+  if (connMode === 'puter') {
+    connectPuter(val);
+  } else {
+    const url = val.startsWith('ws') ? val : `ws://${val}`;
+    connectWS(url);
+  }
+});
+ipInput.addEventListener('keydown', e => { if (e.key === 'Enter') connectBtn.click(); });
+bridgeCarIp.addEventListener('keydown', e => { if (e.key === 'Enter') connectBtn.click(); });
+
+// Pre-fill from ?ip= query param
+const urlIP = new URLSearchParams(location.search).get('ip');
+if (urlIP) ipInput.value = urlIP;
+
+// ── Deadzone ───────────────────────────────────────────────────────────────────
+const DEADZONE = 0.07;
 function applyDZ(v) {
   const a = Math.abs(v);
   if (a < DEADZONE) return 0;
   return Math.sign(v) * (a - DEADZONE) / (1 - DEADZONE);
 }
 
-// ── Joystick geometry ─────────────────────────────────────────────────────────
-// All measurements in CSS pixels, computed lazily on first interaction.
-let baseR  = 0;   // radius of joystick-base element
-let maxDist = 0;  // max knob centre displacement from base centre
-
+// ── Joystick ───────────────────────────────────────────────────────────────────
+let baseR=0, maxDist=0;
 function calcSizes() {
   const br = jsBase.getBoundingClientRect();
-  baseR   = br.width  / 2;
-  // knob's CSS --knob = 28% of --js; in Chrome/Safari getComputedStyle gives
-  // the resolved value; fall back to 28% of base diameter.
+  baseR = br.width / 2;
   const ks = parseFloat(getComputedStyle(jsKnob).width) || (br.width * 0.28);
-  maxDist = Math.max(1, baseR - ks / 2 - 4);  // 4 px border clearance
-  dbg('JS', `calcSizes  baseR=${baseR.toFixed(0)}px  knob=${ks.toFixed(0)}px  maxDist=${maxDist.toFixed(0)}px`);
+  maxDist = Math.max(1, baseR - ks / 2 - 4);
 }
 
-// ── Joystick state ────────────────────────────────────────────────────────────
-let jsActive   = false;
-let jsPointerID= null;
-let jsX = 0, jsY = 0;       // normalized, deadzone NOT applied here
-let sendTimer  = null;
-let _sendCount = 0;          // used to throttle speed console spam
+let jsActive=false, jsPointerID=null, jsX=0, jsY=0;
+let _sendCount=0;
 
-// ── Joystick helpers ──────────────────────────────────────────────────────────
-function moveKnob(kx, ky) {
-  jsKnob.style.transform = `translate(${kx.toFixed(1)}px,${ky.toFixed(1)}px)`;
-}
+function moveKnob(kx,ky) { jsKnob.style.transform = `translate(${kx.toFixed(1)}px,${ky.toFixed(1)}px)`; }
 
 function sendSpeed() {
   if (!carReady) return;
-  if (gpDriving) return;   // gamepad loop is handling sends — don't interfere
-  const fwd  = +(applyDZ(jsY) * 100).toFixed(1);
-  const turn = +(applyDZ(jsX) * 100).toFixed(1);
-  wsSend({ type: 'speed', fwd, turn });
-  // Log every 10th packet (~500 ms) to avoid flooding the console.
+  if (gpDriving) return;
+  const fwd  = +(applyDZ(jsY)*100).toFixed(1);
+  const turn = +(applyDZ(jsX)*100).toFixed(1);
+  sendRaw(`^${PIN}C${fwd.toFixed(1)},${turn.toFixed(1)}\r\n`);
   _sendCount++;
-  if (DBG && _sendCount % 10 === 0) {
-    dbg('JS', `sendSpeed  #${_sendCount}  raw=(${jsX.toFixed(2)}, ${jsY.toFixed(2)})  cmd fwd=${fwd} turn=${turn}`);
-  }
-  const moving = fwd !== 0 || turn !== 0;
   speedDisplay.textContent = `fwd: ${fwd.toFixed(1)}  turn: ${turn.toFixed(1)}`;
-  speedDisplay.classList.toggle('active', moving);
+  speedDisplay.classList.toggle('active', fwd!==0||turn!==0);
 }
 
-function joystickStart(clientX, clientY) {
-  if (!carReady) { showToast('Not connected — tap Connect first'); dbg('JS', 'joystickStart blocked — not connected'); return false; }
+function joystickStart(cx,cy) {
+  if (!carReady) { showToast('Not connected'); return false; }
   calcSizes();
-  dbg('JS', `joystickStart  client=(${clientX}, ${clientY})  pointerId=${jsPointerID ?? 'pending'}`);
-  jsActive = true;
-  _sendCount = 0;
+  jsActive=true; _sendCount=0;
   jsBase.classList.add('active');
-  joystickMove(clientX, clientY);
-  if (!sendTimer) {
-    sendSpeed();
-    sendTimer = setInterval(sendSpeed, 50);
-  }
+  joystickMove(cx,cy);
+  if (!sendTimer) { sendSpeed(); sendTimer = setInterval(sendSpeed, 50); }
   return true;
 }
-
-function joystickMove(clientX, clientY) {
+function joystickMove(cx,cy) {
   if (!jsActive) return;
-  const br  = jsBase.getBoundingClientRect();
-  const ox  = clientX - (br.left + br.width  / 2);
-  const oy  = clientY - (br.top  + br.height / 2);
-  const dist = Math.hypot(ox, oy);
-  const scale = dist > maxDist ? maxDist / dist : 1;
-  const kx = ox * scale;
-  const ky = oy * scale;
-  moveKnob(kx, ky);
-  jsX = maxDist > 0 ? kx / maxDist : 0;
-  jsY = maxDist > 0 ? -ky / maxDist : 0;  // screen Y inverted
+  const br=jsBase.getBoundingClientRect();
+  const ox=cx-(br.left+br.width/2), oy=cy-(br.top+br.height/2);
+  const dist=Math.hypot(ox,oy), scale=dist>maxDist?maxDist/dist:1;
+  const kx=ox*scale, ky=oy*scale;
+  moveKnob(kx,ky);
+  jsX=maxDist>0?kx/maxDist:0;
+  jsY=maxDist>0?-ky/maxDist:0;
 }
-
 function joystickStop() {
-  dbg('JS', `joystickStop  sent ${_sendCount} packets this hold`);
-  jsActive    = false;
-  jsPointerID = null;
-  jsX = jsY   = 0;
-  _sendCount  = 0;
-  // Only snap the knob back if the gamepad isn't currently driving it.
-  if (!gpDriving) {
-    moveKnob(0, 0);
-    jsBase.classList.remove('active');
-  }
-  clearInterval(sendTimer);
-  sendTimer = null;
-  // Only send a stop if the gamepad isn't already streaming commands.
-  if (carReady && !gpDriving) { wsSend({ type: 'speed', fwd: 0, turn: 0 }); dbg('JS', 'sent stop command'); }
-  if (!gpDriving) {
-    speedDisplay.textContent = 'fwd: 0.0  turn: 0.0';
-    speedDisplay.classList.remove('active');
-  }
+  jsActive=false; jsPointerID=null; jsX=jsY=0; _sendCount=0;
+  if (!gpDriving) { moveKnob(0,0); jsBase.classList.remove('active'); }
+  clearInterval(sendTimer); sendTimer=null;
+  if (carReady && !gpDriving) { sendRaw(`^${PIN}C0.0,0.0\r\n`); }
+  if (!gpDriving) { speedDisplay.textContent='fwd: 0.0  turn: 0.0'; speedDisplay.classList.remove('active'); }
 }
 
-// ── Pointer events (touch & mouse) ───────────────────────────────────────────
-jsBase.addEventListener('pointerdown', (e) => {
+jsBase.addEventListener('pointerdown', e => {
   e.preventDefault();
-  if (jsPointerID !== null) { dbg('JS', `pointerdown ignored — already tracking id=${jsPointerID}`); return; }
-  dbg('JS', `pointerdown  id=${e.pointerId}  type=${e.pointerType}  pos=(${e.clientX.toFixed(0)}, ${e.clientY.toFixed(0)})`);
-  if (!joystickStart(e.clientX, e.clientY)) return;
-  jsPointerID = e.pointerId;
-  jsBase.setPointerCapture(e.pointerId);
+  if (jsPointerID!==null) return;
+  if (!joystickStart(e.clientX,e.clientY)) return;
+  jsPointerID=e.pointerId; jsBase.setPointerCapture(e.pointerId);
 });
-
-jsBase.addEventListener('pointermove', (e) => {
-  if (e.pointerId !== jsPointerID) return;
-  e.preventDefault();
-  joystickMove(e.clientX, e.clientY);
+jsBase.addEventListener('pointermove', e => {
+  if (e.pointerId!==jsPointerID) return;
+  e.preventDefault(); joystickMove(e.clientX,e.clientY);
 });
+jsBase.addEventListener('pointerup', e => { if (e.pointerId!==jsPointerID) return; joystickStop(); });
+jsBase.addEventListener('pointercancel', e => { if (e.pointerId!==jsPointerID) return; joystickStop(); });
 
-jsBase.addEventListener('pointerup', (e) => {
-  if (e.pointerId !== jsPointerID) return;
-  dbg('JS', `pointerup    id=${e.pointerId}`);
-  joystickStop();
-});
-
-jsBase.addEventListener('pointercancel', (e) => {
-  if (e.pointerId !== jsPointerID) return;
-  dbg('JS', `pointercancel id=${e.pointerId}`);
-  joystickStop();
-});
-
-// ── Keyboard (WASD / arrow keys) ─────────────────────────────────────────────
-// Maps each key to a (fwd, turn) direction vector component.
-const keysHeld = {};   // set of active key codes
-
+// ── Keyboard ───────────────────────────────────────────────────────────────────
+const keysHeld = {};
 function applyKeyboard() {
-  const fwd  = (keysHeld['KeyW'] || keysHeld['ArrowUp']    ? 1 : 0)
-             - (keysHeld['KeyS'] || keysHeld['ArrowDown']  ? 1 : 0);
-  const turn = (keysHeld['KeyD'] || keysHeld['ArrowRight'] ? 1 : 0)
-             - (keysHeld['KeyA'] || keysHeld['ArrowLeft']  ? 1 : 0);
-
-  if (fwd !== 0 || turn !== 0) {
-    if (maxDist === 0) calcSizes();
-    jsX =  turn;
-    jsY =  fwd;
-    moveKnob(turn * maxDist, -fwd * maxDist);
+  const fwd  = (keysHeld['KeyW']||keysHeld['ArrowUp']?1:0)-(keysHeld['KeyS']||keysHeld['ArrowDown']?1:0);
+  const turn = (keysHeld['KeyD']||keysHeld['ArrowRight']?1:0)-(keysHeld['KeyA']||keysHeld['ArrowLeft']?1:0);
+  if (fwd!==0||turn!==0) {
+    if (maxDist===0) calcSizes();
+    jsX=turn; jsY=fwd;
+    moveKnob(turn*maxDist,-fwd*maxDist);
     if (!jsActive) {
       if (!carReady) return;
-      jsActive = true;
-      jsBase.classList.add('active');
-      if (!sendTimer) { sendSpeed(); sendTimer = setInterval(sendSpeed, 50); }
+      jsActive=true; jsBase.classList.add('active');
+      if (!sendTimer) { sendSpeed(); sendTimer=setInterval(sendSpeed,50); }
     }
-  } else {
-    joystickStop();
-  }
+  } else { joystickStop(); }
 }
-
 const KB_KEYS = new Set(['KeyW','KeyS','KeyA','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight']);
+document.addEventListener('keydown', e => { if (!KB_KEYS.has(e.code)||e.repeat) return; e.preventDefault(); keysHeld[e.code]=true; applyKeyboard(); });
+document.addEventListener('keyup',   e => { if (!KB_KEYS.has(e.code)) return; delete keysHeld[e.code]; applyKeyboard(); });
 
-document.addEventListener('keydown', (e) => {
-  if (!KB_KEYS.has(e.code) || e.repeat) return;
-  e.preventDefault();
-  dbg('KB', `keydown  ${e.code}  held=[${Object.keys(keysHeld).concat(e.code).join(',')}]`);
-  keysHeld[e.code] = true;
-  applyKeyboard();
+// ── Pad counter ───────────────────────────────────────────────────────────────
+function updatePadDisplay() {
+  padDisplay.textContent = `Pad ${padNumber}`;
+}
+function padIncrement() { if (padNumber < 8) { padNumber++; updatePadDisplay(); } }
+function padDecrement() { if (padNumber > 1) { padNumber--; updatePadDisplay(); } }
+
+document.getElementById('btnPadUp').addEventListener('click', padIncrement);
+document.getElementById('btnPadDown').addEventListener('click', padDecrement);
+
+// ── Action button handlers ────────────────────────────────────────────────────
+document.getElementById('btnStop').addEventListener('click', () => {
+  sendRaw(`^${PIN}C0.0,0.0\r\n`);
+});
+document.getElementById('btnLineFollow').addEventListener('click', () => {
+  sendCmd('P');
+});
+document.getElementById('btnRoute').addEventListener('click', () => {
+  sendCmd('T');
+});
+document.getElementById('btnEnterCircle').addEventListener('click', () => {
+  sendCmd('E');
+});
+document.getElementById('btnExitCircle').addEventListener('click', () => {
+  sendCmd('X');
+});
+document.getElementById('btnPadSend').addEventListener('click', () => {
+  sendCmd('N', padNumber);
+});
+document.getElementById('btnZeroOtos').addEventListener('click', () => {
+  sendCmd('Z');
 });
 
-document.addEventListener('keyup', (e) => {
-  if (!KB_KEYS.has(e.code)) return;
-  delete keysHeld[e.code];
-  dbg('KB', `keyup    ${e.code}  held=[${Object.keys(keysHeld).join(',') || 'none'}]`);
-  applyKeyboard();
-});
+// ── Gamepad ────────────────────────────────────────────────────────────────────
+// PS4 standard mapping:
+//  0=×  1=○  2=□  3=△  4=L1  5=R1  6=L2  7=R2  8=Share  9=Options
+//  10=L3 11=R3  12=↑  13=↓  14=←  15=→
+//  axes[0]=LX  axes[1]=LY  axes[2]=RX  axes[3]=RY
 
-// ── Gamepad ───────────────────────────────────────────────────────────────────
-//
-// Uses the standard Gamepad API (W3C).
-// Supported: Chrome/Edge/Firefox on PC, Chrome on Android (Bluetooth/USB),
-//            Safari 14.5+ on iOS/macOS for MFi/Xbox/PS controllers.
-//
-// Standard mapping (most controllers):
-//   axes[0]  = left stick X   (-1 left … +1 right)
-//   axes[1]  = left stick Y   (-1 up   … +1 down)   ← inverted for forward
-//   axes[2]  = right stick X
-//   axes[3]  = right stick Y
-//   buttons[12] = D-pad up
-//   buttons[13] = D-pad down
-//   buttons[14] = D-pad left
-//   buttons[15] = D-pad right
-//
-// Mapping used here:
-//   fwd  ← left stick Y (inverted) or D-pad up/down
-//   turn ← left stick X            or D-pad left/right
-//
-// When the gamepad is providing non-zero input it takes priority over the
-// virtual joystick and keyboard.  The knob visual mirrors the stick position.
+let gpIndex=-1, gpDriving=false, gpLastSendTs=0;
+const gpButtons = {
+  prevState: {}
+};
 
-let gpIndex      = -1;      // index into navigator.getGamepads()
-let gpDriving    = false;   // true while gamepad is providing non-zero input
-let gpLastSendTs = 0;       // timestamp of last gamepad speed packet
-let _gpSendCount = 0;       // for throttling debug logs
-
-const gpPill  = document.getElementById('gpPill');
-const gpLabel = document.getElementById('gpLabel');
-
-function setGPStatus(connected, id) {
-  if (connected) {
-    // Trim verbose id strings like "Xbox 360 Controller (XInput STANDARD…)"
-    const short = (id || 'Gamepad').split('(')[0].trim().slice(0, 22);
-    gpLabel.textContent = short;
-    gpPill.style.display = 'flex';
-    dbg('GP', `pill shown: "${short}"`);
-  } else {
-    gpPill.style.display = 'none';
-    dbg('GP', 'pill hidden');
-  }
+function gpButtonJustPressed(gp, idx) {
+  const now = gp.buttons[idx]?.pressed ?? false;
+  const prev = gpButtons.prevState[idx] ?? false;
+  return now && !prev;
 }
 
-window.addEventListener('gamepadconnected', (e) => {
-  dbg('GP', `connected  index=${e.gamepad.index}  id="${e.gamepad.id}"  axes=${e.gamepad.axes.length}  buttons=${e.gamepad.buttons.length}  mapping="${e.gamepad.mapping}"`);
-  // Use the first connected gamepad; ignore subsequent ones.
-  if (gpIndex < 0) {
-    gpIndex = e.gamepad.index;
-    setGPStatus(true, e.gamepad.id);
-    setHint('Gamepad active · Left stick or D-pad to drive');
+function setGPStatus(on, id) {
+  if (on) {
+    gpLabel.textContent = (id||'Gamepad').split('(')[0].trim().slice(0,22);
+    gpPill.style.display='flex';
+  } else { gpPill.style.display='none'; }
+}
+
+window.addEventListener('gamepadconnected', e => {
+  if (gpIndex < 0) { gpIndex=e.gamepad.index; setGPStatus(true,e.gamepad.id); setHint('Gamepad active'); }
+});
+window.addEventListener('gamepaddisconnected', e => {
+  if (e.gamepad.index===gpIndex) {
+    gpIndex=-1; gpDriving=false; setGPStatus(false);
+    if (carReady) sendRaw(`^${PIN}C0.0,0.0\r\n`);
+    moveKnob(0,0); jsBase.classList.remove('active');
+    const pads=navigator.getGamepads?.()??[];
+    for (let i=0;i<pads.length;i++) { if(pads[i]){gpIndex=i;setGPStatus(true,pads[i].id);break;} }
   }
 });
 
-window.addEventListener('gamepaddisconnected', (e) => {
-  dbg('GP', `disconnected  index=${e.gamepad.index}`);
-  if (e.gamepad.index === gpIndex) {
-    gpIndex   = -1;
-    gpDriving = false;
-    setGPStatus(false);
-    // Send an explicit stop so the car doesn't rely only on the watchdog.
-    if (carReady) { wsSend({ type: 'speed', fwd: 0, turn: 0 }); dbg('GP', 'sent stop on disconnect'); }
-    moveKnob(0, 0);
-    jsBase.classList.remove('active');
-    speedDisplay.textContent = 'fwd: 0.0  turn: 0.0';
-    speedDisplay.classList.remove('active');
-    // Check if another gamepad is still available.
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-    for (let i = 0; i < pads.length; i++) {
-      if (pads[i]) { gpIndex = i; setGPStatus(true, pads[i].id); dbg('GP', `fell back to index=${i}`); break; }
-    }
-    if (gpIndex < 0) setHint('Drag joystick to drive · Release to stop');
-  }
-});
-
-// RAF loop — polls at display refresh rate (~60 fps), throttled to 50 ms sends.
 function gamepadLoop(ts) {
   requestAnimationFrame(gamepadLoop);
-
-  if (gpIndex < 0 || !carReady) return;
-  if (ts - gpLastSendTs < 50) return;   // 20 Hz cap — matches joystick interval
-
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  const gp   = pads[gpIndex];
+  if (gpIndex < 0) return;
+  const pads = navigator.getGamepads?.()??[];
+  const gp = pads[gpIndex];
   if (!gp) return;
 
-  // ── Read axes (left stick) ──────────────────────────────────────────────
-  let rawFwd  = -(gp.axes[1] || 0);   // invert: stick down = negative fwd
-  let rawTurn =  (gp.axes[0] || 0);
+  // ── One-shot buttons (edge-detect) ──
+  if (gpButtonJustPressed(gp, 1))  { sendRaw(`^${PIN}C0.0,0.0\r\n`); }    // × → stop
+  if (gpButtonJustPressed(gp, 2))  { sendCmd('P'); }                       // ○ → line follow
+  if (gpButtonJustPressed(gp, 3))  { sendCmd('T'); }                       // △ → L-route
+  if (gpButtonJustPressed(gp, 4))  { sendCmd('E'); }                       // L1 → enter circle
+  if (gpButtonJustPressed(gp, 5))  { sendCmd('X'); }                       // R1 → exit circle
+  if (gpButtonJustPressed(gp, 8))  { sendCmd('Z'); }                       // Share → zero OTOS
+  if (gpButtonJustPressed(gp, 12)) { padIncrement(); sendCmd('N', padNumber); } // D↑ → pad up
+  if (gpButtonJustPressed(gp, 13)) { padDecrement(); sendCmd('N', padNumber); } // D↓ → pad down
 
-  // ── D-pad override (buttons 12-15, standard mapping) ───────────────────
-  const btn = gp.buttons;
-  if (btn[12]?.pressed) rawFwd  =  1;
-  if (btn[13]?.pressed) rawFwd  = -1;
-  if (btn[14]?.pressed) rawTurn = -1;
-  if (btn[15]?.pressed) rawTurn =  1;
-
-  const fwd    = +(applyDZ(rawFwd)  * 100).toFixed(1);
-  const turn   = +(applyDZ(rawTurn) * 100).toFixed(1);
-  const active = fwd !== 0 || turn !== 0;
-
-  // Only send if there is input or if we need to send a stop after releasing.
-  if (active || gpDriving) {
-    wsSend({ type: 'speed', fwd: +fwd, turn: +turn });
-    gpLastSendTs = ts;
-
-    _gpSendCount++;
-    if (DBG && _gpSendCount % 10 === 0) {
-      dbg('GP', `send #${_gpSendCount}  axes=(${rawFwd.toFixed(2)}, ${rawTurn.toFixed(2)})  fwd=${fwd}  turn=${turn}`);
-    }
-
-    // Mirror on virtual joystick knob.
-    if (maxDist === 0) calcSizes();
-    moveKnob(rawTurn * maxDist, -rawFwd * maxDist);
-    jsBase.classList.toggle('active', active);
-    speedDisplay.textContent = `fwd: ${(+fwd).toFixed(1)}  turn: ${(+turn).toFixed(1)}`;
-    speedDisplay.classList.toggle('active', active);
+  // Update previous button state
+  for (let i=0;i<gp.buttons.length;i++) {
+    gpButtons.prevState[i] = gp.buttons[i]?.pressed ?? false;
   }
 
+  // ── Analog drive (20 Hz throttle) ──
+  if (!carReady || ts - gpLastSendTs < 50) return;
+
+  let rawFwd  = -(gp.axes[1]||0);
+  let rawTurn =  (gp.axes[0]||0);
+  if (gp.buttons[14]?.pressed) rawTurn = -1;
+  if (gp.buttons[15]?.pressed) rawTurn =  1;
+
+  const fwd  = +(applyDZ(rawFwd)*100).toFixed(1);
+  const turn = +(applyDZ(rawTurn)*100).toFixed(1);
+  const active = fwd!==0||turn!==0;
+
+  if (active || gpDriving) {
+    sendRaw(`^${PIN}C${fwd.toFixed(1)},${turn.toFixed(1)}\r\n`);
+    gpLastSendTs = ts;
+    if (maxDist===0) calcSizes();
+    moveKnob(rawTurn*maxDist,-rawFwd*maxDist);
+    jsBase.classList.toggle('active',active);
+    speedDisplay.textContent=`fwd: ${fwd.toFixed(1)}  turn: ${turn.toFixed(1)}`;
+    speedDisplay.classList.toggle('active',active);
+  }
   gpDriving = active;
 }
 
 requestAnimationFrame(gamepadLoop);
 
-// ── Safety releases ───────────────────────────────────────────────────────────
-window.addEventListener('blur',             joystickStop);
+// ── Safety releases ────────────────────────────────────────────────────────────
+window.addEventListener('blur', joystickStop);
 window.addEventListener('visibilitychange', () => { if (document.hidden) joystickStop(); });
-document.addEventListener('touchcancel',    joystickStop);
+document.addEventListener('touchcancel', joystickStop);
 
-// ── Connect / disconnect button ───────────────────────────────────────────────
-connectBtn.addEventListener('click', () => {
-  if (carReady) {
-    dbg('TCP', 'user clicked Disconnect');
-    joystickStop();
-    wsSend({ type: 'disconnect' });
-    carReady = false;
-    setStatus(false);
-    setHint('Enter car IP and tap Connect');
-    connectBtn.textContent = 'Connect';
-    connectBtn.classList.remove('disconnect');
-  } else {
-    const ip = ipInput.value.trim();
-    if (!ip)      { showToast('Enter the car IP address first'); return; }
-    if (!wsReady) { showToast('Bridge not connected — check URL and tap ↻'); return; }
-    dbg('TCP', `user clicked Connect → ${ip}`);
-    connectBtn.textContent = 'Connecting…';
-    setHint('Connecting to ' + ip + '…');
-    wsSend({ type: 'connect', ip });
-  }
-});
-
-ipInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') connectBtn.click(); });
-
-// ── Bridge reconnect button ───────────────────────────────────────────────────
-wsReconnectBtn.addEventListener('click', () => {
-  dbg('WS', 'manual reconnect triggered');
-  localStorage.setItem('bridgeURL', wsInput.value.trim());
-  clearTimeout(wsRetryTimer);
-  if (ws) { try { ws.close(); } catch (_) {} ws = null; }
-  wsReady = carReady = false;
-  connectBtn.textContent = 'Connect';
-  connectBtn.classList.remove('disconnect');
-  connectWS();
-});
-
-wsInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') wsReconnectBtn.click(); });
-
-// Pre-fill car IP from ?ip= query param.
-const urlIP = new URLSearchParams(location.search).get('ip');
-if (urlIP) ipInput.value = urlIP;
-
-// ── Start ─────────────────────────────────────────────────────────────────────
-connectWS();
+// ── PWA service worker ────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  const sw = `
+self.addEventListener('install', e => e.waitUntil(
+  caches.open('car-v1').then(c => c.addAll(['/']))
+));
+self.addEventListener('fetch', e => e.respondWith(
+  caches.match(e.request).then(r => r || fetch(e.request))
+));`;
+  const blob = new Blob([sw], {type:'text/javascript'});
+  const url  = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).catch(()=>{});
+}
 </script>
 </body>
 </html>

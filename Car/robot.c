@@ -1,10 +1,12 @@
 #include "include/robot.h"
 #include "include/functions.h"
+#include "include/menu.h"
 #include <string.h>
 #include <stdint.h>
 #include "include/otos.h"
 #include "include/detector.h"
 #include "include/pid.h"
+#include "include/fast_trig.h"
 
 #pragma diag_suppress 1530
 #pragma diag_suppress 1531
@@ -45,8 +47,10 @@ float drive_straight_max_correction_percent = 60.0f;
 float drive_straight_deadband_deg = 0.5f;
 float drive_straight_correction_sign = -1.0f;
 float turn_angle_tolerance_deg = 8.0f;
-float drive_to_xy_speed_percent = 50.0f;
+float drive_to_xy_speed_percent = 75.0f;
 float drive_to_xy_tolerance_in = 1.5f;
+float drive_to_xy_kv           = 10.0f;  /* % per inch   — scales forward speed with distance */
+float drive_to_xy_komega       = 0.7f;   /* % per degree — matches LF_KP                      */
 float align_line_left_base_percent = 30.0f;
 float align_line_right_base_percent = 72.0f;
 float align_line_detector_kp = 0.10f;
@@ -59,6 +63,8 @@ float align_line_detector_tolerance_raw = 70.0f;
 float drive_to_line_max_percent = 85.0f;
 float drive_to_line_min_percent = 12.0f;
 float drive_to_line_approach_gain = 1.5f;
+
+static int lf_last_dir = 1;
 
 typedef struct
 {
@@ -474,7 +480,6 @@ static RobotCommandChain chainAndThenSpinCCWMs(unsigned int ms, unsigned char du
     return getChainApi();
 }
 
-
 static RobotCommandChain chainAndThenTurnToAngle(float target_angle_degrees)
 {
     if (active_chain.count >= CHAIN_MAX_COMMANDS)
@@ -519,6 +524,18 @@ static RobotCommandChain chainAndThenAlignLeftToLine(void)
     }
 
     Command_AlignLeftToLine(&active_chain.commands[active_chain.count]);
+    chainAppend(&active_chain.commands[active_chain.count]);
+    return getChainApi();
+}
+
+static RobotCommandChain chainAndThenOTOSReset(void)
+{
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    Command_OTOSReset(&active_chain.commands[active_chain.count]);
     chainAppend(&active_chain.commands[active_chain.count]);
     return getChainApi();
 }
@@ -608,6 +625,58 @@ static RobotCommandChain chainAndThenDriveToXY(float target_x_in, float target_y
     return getChainApi();
 }
 
+static RobotCommandChain chainAndThenDriveDistance(float inches)
+{
+    Command *cmd;
+
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    cmd = &active_chain.commands[active_chain.count];
+    Command_DriveDistance(cmd, inches);
+    chainAppend(cmd);
+    return getChainApi();
+}
+
+static RobotCommandChain chainAndThenTurnToAbsoluteAngle(float degrees)
+{
+    if (active_chain.count >= CHAIN_MAX_COMMANDS)
+    {
+        return getChainApi();
+    }
+
+    Command_TurnToAbsoluteAngle(&active_chain.commands[active_chain.count], degrees);
+    chainAppend(&active_chain.commands[active_chain.count]);
+    return getChainApi();
+}
+
+static RobotCommandChain chainWithTimeout(unsigned int timeout_ms)
+{
+    if (active_chain.count == 0)
+    {
+        return getChainApi();
+    }
+
+    active_chain.commands[active_chain.count - 1U].timeout_ticks =
+        COMMAND_TICKS_FROM_MS(timeout_ms);
+    return getChainApi();
+}
+
+static RobotCommandChain chainWithBLState(unsigned char bl_state)
+{
+    if (active_chain.count == 0)
+    {
+        return getChainApi();
+    }
+
+    /* Store (bl_state + 1) so that 0 means "no BL state to set" */
+    active_chain.commands[active_chain.count - 1U].bl_state_on_start =
+        (unsigned char)(bl_state + 1U);
+    return getChainApi();
+}
+
 static void chainSchedule(void)
 {
     if ((active_robot == 0) || (active_chain.count == 0))
@@ -634,11 +703,16 @@ static RobotCommandChain getChainApi(void)
     chain_api_local.andThenDriveToLine = chainAndThenDriveToLine;
     chain_api_local.andThenAlignLeftToLine = chainAndThenAlignLeftToLine;
     chain_api_local.andThenFollowLine      = chainAndThenFollowLine;
+    chain_api_local.andThenOTOSReset       = chainAndThenOTOSReset;
     chain_api_local.until = chainUntil;
     chain_api_local.untilSelective = chainUntilSelective;
     chain_api_local.withDisplay = chainWithDisplay;
     chain_api_local.andThenDriveUntil = chainAndThenDriveUntil;
     chain_api_local.andThenDriveToXY = chainAndThenDriveToXY;
+    chain_api_local.andThenDriveDistance = chainAndThenDriveDistance;
+    chain_api_local.andThenTurnToAbsoluteAngle = chainAndThenTurnToAbsoluteAngle;
+    chain_api_local.withTimeout = chainWithTimeout;
+    chain_api_local.withBLState = chainWithBLState;
     chain_api_local.schedule = chainSchedule;
 
     return chain_api_local;
@@ -674,12 +748,19 @@ static void commandTick(Command *command)
         return;
     }
 
+    /* Fire BL state transition on the first tick this command runs */
+    if (!command->started && (command->bl_state_on_start != 0U))
+    {
+        Menu_SetBLState((BLState)(command->bl_state_on_start - 1U));
+    }
+
     switch (command->type)
     {
     case CMD_WAIT:
         if (!command->started)
         {
             command->started = 1;
+            driveStop();   /* ensure motors are off for the entire wait period */
             setCurrentCommandDisplay(getDisplayName(command, "WAIT"));
         }
 
@@ -776,7 +857,10 @@ static void commandTick(Command *command)
             command->heading_error_sum = 0.0f;
             command->pwm_counter = 0;
             setTurnToAngleDisplay(command, 0);
-            command->target_angle = (-getHeading()) + command->target_angle;
+            if (command->left_duty == 0U)
+            {
+                command->target_angle = (-getHeading()) + command->target_angle;
+            }
         }
 
         heading = -getHeading();
@@ -830,6 +914,17 @@ static void commandTick(Command *command)
             driveStop();
             command->finished = 1;
             break;
+        }
+
+        {
+            unsigned int deadline = (command->timeout_ticks > 0U)
+                                    ? command->timeout_ticks
+                                    : (unsigned int)secondsToTicks(60);
+            if (command->elapsed_ticks >= deadline)
+            {
+                driveStop();
+                command->finished = 1;
+            }
         }
         break;
     }
@@ -1105,8 +1200,6 @@ static void commandTick(Command *command)
         white_difference = absoluteFloat(left_white_level - right_white_level);
         avg_white = 0.5f * (left_white_level + right_white_level);
 
-        /* If both sensors agree and we are still in white approach range,
-           use IMU heading hold to drive straight. */
         if ((white_difference <= drive_to_line_equal_tolerance) &&
             (avg_white > drive_to_line_black_lock_level))
         {
@@ -1202,27 +1295,24 @@ static void commandTick(Command *command)
         left_color  = getDetectorValue(DETECTOR_RIGHT);
         right_color = getDetectorValue(DETECTOR_LEFT);
 
-        left_pwm = pwmCountsFromPercentFloatSigned(100.0);
-        right_pwm = pwmCountsFromPercentFloatSigned(-100.0);
-
-        int BLACK_LEVEL = 70;
+        left_pwm = pwmCountsFromPercentFloatSigned(60.0);
+        right_pwm = pwmCountsFromPercentFloatSigned(-60.0);
 
         applyMixedDrive(left_pwm, right_pwm);
-                                   
-        if ((left_color > BLACK_LEVEL) && (right_color < left_color))
+
+        if (right_color - left_color > 20) //right is greater by 50 means it is on black.
         {
             if (command->pwm_counter < 255U)
             {
                 command->pwm_counter++;
             }
         }
-        else
-        {
+        else {
             command->pwm_counter = 0U;
         }
 
         command->elapsed_ticks++;
-        if ((command->pwm_counter >= COMMAND_TICKS_FROM_MS(100U)) ||
+        if ((command->pwm_counter >= COMMAND_TICKS_FROM_MS(5U)) ||
             (command->elapsed_ticks >= secondsToTicks(5)))
         {
             driveStop();
@@ -1232,7 +1322,7 @@ static void commandTick(Command *command)
         break;
     }
 
-case CMD_FOLLOW_LINE:
+    case CMD_FOLLOW_LINE:
     {
         if (!command->started)
         {
@@ -1243,6 +1333,7 @@ case CMD_FOLLOW_LINE:
             lf_wasInGap            = 0;
             lf_coastFrames         = 0;
             lf_coastMv             = 0;
+            lf_last_dir            = 1; // 1 = Right, -1 = Left
             setFollowLineElapsedDisplay(command);
             zeroHeading();
             command->lf_lap_count = -1;
@@ -1254,33 +1345,60 @@ case CMD_FOLLOW_LINE:
         int steerError = irL - irR;
         int sumError   = (irL + irR) - LF_TARGET_SUM;
 
-        lf_integral += steerError;
-        if (lf_integral >  LF_INTEGRAL_MAX) lf_integral =  LF_INTEGRAL_MAX;
-        if (lf_integral <  LF_INTEGRAL_MIN) lf_integral =  LF_INTEGRAL_MIN;
+        int leftDuty  = 0;
+        int rightDuty = 0;
 
-        int derivative = steerError - lf_prev_error;
-        lf_prev_error  = steerError;
+        if ((irL < LF_LOSS_THRESHOLD) && (irR < LF_LOSS_THRESHOLD))
+        {
+            // CASE: OFF LINE (Both sensors are seeing white)
+            if (lf_last_dir > 0) {
+                leftDuty  = -70;
+                rightDuty = 70;
+            } else {
+                leftDuty  = 70;
+                rightDuty = -70;
+            }
+        }
+        else if ((irL > LF_BOTH_BLACK_THRESHOLD) && (irR > LF_BOTH_BLACK_THRESHOLD))
+        {
+            // CASE: INTERSECTION (Both sensors are seeing black)
+            leftDuty  = 70;
+            rightDuty = 70;
+        }
+        else
+        {
+            // CASE: NORMAL PID FOLLOWING
+            lf_integral += steerError;
+            if (lf_integral >  LF_INTEGRAL_MAX) lf_integral =  LF_INTEGRAL_MAX;
+            if (lf_integral <  LF_INTEGRAL_MIN) lf_integral =  LF_INTEGRAL_MIN;
 
-        int mv_scaled = (LF_KP_SCALED * steerError)
-                      + (LF_KI_SCALED * lf_integral)
-                      + (LF_KD_SCALED * derivative);
-        int mv = mv_scaled >> 10;
+            int derivative = steerError - lf_prev_error;
+            lf_prev_error  = steerError;
 
-        if (mv >  LF_CORRECTION_MAX) mv =  LF_CORRECTION_MAX;
-        if (mv <  LF_CORRECTION_MIN) mv =  LF_CORRECTION_MIN;
+            int mv_scaled = (LF_KP_SCALED * steerError)
+                        + (LF_KI_SCALED * lf_integral)
+                        + (LF_KD_SCALED * derivative);
+            int mv = mv_scaled >> 10;
 
-        int speedTrim_scaled = LF_KP_SUM_SCALED * sumError;
-        int speedTrim        = speedTrim_scaled >> 10;
-        if (speedTrim < 0) speedTrim = -speedTrim;
+            // Store direction only during active tracking
+            if (abs(mv) > 5) {
+                lf_last_dir = (mv > 0) ? 1 : -1;
+            }
 
-        int steerAbs = mv < 0 ? -mv : mv;
-        int minBase  = steerAbs > 10 ? steerAbs : 10;
+            // Clamp correction
+            if (mv >  LF_CORRECTION_MAX) mv =  LF_CORRECTION_MAX;
+            if (mv <  LF_CORRECTION_MIN) mv =  LF_CORRECTION_MIN;
 
-        int baseSpeed = LF_BASE_SPEED - speedTrim;
-        if (baseSpeed < minBase) baseSpeed = minBase;
+            // Base Speed with Sum Correction
+            int speedTrim_scaled = LF_KP_SUM_SCALED * sumError;
+            int speedTrim        = speedTrim_scaled >> 10;
+            
+            int baseSpeed = LF_BASE_SPEED - abs(speedTrim);
+            if (baseSpeed < 20) baseSpeed = 20;
 
-        int leftDuty  = LF_BASE_SPEED - mv;
-        int rightDuty = LF_BASE_SPEED + mv;
+            leftDuty  = LF_BASE_SPEED - mv;
+            rightDuty = LF_BASE_SPEED + mv;
+        }
 
         if (leftDuty  >  100) leftDuty  =  100;
         if (leftDuty  < -100) leftDuty  = -100;
@@ -1306,12 +1424,12 @@ case CMD_FOLLOW_LINE:
         command->elapsed_ticks++;
         setFollowLineElapsedDisplay(command);
 
-        if (((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0)) || command->elapsed_ticks >= secondsToTicks(40))
+        if (((command->drive_until_flag != 0) && (*(command->drive_until_flag) != 0)) || command->elapsed_ticks >= command->duration_ticks)
         {
             driveStop();
             command->finished = 1;
-            lf_integral    = 0;
-            lf_prev_error  = 0;
+            lf_integral   = 0;
+            lf_prev_error = 0;
             break;
         }
 
@@ -1431,30 +1549,97 @@ case CMD_FOLLOW_LINE:
 
     case CMD_DRIVE_TO_XY:
     {
-        float heading;
-        float error;
-        float derivative;
-        float control;
-        float normalized_control;
-        int correction;
-        int left_pwm;
-        int right_pwm;
-        int max_correction_pwm;
-        unsigned int base_pwm;
-        unsigned int min_pwm;
-        float current_y;
-        float delta_y;
+        float dx, dy, dist;
+        float angle_to_target, heading_err;
+        float v, omega, left_pct, right_pct;
+
+        if (!command->started)
+        {
+            command->started       = 1;
+            command->elapsed_ticks = 0;
+            setCurrentCommandDisplay(getDisplayName(command, "GO TO XY"));
+        }
+
+        dx = command->target_x - getPositionX();
+        dy = command->target_y - getPositionY();
+        dist = sqrtf(dx * dx + dy * dy);
+
+        if (dist <= drive_to_xy_tolerance_in)
+        {
+            driveStop();
+            command->finished = 1;
+            break;
+        }
+
+        angle_to_target = atan2f(dx, dy) * (180.0f / FT_PI);
+        heading_err     = wrapAngle(angle_to_target - getHeading());
+
+        /* Linear velocity: proportional to distance, capped */
+        v = drive_to_xy_kv * dist;
+        if (v > drive_to_xy_speed_percent) { v = drive_to_xy_speed_percent; }
+
+        /* Angular velocity: proportional to heading error */
+        omega = drive_to_xy_komega * heading_err;
+        if (omega >  drive_to_xy_speed_percent) { omega =  drive_to_xy_speed_percent; }
+        if (omega < -drive_to_xy_speed_percent) { omega = -drive_to_xy_speed_percent; }
+
+        left_pct  = v - omega;
+        right_pct = v + omega;
+
+        if (left_pct  >  100.0f) { left_pct  =  100.0f; }
+        if (left_pct  < -100.0f) { left_pct  = -100.0f; }
+        if (right_pct >  100.0f) { right_pct =  100.0f; }
+        if (right_pct < -100.0f) { right_pct = -100.0f; }
+
+        applyMixedDrive(pwmCountsFromPercentFloatSigned(left_pct),
+                        pwmCountsFromPercentFloatSigned(right_pct));
+
+        command->elapsed_ticks++;
+        if (command->elapsed_ticks >= secondsToTicks(30))
+        {
+            driveStop();
+            command->finished = 1;
+        }
+        break;
+    }
+
+    case CMD_OTOS_RESET:
+        if (!command->started)
+        {
+            command->started = 1;
+            setCurrentCommandDisplay(getDisplayName(command, "OTOS RESET"));
+            OTOS_FullReset();
+            __delay_cycles(8000000UL);
+        }
+        command->finished = 1;
+        break;
+
+    case CMD_DRIVE_DISTANCE:
+    {
+        float dx, dy, dist_traveled;
+        float heading, error, derivative, control, normalized_control;
+        int correction, left_pwm, right_pwm, max_correction_pwm;
+        unsigned int base_pwm, min_pwm;
 
         if (!command->started)
         {
             command->started = 1;
+            command->target_x = getPositionX();
+            command->target_y = getPositionY();
             command->heading_start = getHeading();
             command->heading_error_prev = 0.0f;
-            command->heading_error_sum = 0.0f;
-            /* Determine direction once: CLOCKWISE = forward (+Y), CCW = reverse (-Y) */
-            command->spin_direction = (getPositionY() <= command->target_y)
-                                      ? SPIN_CLOCKWISE : SPIN_COUNTERCLOCKWISE;
-            setCurrentCommandDisplay(getDisplayName(command, "GO TO XY"));
+            setCurrentCommandDisplay(getDisplayName(command, "DRIVE DIST"));
+        }
+
+        dx = getPositionX() - command->target_x;
+        dy = getPositionY() - command->target_y;
+        dist_traveled = sqrtf(dx * dx + dy * dy);
+
+        if (dist_traveled >= command->target_angle)
+        {
+            driveStop();
+            command->finished = 1;
+            break;
         }
 
         heading = getHeading();
@@ -1470,82 +1655,33 @@ case CMD_FOLLOW_LINE:
             control = 0.0f;
         }
 
-        base_pwm = pwmCountsFromPercentFloat(drive_to_xy_speed_percent);
+        base_pwm = pwmCountsFromPercentFloat(drive_straight_base_percent);
         min_pwm = pwmCountsFromPercent(MOTOR_MIN_DUTY_PERCENT);
         max_correction_pwm = (int)pwmCountsFromPercentFloat(drive_straight_max_correction_percent);
 
         normalized_control = control / 90.0f;
-        if (normalized_control > 1.0f)
-        {
-            normalized_control = 1.0f;
-        }
-        if (normalized_control < -1.0f)
-        {
-            normalized_control = -1.0f;
-        }
+        if (normalized_control >  1.0f) { normalized_control =  1.0f; }
+        if (normalized_control < -1.0f) { normalized_control = -1.0f; }
 
         correction = (int)((float)max_correction_pwm * normalized_control);
+        left_pwm  = (int)base_pwm - correction;
+        right_pwm = (int)base_pwm + correction;
 
-        if (command->spin_direction == SPIN_CLOCKWISE)
-        {
-            /* Forward: +Y */
-            left_pwm = (int)base_pwm + correction;
-            right_pwm = (int)base_pwm - correction;
-            if ((left_pwm > 0) && (left_pwm < (int)min_pwm))
-            {
-                left_pwm = (int)min_pwm;
-            }
-            if ((right_pwm > 0) && (right_pwm < (int)min_pwm))
-            {
-                right_pwm = (int)min_pwm;
-            }
-            Motors_DriveForwardPWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
-        }
-        else
-        {
-            /* Reverse: -Y */
-            left_pwm = (int)base_pwm - correction;
-            right_pwm = (int)base_pwm + correction;
-            if ((left_pwm > 0) && (left_pwm < (int)min_pwm))
-            {
-                left_pwm = (int)min_pwm;
-            }
-            if ((right_pwm > 0) && (right_pwm < (int)min_pwm))
-            {
-                right_pwm = (int)min_pwm;
-            }
-            Motors_DriveReversePWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
-        }
+        if ((left_pwm  > 0) && (left_pwm  < (int)min_pwm)) { left_pwm  = (int)min_pwm; }
+        if ((right_pwm > 0) && (right_pwm < (int)min_pwm)) { right_pwm = (int)min_pwm; }
 
-        /* Stop when within tolerance of target Y (or overshot) */
-        current_y = getPositionY();
-        delta_y = command->target_y - current_y;
+        Motors_DriveForwardPWM(clampPwmCounts(left_pwm), clampPwmCounts(right_pwm));
 
-        if (command->spin_direction == SPIN_CLOCKWISE)
-        {
-            if (delta_y <= drive_to_xy_tolerance_in)
-            {
-                driveStop();
-                command->finished = 1;
-                break;
-            }
-        }
-        else
-        {
-            if (-delta_y <= drive_to_xy_tolerance_in)
-            {
-                driveStop();
-                command->finished = 1;
-                break;
-            }
-        }
-
-        /* Safety timeout: 30 seconds */
         command->elapsed_ticks++;
-        if (command->elapsed_ticks >= secondsToTicks(30))
         {
-            driveStop();
-            command->finished = 1;
+            unsigned int deadline = (command->timeout_ticks > 0U)
+                                    ? command->timeout_ticks
+                                    : (unsigned int)secondsToTicks(60);
+            if (command->elapsed_ticks >= deadline)
+            {
+                driveStop();
+                command->finished = 1;
+            }
         }
         break;
     }
@@ -1712,13 +1848,26 @@ unsigned char isRobotBusy(void)
 static unsigned long  s_curvature_last_tick = 0UL;
 static unsigned char  s_curvature_active    = 0U;
 
-#define CURVATURE_WATCHDOG_TICKS (15U)
+static void (*s_on_complete_cb)(void) = 0;
+
+void robotSetOnComplete(void (*cb)(void))
+{
+    s_on_complete_cb = cb;
+}
+
+/* IMU heading lock for straight curvature driving */
+static float         s_curv_heading_lock       = 0.0f;
+static float         s_curv_heading_prev_error = 0.0f;
+static unsigned char s_curv_heading_locked     = 0U;
+
+#define CURVATURE_WATCHDOG_TICKS (15U)   /* 15 × 20 ms = 300 ms */
 
 void applySpeedSet(float fwd_pct, float turn_pct)
 {
     float left_pct;
     float right_pct;
 
+    /* Preempt any running timed command */
     if (active_robot != 0)
     {
         active_robot->active_command = 0;
@@ -1728,7 +1877,7 @@ void applySpeedSet(float fwd_pct, float turn_pct)
     if ((fwd_pct == 0.0f) && (turn_pct == 0.0f))
     {
         driveStop();
-        s_curvature_active = 0U;
+        s_curvature_active        = 0U;
         return;
     }
 
@@ -1758,7 +1907,6 @@ void robotCurvatureWatchdog(unsigned long tick)
     }
 }
 
-
 static void switchProcess(Robot *robot)
 {
     /* Switch handling is done by interrupt-based switches.c */
@@ -1783,6 +1931,7 @@ void Command_Forward(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_Wait(Command *command, int time_seconds)
@@ -1803,6 +1952,7 @@ void Command_Wait(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_TurnToAngle(Command *command, float target_angle_degrees)
@@ -1828,6 +1978,7 @@ void Command_TurnToAngle(Command *command, float target_angle_degrees)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_DriveStraight(Command *command, int time_seconds)
@@ -1852,6 +2003,7 @@ void Command_DriveStraight(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUntilFlag stop_right_flag)
@@ -1876,6 +2028,7 @@ void Command_DriveUntil(Command *command, DriveUntilFlag stop_left_flag, DriveUn
     command->drive_until_left_flag = stop_left_flag;
     command->drive_until_right_flag = stop_right_flag;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_DriveToLine(Command *command)
@@ -1903,6 +2056,7 @@ void Command_DriveToLine(Command *command)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_AlignLeftToLine(Command *command)
@@ -1930,6 +2084,30 @@ void Command_AlignLeftToLine(Command *command)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
+}
+
+void Command_OTOSReset(Command *command)
+{
+    if (command == 0) { return; }
+
+    command->type                  = CMD_OTOS_RESET;
+    command->duration_ticks        = 0;
+    command->elapsed_ticks         = 0;
+    command->started               = 0;
+    command->finished              = 0;
+    command->child_count           = 0;
+    command->active_child          = 0;
+    command->target_angle          = 0.0f;
+    command->heading_start         = 0.0f;
+    command->heading_error_prev    = 0.0f;
+    command->heading_error_sum     = 0.0f;
+    command->drive_until_flag      = 0;
+    command->drive_until_left_flag = 0;
+    command->drive_until_right_flag= 0;
+    command->display_message       = 0;
+    command->bl_state_on_start     = 0;
+    command->timeout_ticks         = 0;
 }
 
 void Command_FollowLine(Command *command, int time_seconds)
@@ -1957,8 +2135,10 @@ void Command_FollowLine(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
-    lf_heading_acc = 0;
-    lf_prev_heading = getHeading();
+    command->bl_state_on_start = 0;
+    lf_heading_acc     = 0;
+    lf_junction_frames = 0;
+    lf_prev_heading    = getHeading();
 }
 
 void Command_ReverseStraight(Command *command, int time_seconds)
@@ -1983,6 +2163,7 @@ void Command_ReverseStraight(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_DriveToXY(Command *command, float target_x_in, float target_y_in)
@@ -2013,6 +2194,65 @@ void Command_DriveToXY(Command *command, float target_x_in, float target_y_in)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
+}
+
+void Command_DriveDistance(Command *command, float inches)
+{
+    if (command == 0)
+    {
+        return;
+    }
+
+    command->type = CMD_DRIVE_DISTANCE;
+    command->target_angle = inches;
+    command->target_x = 0.0f;
+    command->target_y = 0.0f;
+    command->duration_ticks = 0;
+    command->elapsed_ticks = 0;
+    command->started = 0;
+    command->finished = 0;
+    command->child_count = 0;
+    command->active_child = 0;
+    command->heading_start = 0.0f;
+    command->heading_error_prev = 0.0f;
+    command->heading_error_sum = 0.0f;
+    command->left_duty = 0;
+    command->right_duty = 0;
+    command->drive_until_flag = 0;
+    command->drive_until_left_flag = 0;
+    command->drive_until_right_flag = 0;
+    command->display_message = 0;
+    command->bl_state_on_start = 0;
+    command->timeout_ticks = 0;   /* 0 = use the built-in 60-second hard limit */
+}
+
+void Command_TurnToAbsoluteAngle(Command *command, float degrees)
+{
+    if (command == 0)
+    {
+        return;
+    }
+
+    command->type = CMD_TURN_TO_ANGLE;
+    command->duration_ticks = 0;
+    command->elapsed_ticks = 0;
+    command->started = 0;
+    command->finished = 0;
+    command->child_count = 0;
+    command->active_child = 0;
+    command->target_angle = wrapAngle(degrees);
+    command->heading_start = 0.0f;
+    command->heading_error_prev = 0.0f;
+    command->heading_error_sum = 0.0f;
+    command->left_duty = 1U;
+    command->right_duty = 0;
+    command->drive_until_flag = 0;
+    command->drive_until_left_flag = 0;
+    command->drive_until_right_flag = 0;
+    command->pwm_counter = 0;
+    command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_Reverse(Command *command, int time_seconds)
@@ -2033,6 +2273,7 @@ void Command_Reverse(Command *command, int time_seconds)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_Spin(Command *command, int time_seconds, SpinDirection direction)
@@ -2056,6 +2297,7 @@ void Command_Spin(Command *command, int time_seconds, SpinDirection direction)
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 }
 
 void Command_Sequence(Command *command, Command **children, unsigned char child_count)
@@ -2078,6 +2320,7 @@ void Command_Sequence(Command *command, Command **children, unsigned char child_
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 
     for (index = 0; index < command->child_count; index++)
     {
@@ -2105,6 +2348,7 @@ void Command_Parallel(Command *command, Command **children, unsigned char child_
     command->drive_until_left_flag = 0;
     command->drive_until_right_flag = 0;
     command->display_message = 0;
+    command->bl_state_on_start = 0;
 
     for (index = 0; index < command->child_count; index++)
     {
@@ -2136,6 +2380,7 @@ void resetRobot(Robot *robot)
 
     robot->state = STANDBY;
     robot->active_command = 0;
+    s_on_complete_cb = 0;   /* cancel any pending follow-on chain */
     driveStop();
 }
 
@@ -2177,9 +2422,16 @@ void updateRobot(Robot *robot, int Time_Sequence)
 
         if (robot->active_command->finished)
         {
+            void (*cb)(void);
             robot->active_command = 0;
             robot->state = STANDBY;
             driveStop();
+
+            /* Fire on-complete callback AFTER clearing the active command so
+               the callback is free to schedule a new chain immediately. */
+            cb = s_on_complete_cb;
+            s_on_complete_cb = 0;
+            if (cb != 0) { cb(); }
         }
     }
     else
@@ -2254,6 +2506,12 @@ RobotCommandChain chainFollowLine(int time_seconds)
     return chainAndThenFollowLine(time_seconds);
 }
 
+RobotCommandChain chainOTOSReset(void)
+{
+    chainReset();
+    return chainAndThenOTOSReset();
+}
+
 RobotCommandChain chainDriveUntil(DriveUntilFlag left_flag, DriveUntilFlag right_flag)
 {
     chainReset();
@@ -2288,4 +2546,16 @@ RobotCommandChain chainSpinCCWMs(unsigned int ms, unsigned char duty_percent)
 {
     chainReset();
     return chainAndThenSpinCCWMs(ms, duty_percent);
+}
+
+RobotCommandChain chainDriveDistance(float inches)
+{
+    chainReset();
+    return chainAndThenDriveDistance(inches);
+}
+
+RobotCommandChain chainTurnToAbsoluteAngle(float degrees)
+{
+    chainReset();
+    return chainAndThenTurnToAbsoluteAngle(degrees);
 }
